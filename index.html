@@ -424,7 +424,7 @@
     .utility-row {
       grid-area: utility;
       display: grid;
-      grid-template-columns: repeat(3, auto);
+      grid-template-columns: repeat(4, auto);
       justify-content: end;
       align-items: center;
       gap: 10px;
@@ -459,6 +459,11 @@
     .secondary-btn.audio-btn svg {
       width: 31px;
       height: 31px;
+    }
+
+    .secondary-btn.remote-btn svg {
+      width: 27px;
+      height: 27px;
     }
 
     .ctrl.recommend.active {
@@ -556,6 +561,138 @@
     .overlay-btn:disabled {
       opacity: 0.4;
       cursor: not-allowed;
+    }
+
+    .device-sheet {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      z-index: 6;
+      background: rgba(3,3,4,0.58);
+      backdrop-filter: blur(12px);
+    }
+
+    .device-sheet.show { display: flex; }
+
+    .device-card {
+      width: min(100%, 560px);
+      max-height: min(78dvh, 720px);
+      overflow: hidden;
+      padding: 18px;
+      border-radius: 24px;
+      background: rgba(19,19,22,0.94);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.42);
+      display: grid;
+      gap: 14px;
+      grid-template-rows: auto auto minmax(0, 1fr) auto;
+    }
+
+    .device-title {
+      margin: 0;
+      font-size: clamp(22px, 2.6vw, 32px);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+
+    .device-copy {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .device-list {
+      display: grid;
+      gap: 10px;
+      overflow: auto;
+      padding-right: 2px;
+      min-height: 120px;
+    }
+
+    .device-item {
+      width: 100%;
+      text-align: left;
+      display: grid;
+      gap: 6px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.09);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .device-item:hover { background: rgba(255,255,255,0.08); }
+
+    .device-item.active {
+      border-color: rgba(46,214,100,0.4);
+      background: rgba(13,27,17,0.55);
+    }
+
+    .device-item:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .device-item-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .device-item-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .device-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .device-chip.good {
+      color: #d7ffe5;
+      background: rgba(13,27,17,0.7);
+      border-color: rgba(46,214,100,0.34);
+    }
+
+    .device-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .device-btn {
+      min-height: 48px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.09);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .device-btn.primary {
+      background: linear-gradient(180deg, #2ae06c, #19b856);
+      color: #041008;
+      border: 0;
     }
 
     .hidden { display: none !important; }
@@ -794,6 +931,16 @@
               <path d="M7.05 5.55A8.25 8.25 0 1 0 16.95 5.55"></path>
             </svg>
           </button>
+          <button id="connectRemoteBtn" class="secondary-btn remote-btn" type="button" aria-label="Choose Spotify Connect device" title="Choose Spotify Connect device" disabled>
+            <svg viewBox="0 0 110 135" fill="currentColor" aria-hidden="true">
+              <path d="M55,105.19c24.92,0,45.19-20.27,45.19-45.19S79.92,14.81,55,14.81,9.81,35.08,9.81,60s20.27,45.19,45.19,45.19ZM55,21.06c21.47,0,38.94,17.47,38.94,38.94s-17.47,38.94-38.94,38.94-38.94-17.47-38.94-38.94S33.53,21.06,55,21.06Z"></path>
+              <path d="M55,75.19c8.38,0,15.19-6.82,15.19-15.19s-6.82-15.19-15.19-15.19-15.19,6.82-15.19,15.19,6.82,15.19,15.19,15.19ZM55,51.06c4.93,0,8.94,4.01,8.94,8.94s-4.01,8.94-8.94,8.94-8.94-4.01-8.94-8.94,4.01-8.94,8.94-8.94Z"></path>
+              <path d="M51.93,37.4h6.15c1.15,0,2.21-.63,2.76-1.65.54-1.02.48-2.25-.16-3.21l-3.07-4.62c-1.16-1.74-4.04-1.74-5.2,0l-3.07,4.62c-.64.96-.7,2.19-.16,3.21s1.6,1.65,2.76,1.65h0Z"></path>
+              <path d="M58.07,82.6h-6.15c-1.15,0-2.21.63-2.76,1.65-.54,1.02-.48,2.25.16,3.21l3.07,4.62c.58.87,1.55,1.39,2.6,1.39s2.02-.52,2.6-1.39l3.07-4.62c.64-.96.7-2.19.16-3.21s-1.6-1.65-2.76-1.65h0Z"></path>
+              <path d="M79.26,65.83c.46.25.97.37,1.48.37.61,0,1.21-.18,1.73-.52l4.62-3.07c.87-.58,1.39-1.55,1.39-2.6s-.52-2.02-1.39-2.6l-4.62-3.07c-.96-.64-2.2-.7-3.21-.16-1.02.54-1.65,1.6-1.65,2.76v6.15c0,1.15.63,2.21,1.65,2.76h0Z"></path>
+              <path d="M29.27,66.2c.51,0,1.01-.12,1.48-.37,1.02-.54,1.65-1.6,1.65-2.76v-6.15c0-1.15-.63-2.21-1.65-2.76-1.01-.54-2.25-.48-3.21.16l-4.62,3.07c-.87.58-1.39,1.55-1.39,2.6s.52,2.02,1.39,2.6l4.62,3.07c.52.35,1.12.52,1.73.52h0Z"></path>
+            </svg>
+          </button>
           <button id="fullscreenBtn" class="secondary-btn" type="button" aria-label="Toggle full screen" title="Toggle full screen">
             <svg id="fullscreenIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M8 3H3v5"></path>
@@ -819,6 +966,18 @@
         </div>
       </div>
     </div>
+
+    <div id="deviceSheet" class="device-sheet" aria-hidden="true">
+      <div class="device-card" role="dialog" aria-modal="true" aria-labelledby="deviceSheetTitle">
+        <h2 id="deviceSheetTitle" class="device-title">Choose a Spotify Connect device</h2>
+        <p class="device-copy">Pick which Spotify Connect target this dashboard controls. Selecting one makes it the device this UI sends play, pause, skip, seek, queue, and volume commands to.</p>
+        <div id="deviceList" class="device-list" aria-live="polite"></div>
+        <div class="device-actions">
+          <button id="refreshDevicesBtn" class="device-btn primary" type="button">Refresh</button>
+          <button id="closeDevicesBtn" class="device-btn" type="button">Close</button>
+        </div>
+      </div>
+    </div>
   </main>
 
   <button id="signOutMiniBtn" class="icon-mini-btn hidden" type="button" aria-label="Sign out" hidden></button>
@@ -838,7 +997,8 @@
       oauthState: 'spotify_car_ui_oauth_state',
       overlayDismissed: 'spotify_car_ui_overlay_dismissed',
       volume: 'spotify_car_ui_volume',
-      previousVolume: 'spotify_car_ui_previous_volume'
+      previousVolume: 'spotify_car_ui_previous_volume',
+      selectedDeviceId: 'spotify_car_ui_selected_device_id'
     };
 
     const SCOPES = [
@@ -891,6 +1051,7 @@
       volumeSlider: document.getElementById('volumeSlider'),
       audioBtn: document.getElementById('audioBtn'),
       useDeviceBtn: document.getElementById('useDeviceBtn'),
+      connectRemoteBtn: document.getElementById('connectRemoteBtn'),
       fullscreenBtn: document.getElementById('fullscreenBtn'),
       fullscreenIcon: document.getElementById('fullscreenIcon'),
       overlay: document.getElementById('overlay'),
@@ -899,7 +1060,11 @@
       loginBtn: document.getElementById('loginBtn'),
       setupAudioBtn: document.getElementById('setupAudioBtn'),
       setupDeviceBtn: document.getElementById('setupDeviceBtn'),
-      closeOverlayBtn: document.getElementById('closeOverlayBtn')
+      closeOverlayBtn: document.getElementById('closeOverlayBtn'),
+      deviceSheet: document.getElementById('deviceSheet'),
+      deviceList: document.getElementById('deviceList'),
+      refreshDevicesBtn: document.getElementById('refreshDevicesBtn'),
+      closeDevicesBtn: document.getElementById('closeDevicesBtn')
     };
 
     const state = {
@@ -924,7 +1089,15 @@
       volumeSyncPending: null,
       volume: 0.8,
       previousVolume: 0.8,
-      gestureCooldownUntil: 0
+      gestureCooldownUntil: 0,
+      selectedDeviceId: '',
+      selectedDeviceName: '',
+      selectedDeviceSupportsVolume: true,
+      playbackDeviceId: '',
+      playbackDeviceName: '',
+      playbackDeviceSupportsVolume: true,
+      devices: [],
+      playbackPollTimer: null
     };
 
     const gesture = {
@@ -1222,6 +1395,23 @@
       }
     }
 
+    function getCommandDeviceId() {
+      return state.selectedDeviceId || state.playbackDeviceId || state.deviceId || '';
+    }
+
+    function isLocalCommandTarget() {
+      const targetId = getCommandDeviceId();
+      return !!targetId && !!state.deviceId && targetId === state.deviceId;
+    }
+
+    function canControlVolume() {
+      if (!hasTokens()) return false;
+      if (isLocalCommandTarget()) return !!state.player || !!getCommandDeviceId();
+      if (state.selectedDeviceId) return !!state.selectedDeviceSupportsVolume;
+      if (state.playbackDeviceId) return !!state.playbackDeviceSupportsVolume;
+      return !!state.player;
+    }
+
     function updateTransportButtons(enabled) {
       els.shuffleBtn.disabled = !enabled;
       els.prevBtn.disabled = !enabled;
@@ -1230,8 +1420,8 @@
       els.timeline.disabled = !enabled;
       els.heartBtn.disabled = !enabled;
       els.recommendBtn.disabled = !enabled;
-      els.volumeSlider.disabled = !enabled || !state.player;
-      els.muteBtn.disabled = !enabled || !state.player;
+      els.volumeSlider.disabled = !enabled || !canControlVolume();
+      els.muteBtn.disabled = !enabled || !canControlVolume();
     }
 
     function updateAudioButton() {
@@ -1242,12 +1432,24 @@
       updateSetupOverlayButtons();
     }
 
+    function updateRemoteButton() {
+      if (!els.connectRemoteBtn) return;
+      const hasSelection = !!state.selectedDeviceId;
+      els.connectRemoteBtn.disabled = !hasTokens();
+      els.connectRemoteBtn.classList.toggle('active', hasSelection);
+      const label = state.selectedDeviceName || state.playbackDeviceName || 'Choose Spotify Connect device';
+      els.connectRemoteBtn.setAttribute('title', hasSelection ? `Controlling ${label}` : 'Choose Spotify Connect device');
+      els.connectRemoteBtn.setAttribute('aria-label', hasSelection ? `Controlling ${label}` : 'Choose Spotify Connect device');
+    }
+
     function updateAuxButtons() {
       const authed = hasTokens();
       els.signOutMiniBtn.classList.toggle('hidden', !authed);
       els.audioBtn.disabled = !authed || !state.player;
       els.useDeviceBtn.disabled = !authed || !state.deviceId;
+      if (els.connectRemoteBtn) els.connectRemoteBtn.disabled = !authed;
       updateAudioButton();
+      updateRemoteButton();
       updateSetupOverlayButtons();
     }
 
@@ -1283,6 +1485,145 @@
       }
     }
 
+
+    function setSelectedDevice(device = null, persist = true) {
+      state.selectedDeviceId = device?.id || '';
+      state.selectedDeviceName = device?.name || '';
+      state.selectedDeviceSupportsVolume = device ? device.supports_volume !== false : true;
+      if (persist) {
+        if (state.selectedDeviceId) setSaved(STORAGE_KEYS.selectedDeviceId, state.selectedDeviceId);
+        else removeSaved(STORAGE_KEYS.selectedDeviceId);
+      }
+      updateRemoteButton();
+      updateTransportButtons(!!state.playbackState || !!state.ready);
+    }
+
+    function updatePlaybackDeviceInfo(device = null) {
+      state.playbackDeviceId = device?.id || '';
+      state.playbackDeviceName = device?.name || '';
+      state.playbackDeviceSupportsVolume = device ? device.supports_volume !== false : true;
+      if (!state.selectedDeviceId) updateTransportButtons(!!state.playbackState || !!state.ready);
+      updateRemoteButton();
+    }
+
+    function normalizePlaybackState(input, source = 'sdk') {
+      if (!input) return null;
+      if (source === 'api') {
+        if (!input.item) return null;
+        const item = input.item;
+        return {
+          paused: !input.is_playing,
+          position: input.progress_ms || 0,
+          duration: item.duration_ms || 0,
+          context: input.context ? { metadata: { context_description: item.album?.name || input.context.type || 'Spotify' } } : null,
+          track_window: { current_track: {
+            id: item.id,
+            uri: item.uri,
+            name: item.name,
+            duration_ms: item.duration_ms,
+            artists: item.artists || [],
+            album: item.album || { images: [] }
+          } },
+          device: input.device || null
+        };
+      }
+      return input;
+    }
+
+    async function fetchAvailableDevices(render = true) {
+      const data = await spotifyFetch('/v1/me/player/devices');
+      state.devices = Array.isArray(data?.devices) ? data.devices : [];
+      const savedSelected = state.selectedDeviceId || getSaved(STORAGE_KEYS.selectedDeviceId);
+      if (savedSelected) {
+        const found = state.devices.find(device => device.id === savedSelected);
+        if (found) {
+          setSelectedDevice(found, false);
+        } else if (state.selectedDeviceId) {
+          setSelectedDevice(null);
+        }
+      }
+      if (render) renderDeviceList();
+      return state.devices;
+    }
+
+    function renderDeviceList() {
+      if (!els.deviceList) return;
+      if (!state.devices.length) {
+        els.deviceList.innerHTML = '<div class="device-item" style="cursor:default"><div class="device-item-head"><span>No Spotify Connect devices found</span></div><div class="device-item-meta"><span class="device-chip">Open Spotify on the device first, then refresh.</span></div></div>';
+        return;
+      }
+      const activeId = state.playbackDeviceId;
+      const selectedId = state.selectedDeviceId;
+      els.deviceList.innerHTML = state.devices.map(device => {
+        const isSelected = selectedId && device.id === selectedId;
+        const isActive = activeId && device.id === activeId;
+        const isLocal = state.deviceId && device.id === state.deviceId;
+        const chips = [
+          `<span class="device-chip">${device.type || 'device'}</span>`,
+          isActive ? '<span class="device-chip good">Active</span>' : '',
+          isLocal ? '<span class="device-chip">This browser</span>' : '',
+          device.supports_volume === false ? '<span class="device-chip">No volume API</span>' : '',
+          device.is_restricted ? '<span class="device-chip">Restricted</span>' : ''
+        ].filter(Boolean).join('');
+        return `
+          <button class="device-item ${isSelected ? 'active' : ''}" type="button" data-device-id="${device.id || ''}" ${device.is_restricted || !device.id ? 'disabled' : ''}>
+            <div class="device-item-head">
+              <span>${device.name || 'Unnamed device'}</span>
+              ${isSelected ? '<span class="device-chip good">Selected</span>' : ''}
+            </div>
+            <div class="device-item-meta">${chips}</div>
+          </button>
+        `;
+      }).join('');
+      els.deviceList.querySelectorAll('[data-device-id]').forEach(button => {
+        button.addEventListener('click', async () => {
+          const deviceId = button.getAttribute('data-device-id') || '';
+          const device = state.devices.find(entry => entry.id === deviceId);
+          if (!device || device.is_restricted) return;
+          try {
+            setSelectedDevice(device);
+            await spotifyFetch('/v1/me/player', {
+              method: 'PUT',
+              body: JSON.stringify({ device_ids: [device.id], play: false })
+            });
+            updatePlaybackDeviceInfo(device);
+            setStatus(`Now controlling ${device.name}`, 'good');
+            closeDeviceSheet();
+            await hydratePlaybackState();
+            syncPlaybackFlags().catch(() => {});
+          } catch (error) {
+            setStatus(`Device selection failed: ${error.message}`, 'error');
+          }
+        });
+      });
+    }
+
+    async function openDeviceSheet() {
+      if (!hasTokens()) return;
+      els.deviceSheet.classList.add('show');
+      els.deviceSheet.setAttribute('aria-hidden', 'false');
+      els.deviceList.innerHTML = '<div class="device-item" style="cursor:default"><div class="device-item-head"><span>Loading devices…</span></div></div>';
+      try {
+        await fetchAvailableDevices(true);
+      } catch (error) {
+        els.deviceList.innerHTML = `<div class="device-item" style="cursor:default"><div class="device-item-head"><span>Could not load devices</span></div><div class="device-item-meta"><span class="device-chip">${error.message}</span></div></div>`;
+        setStatus(`Could not load devices: ${error.message}`, 'error');
+      }
+    }
+
+    function closeDeviceSheet() {
+      els.deviceSheet.classList.remove('show');
+      els.deviceSheet.setAttribute('aria-hidden', 'true');
+    }
+
+    async function refreshDevices() {
+      try {
+        await fetchAvailableDevices(true);
+        setStatus('Device list refreshed', 'good');
+      } catch (error) {
+        setStatus(`Could not refresh devices: ${error.message}`, 'error');
+      }
+    }
 
     function isInteractiveTarget(target) {
       return !!target?.closest('button, input, .overlay-card, a, label');
@@ -1323,17 +1664,61 @@
       return !!state.player && !els.overlay.classList.contains('show');
     }
 
+    async function apiPlayerCommand(path, { method = 'POST', query = {}, body = null } = {}) {
+      const params = new URLSearchParams(query);
+      const targetId = getCommandDeviceId();
+      if (targetId) params.set('device_id', targetId);
+      const suffix = params.toString() ? `?${params.toString()}` : '';
+      return spotifyFetch(`${path}${suffix}`, { method, ...(body ? { body: JSON.stringify(body) } : {}) });
+    }
+
+    async function refreshPlaybackSoon(delay = 220) {
+      await new Promise(resolve => setTimeout(resolve, delay));
+      await hydratePlaybackState();
+      syncPlaybackFlags().catch(() => {});
+    }
+
+    async function commandPrevious() {
+      if (isLocalCommandTarget() && state.player) return state.player.previousTrack();
+      return apiPlayerCommand('/v1/me/player/previous');
+    }
+
+    async function commandNext() {
+      if (isLocalCommandTarget() && state.player) return state.player.nextTrack();
+      return apiPlayerCommand('/v1/me/player/next');
+    }
+
+    async function commandTogglePlay() {
+      if (isLocalCommandTarget() && state.player && !state.selectedDeviceId) return state.player.togglePlay();
+      if (state.playbackState?.paused) return apiPlayerCommand('/v1/me/player/play', { method: 'PUT' });
+      return apiPlayerCommand('/v1/me/player/pause', { method: 'PUT' });
+    }
+
+    async function commandSeek(positionMs) {
+      if (isLocalCommandTarget() && state.player) return state.player.seek(positionMs);
+      return apiPlayerCommand('/v1/me/player/seek', { method: 'PUT', query: { position_ms: String(Math.max(0, Math.round(positionMs || 0))) } });
+    }
+
+    async function commandSetVolume(volume) {
+      const bounded = Math.max(0, Math.min(1, Number.isFinite(volume) ? volume : 0));
+      if (isLocalCommandTarget() && state.player && !state.selectedDeviceId) return syncPlayerVolume(bounded);
+      if (!canControlVolume()) throw new Error('Volume is not available for this device');
+      return apiPlayerCommand('/v1/me/player/volume', { method: 'PUT', query: { volume_percent: String(Math.round(bounded * 100)) } });
+    }
+
     async function runGestureAction(direction) {
-      if (!state.player || Date.now() < state.gestureCooldownUntil) return;
+      if ((!state.player && !hasTokens()) || Date.now() < state.gestureCooldownUntil) return;
       state.gestureCooldownUntil = Date.now() + 360;
 
       try {
         if (direction === 'right') {
-          await state.player.nextTrack();
+          await commandNext();
           setStatus('Next track', 'good');
+          refreshPlaybackSoon().catch(() => {});
         } else if (direction === 'left') {
-          await state.player.previousTrack();
+          await commandPrevious();
           setStatus('Previous track', 'good');
+          refreshPlaybackSoon().catch(() => {});
         } else if (direction === 'up') {
           const nextVolume = Math.min(1, state.volume + 0.08);
           await applyVolume(nextVolume);
@@ -1575,7 +1960,11 @@
     async function applyVolume(volume) {
       setVolumeUI(volume);
       if (volume > 0.001) state.previousVolume = volume;
-      if (state.player) await syncPlayerVolume(state.volume);
+      try {
+        await commandSetVolume(state.volume);
+      } catch (error) {
+        setStatus(`Volume failed: ${error.message}`, 'error');
+      }
     }
 
     function clearTrack() {
@@ -1593,6 +1982,7 @@
       setShuffleVisual(false);
       setRecommendVisual(false);
       setPlayPauseVisual(true);
+      updatePlaybackDeviceInfo(null);
       updateTransportButtons(false);
     }
 
@@ -1739,13 +2129,13 @@
         if (playback && typeof playback.shuffle_state === 'boolean') {
           setShuffleVisual(playback.shuffle_state);
         }
+        if (playback?.device) updatePlaybackDeviceInfo(playback.device);
       } catch (error) {
         if (!/204/.test(String(error?.message || ''))) {
           console.error(error);
         }
       }
     }
-
 
     function extractId(uriOrId) {
       if (!uriOrId) return '';
@@ -1762,7 +2152,8 @@
 
     async function addItemToQueue(uri) {
       const params = new URLSearchParams({ uri });
-      if (state.deviceId) params.set('device_id', state.deviceId);
+      const targetId = getCommandDeviceId();
+      if (targetId) params.set('device_id', targetId);
       await spotifyFetch(`/v1/me/player/queue?${params.toString()}`, { method: 'POST' });
     }
 
@@ -1857,7 +2248,8 @@
       if (state.shuffleRequest) return state.shuffleRequest;
       const nextState = !state.shuffleEnabled;
       const params = new URLSearchParams({ state: String(nextState) });
-      if (state.deviceId) params.set('device_id', state.deviceId);
+      const targetId = getCommandDeviceId();
+      if (targetId) params.set('device_id', targetId);
 
       state.shuffleRequest = (async () => {
         try {
@@ -1912,6 +2304,7 @@
       els.artistName.textContent = artist || 'Unknown artist';
       els.metaTop.textContent = contextName;
       setPlayPauseVisual(!!playbackState.paused);
+      if (playbackState.device) updatePlaybackDeviceInfo(playbackState.device);
 
       const newUri = current.uri || '';
       if (newUri && newUri !== state.currentUri) {
@@ -1925,18 +2318,36 @@
     }
 
     async function hydratePlaybackState() {
-      if (!state.player) return;
       try {
-        const playbackState = await state.player.getCurrentState();
-        if (!playbackState) return;
-        state.playbackState = playbackState;
-        state.lastPlayerSnapshotAt = Date.now();
-        updateTrackFromState(playbackState);
-        syncPlaybackFlags().catch(() => {});
-        setStatus('Ready', 'good');
-        syncPlaybackFlags().catch(() => {});
+        const playback = await spotifyFetch('/v1/me/player');
+        if (playback?.device) updatePlaybackDeviceInfo(playback.device);
+        if (playback?.item) {
+          const normalized = normalizePlaybackState(playback, 'api');
+          if (normalized) {
+            state.playbackState = normalized;
+            state.lastPlayerSnapshotAt = Date.now();
+            updateTrackFromState(normalized);
+            setStatus('Ready', 'good');
+            return;
+          }
+        }
       } catch (error) {
         console.error(error);
+      }
+
+      if (state.player) {
+        try {
+          const playbackState = await state.player.getCurrentState();
+          if (!playbackState) return;
+          const normalized = normalizePlaybackState(playbackState, 'sdk');
+          state.playbackState = normalized;
+          state.lastPlayerSnapshotAt = Date.now();
+          updateTrackFromState(normalized);
+          syncPlaybackFlags().catch(() => {});
+          setStatus('Ready', 'good');
+        } catch (error) {
+          console.error(error);
+        }
       }
     }
 
@@ -1966,6 +2377,7 @@
           method: 'PUT',
           body: JSON.stringify({ device_ids: [state.deviceId], play: true })
         });
+        setSelectedDevice({ id: state.deviceId, name: APP_CONFIG.DEVICE_NAME, supports_volume: true });
         setStatus('Playback transferred', 'good');
         setOverlay('hidden');
         setSaved(STORAGE_KEYS.overlayDismissed, '1');
@@ -1984,7 +2396,8 @@
         STORAGE_KEYS.expiresAt,
         STORAGE_KEYS.codeVerifier,
         STORAGE_KEYS.oauthState,
-        STORAGE_KEYS.overlayDismissed
+        STORAGE_KEYS.overlayDismissed,
+        STORAGE_KEYS.selectedDeviceId
       ].forEach(removeSaved);
 
       if (state.player) {
@@ -2000,6 +2413,10 @@
       state.currentLiked = false;
       state.shuffleEnabled = false;
       state.discoveryQueued = false;
+      state.selectedDeviceId = '';
+      state.selectedDeviceName = '';
+      state.playbackDeviceId = '';
+      state.playbackDeviceName = '';
       updateAuxButtons();
       clearTrack();
       updateAudioButton();
@@ -2033,6 +2450,7 @@
         updateTransportButtons(true);
         updateAudioButton();
         setStatus('Spotify ready', 'good');
+        fetchAvailableDevices(false).catch(() => {});
         syncPlaybackFlags().catch(() => {});
         await syncPlayerVolume(state.volume);
 
@@ -2050,9 +2468,11 @@
 
       state.player.addListener('player_state_changed', (playbackState) => {
         if (!playbackState) return;
-        state.playbackState = playbackState;
+        if (state.selectedDeviceId && state.selectedDeviceId !== state.deviceId) return;
+        const normalized = normalizePlaybackState(playbackState, 'sdk');
+        state.playbackState = normalized;
         state.lastPlayerSnapshotAt = Date.now();
-        updateTrackFromState(playbackState);
+        updateTrackFromState(normalized);
         syncPlaybackFlags().catch(() => {});
       });
 
@@ -2120,12 +2540,26 @@
       }
     }
 
+    function startPlaybackPolling() {
+      if (state.playbackPollTimer) clearInterval(state.playbackPollTimer);
+      state.playbackPollTimer = setInterval(() => {
+        if (!hasTokens() || state.seeking) return;
+        hydratePlaybackState().catch(() => {});
+      }, 2600);
+    }
+
     function attachEvents() {
       els.loginBtn.addEventListener('click', beginLogin);
       els.audioBtn.addEventListener('click', activateAudio);
       els.setupAudioBtn.addEventListener('click', activateAudio);
       els.useDeviceBtn.addEventListener('click', transferPlayback);
       els.setupDeviceBtn.addEventListener('click', transferPlayback);
+      els.connectRemoteBtn.addEventListener('click', openDeviceSheet);
+      els.refreshDevicesBtn.addEventListener('click', refreshDevices);
+      els.closeDevicesBtn.addEventListener('click', closeDeviceSheet);
+      els.deviceSheet.addEventListener('click', (event) => {
+        if (event.target === els.deviceSheet) closeDeviceSheet();
+      });
       els.fullscreenBtn.addEventListener('click', toggleFullscreen);
       els.closeOverlayBtn.addEventListener('click', () => {
         setSaved(STORAGE_KEYS.overlayDismissed, '1');
@@ -2134,20 +2568,26 @@
       els.signOutMiniBtn.addEventListener('click', signOut);
 
       els.prevBtn.addEventListener('click', async () => {
-        if (!state.player) return;
-        try { await state.player.previousTrack(); } catch (error) { setStatus(`Previous failed: ${error.message}`, 'error'); }
+        try {
+          await commandPrevious();
+          refreshPlaybackSoon().catch(() => {});
+        } catch (error) { setStatus(`Previous failed: ${error.message}`, 'error'); }
       });
 
       els.playPauseBtn.addEventListener('click', async () => {
-        if (!state.player) return;
-        try { await state.player.togglePlay(); } catch (error) { setStatus(`Play or pause failed: ${error.message}`, 'error'); }
+        try {
+          await commandTogglePlay();
+          refreshPlaybackSoon().catch(() => {});
+        } catch (error) { setStatus(`Play or pause failed: ${error.message}`, 'error'); }
       });
 
       els.shuffleBtn.addEventListener('click', toggleShuffle);
 
       els.nextBtn.addEventListener('click', async () => {
-        if (!state.player) return;
-        try { await state.player.nextTrack(); } catch (error) { setStatus(`Next failed: ${error.message}`, 'error'); }
+        try {
+          await commandNext();
+          refreshPlaybackSoon().catch(() => {});
+        } catch (error) { setStatus(`Next failed: ${error.message}`, 'error'); }
       });
 
       els.heartBtn.addEventListener('click', toggleLike);
@@ -2160,12 +2600,11 @@
       });
 
       const finishSeek = async () => {
-        if (!state.player || !state.seeking) return;
+        if (!state.seeking) return;
         state.seeking = false;
         try {
-          await state.player.seek(Number(els.timeline.value));
-          await hydratePlaybackState();
-        syncPlaybackFlags().catch(() => {});
+          await commandSeek(Number(els.timeline.value));
+          await refreshPlaybackSoon(150);
         } catch (error) {
           setStatus(`Seek failed: ${error.message}`, 'error');
         }
@@ -2196,6 +2635,9 @@
 
       document.addEventListener('fullscreenchange', syncFullscreenButton);
       document.addEventListener('fullscreenerror', () => setStatus('Full screen failed', 'error'));
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && els.deviceSheet.classList.contains('show')) closeDeviceSheet();
+      });
     }
 
     window.onSpotifyWebPlaybackSDKReady = () => {
@@ -2215,11 +2657,16 @@
       updateAudioButton();
       syncFullscreenButton();
       startProgressLoop();
+      startPlaybackPolling();
+      const savedSelected = getSaved(STORAGE_KEYS.selectedDeviceId);
+      if (savedSelected) state.selectedDeviceId = savedSelected;
       await maybeHandleAuthRedirect();
 
       if (hasTokens()) {
         setStatus(state.redirectMismatch ? 'Stored session found' : 'Restoring session', 'warn');
         setOverlay('hidden');
+        hydratePlaybackState().catch(() => {});
+        fetchAvailableDevices(false).catch(() => {});
       } else {
         setOverlay('signin');
       }
