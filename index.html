@@ -290,11 +290,11 @@
     .controls {
       grid-area: controls;
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: clamp(10px, 1.8vw, 20px);
       align-items: center;
       min-height: 0;
-      width: min(100%, 760px);
+      width: min(100%, 920px);
     }
 
     .ctrl {
@@ -325,6 +325,7 @@
       height: var(--play-icon-size);
     }
 
+    .ctrl.active { color: var(--green); }
     .ctrl.heart.active { color: var(--green); }
 
     .volume-wrap {
@@ -657,7 +658,7 @@
 
     <div class="frame">
       <section class="hero" aria-live="polite">
-        <div class="hero-inner">
+        <div id="gestureZone" class="hero-inner">
           <div class="art-wrap">
             <img id="albumArt" class="album-art" alt="Album art" />
           </div>
@@ -680,6 +681,17 @@
 
       <section class="transport-row" aria-label="Playback controls and volume">
         <div class="controls" role="group" aria-label="Playback controls">
+          <button id="shuffleBtn" class="ctrl shuffle" type="button" aria-label="Shuffle" title="Shuffle" disabled>
+            <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M10 19h10c6 0 9 2 13 8l8 12c4 6 7 8 13 8h2"></path>
+              <path d="M10 45h10c6 0 9-2 13-8l2-3"></path>
+              <path d="M49 19h7v7"></path>
+              <path d="M56 19l-9 9"></path>
+              <path d="M49 38h7v7"></path>
+              <path d="M56 45l-8-8"></path>
+            </svg>
+          </button>
+
           <button id="prevBtn" class="ctrl prev" type="button" aria-label="Previous track" disabled>
             <svg viewBox="0 0 64 64" fill="currentColor" aria-hidden="true">
               <rect x="10" y="14" width="6" height="36" rx="2"></rect>
@@ -810,12 +822,14 @@
       signOutMiniBtn: document.getElementById('signOutMiniBtn'),
       bgArt: document.getElementById('bgArt'),
       albumArt: document.getElementById('albumArt'),
+      gestureZone: document.getElementById('gestureZone'),
       metaTop: document.getElementById('metaTop'),
       trackName: document.getElementById('trackName'),
       artistName: document.getElementById('artistName'),
       currentTime: document.getElementById('currentTime'),
       totalTime: document.getElementById('totalTime'),
       timeline: document.getElementById('timeline'),
+      shuffleBtn: document.getElementById('shuffleBtn'),
       prevBtn: document.getElementById('prevBtn'),
       playPauseBtn: document.getElementById('playPauseBtn'),
       playPauseIcon: document.getElementById('playPauseIcon'),
@@ -848,6 +862,8 @@
       likeRequest: null,
       currentUri: '',
       currentLiked: false,
+      shuffleEnabled: false,
+      shuffleRequest: null,
       seeking: false,
       timelineTimer: null,
       lastPlayerSnapshotAt: 0,
@@ -867,7 +883,8 @@
       startTime: 0,
       tracking: false,
       active: false,
-      pointerType: ''
+      pointerType: '',
+      captureEl: null
     };
 
     function setSaved(key, value) { localStorage.setItem(key, value); }
@@ -960,6 +977,7 @@
     }
 
     function updateTransportButtons(enabled) {
+      els.shuffleBtn.disabled = !enabled;
       els.prevBtn.disabled = !enabled;
       els.playPauseBtn.disabled = !enabled;
       els.nextBtn.disabled = !enabled;
@@ -1024,6 +1042,14 @@
     }
 
     function clearGesture() {
+      if (gesture.captureEl && gesture.pointerId !== null && gesture.captureEl.releasePointerCapture) {
+        try {
+          gesture.captureEl.releasePointerCapture(gesture.pointerId);
+        } catch (error) {
+          /* ignore capture release errors */
+        }
+      }
+
       gesture.pointerId = null;
       gesture.startX = 0;
       gesture.startY = 0;
@@ -1033,6 +1059,7 @@
       gesture.tracking = false;
       gesture.active = false;
       gesture.pointerType = '';
+      gesture.captureEl = null;
     }
 
     function canUseGestures() {
@@ -1065,9 +1092,10 @@
     }
 
     function attachGestureEvents() {
-      if (!els.screen) return;
+      const zone = els.gestureZone;
+      if (!zone) return;
 
-      els.screen.addEventListener('pointerdown', (event) => {
+      zone.addEventListener('pointerdown', (event) => {
         if (!canUseGestures()) return;
         if (!event.isPrimary) return;
         if (event.pointerType === 'mouse' && event.button !== 0) return;
@@ -1082,9 +1110,18 @@
         gesture.tracking = true;
         gesture.active = false;
         gesture.pointerType = event.pointerType || 'mouse';
+        gesture.captureEl = zone;
+
+        if (zone.setPointerCapture) {
+          try {
+            zone.setPointerCapture(event.pointerId);
+          } catch (error) {
+            /* ignore pointer capture failures */
+          }
+        }
       }, { passive: true });
 
-      els.screen.addEventListener('pointermove', (event) => {
+      zone.addEventListener('pointermove', (event) => {
         if (!gesture.tracking || event.pointerId !== gesture.pointerId) return;
         gesture.lastX = event.clientX;
         gesture.lastY = event.clientY;
@@ -1123,10 +1160,10 @@
         }
       };
 
-      els.screen.addEventListener('pointerup', finishGesture, { passive: true });
-      els.screen.addEventListener('pointercancel', clearGesture, { passive: true });
-      els.screen.addEventListener('pointerleave', (event) => {
-        if (gesture.pointerType === 'mouse') clearGesture();
+      zone.addEventListener('pointerup', finishGesture, { passive: true });
+      zone.addEventListener('pointercancel', clearGesture, { passive: true });
+      zone.addEventListener('pointerleave', () => {
+        if (gesture.pointerType === 'mouse' && !gesture.captureEl) clearGesture();
       }, { passive: true });
     }
 
@@ -1149,6 +1186,14 @@
         svg.setAttribute('fill', 'none');
         svg.setAttribute('stroke', 'currentColor');
       }
+    }
+
+    function setShuffleVisual(active) {
+      state.shuffleEnabled = !!active;
+      els.shuffleBtn.classList.toggle('active', !!active);
+      els.shuffleBtn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      els.shuffleBtn.setAttribute('title', active ? 'Shuffle on' : 'Shuffle off');
+      els.shuffleBtn.setAttribute('aria-label', active ? 'Shuffle on' : 'Shuffle off');
     }
 
     function setVolumeIcon(volume) {
@@ -1209,6 +1254,7 @@
       els.timeline.value = 0;
       updateRangeVisual(els.timeline);
       setHeartVisual(false);
+      setShuffleVisual(false);
       setPlayPauseVisual(true);
       updateTransportButtons(false);
     }
@@ -1350,6 +1396,19 @@
       return data;
     }
 
+    async function syncPlaybackFlags() {
+      try {
+        const playback = await spotifyFetch('/v1/me/player');
+        if (playback && typeof playback.shuffle_state === 'boolean') {
+          setShuffleVisual(playback.shuffle_state);
+        }
+      } catch (error) {
+        if (!/204/.test(String(error?.message || ''))) {
+          console.error(error);
+        }
+      }
+    }
+
     async function syncLikedState(uri) {
       if (!uri) {
         setHeartVisual(false);
@@ -1366,6 +1425,28 @@
         setHeartVisual(false);
         setStatus(`Library check failed: ${error.message}`, 'error');
       }
+    }
+
+    async function toggleShuffle() {
+      if (state.shuffleRequest) return state.shuffleRequest;
+      const nextState = !state.shuffleEnabled;
+      const params = new URLSearchParams({ state: String(nextState) });
+      if (state.deviceId) params.set('device_id', state.deviceId);
+
+      state.shuffleRequest = (async () => {
+        try {
+          await spotifyFetch(`/v1/me/player/shuffle?${params.toString()}`, { method: 'PUT' });
+          setShuffleVisual(nextState);
+          setStatus(nextState ? 'Shuffle on' : 'Shuffle off', 'good');
+          setTimeout(() => { syncPlaybackFlags().catch(() => {}); }, 250);
+        } catch (error) {
+          setStatus(`Shuffle failed: ${error.message}`, 'error');
+        } finally {
+          state.shuffleRequest = null;
+        }
+      })();
+
+      return state.shuffleRequest;
     }
 
     async function toggleLike() {
@@ -1423,7 +1504,9 @@
         state.playbackState = playbackState;
         state.lastPlayerSnapshotAt = Date.now();
         updateTrackFromState(playbackState);
+        syncPlaybackFlags().catch(() => {});
         setStatus('Ready', 'good');
+        syncPlaybackFlags().catch(() => {});
       } catch (error) {
         console.error(error);
       }
@@ -1460,6 +1543,7 @@
         setSaved(STORAGE_KEYS.overlayDismissed, '1');
         await new Promise(resolve => setTimeout(resolve, 900));
         await hydratePlaybackState();
+        syncPlaybackFlags().catch(() => {});
       } catch (error) {
         setStatus(`Transfer failed: ${error.message}`, 'error');
       }
@@ -1486,6 +1570,7 @@
       state.playbackState = null;
       state.currentUri = '';
       state.currentLiked = false;
+      state.shuffleEnabled = false;
       updateAuxButtons();
       clearTrack();
       updateAudioButton();
@@ -1519,6 +1604,7 @@
         updateTransportButtons(true);
         updateAudioButton();
         setStatus('Spotify ready', 'good');
+        syncPlaybackFlags().catch(() => {});
         await syncPlayerVolume(state.volume);
 
         if (!state.activated) {
@@ -1538,6 +1624,7 @@
         state.playbackState = playbackState;
         state.lastPlayerSnapshotAt = Date.now();
         updateTrackFromState(playbackState);
+        syncPlaybackFlags().catch(() => {});
       });
 
       state.player.addListener('autoplay_failed', () => {
@@ -1627,6 +1714,8 @@
         try { await state.player.togglePlay(); } catch (error) { setStatus(`Play or pause failed: ${error.message}`, 'error'); }
       });
 
+      els.shuffleBtn.addEventListener('click', toggleShuffle);
+
       els.nextBtn.addEventListener('click', async () => {
         if (!state.player) return;
         try { await state.player.nextTrack(); } catch (error) { setStatus(`Next failed: ${error.message}`, 'error'); }
@@ -1646,6 +1735,7 @@
         try {
           await state.player.seek(Number(els.timeline.value));
           await hydratePlaybackState();
+        syncPlaybackFlags().catch(() => {});
         } catch (error) {
           setStatus(`Seek failed: ${error.message}`, 'error');
         }
