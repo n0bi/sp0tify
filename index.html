@@ -155,6 +155,9 @@
       min-height: 0;
       height: 100%;
       width: 100%;
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
     }
 
     .art-wrap {
@@ -174,6 +177,9 @@
       box-shadow: 0 18px 42px rgba(0,0,0,0.28);
       border: 1px solid rgba(255,255,255,0.09);
       background: rgba(0,0,0,0.2);
+      -webkit-user-drag: none;
+      user-select: none;
+      touch-action: none;
     }
 
     .meta {
@@ -790,9 +796,13 @@
             <span class="mini-dot" aria-hidden="true"></span>
           </button>
           <button id="useDeviceBtn" class="secondary-btn" type="button" aria-label="Use this device" title="Use this device" disabled>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M12 2v10"></path>
-              <path d="M6.2 5.8a8 8 0 1 0 11.6 0"></path>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3.5" y="6" width="17" height="12" rx="2.5"></rect>
+              <path d="M7.5 9.5h3"></path>
+              <path d="M13.5 9.5h3"></path>
+              <circle cx="9" cy="12.5" r="1.55"></circle>
+              <circle cx="15" cy="12.5" r="1.55"></circle>
+              <path d="M8.2 16h7.6"></path>
             </svg>
           </button>
           <button id="fullscreenBtn" class="secondary-btn" type="button" aria-label="Toggle full screen" title="Toggle full screen">
@@ -938,6 +948,16 @@
       active: false,
       pointerType: '',
       captureEl: null
+    };
+
+    const touchGesture = {
+      identifier: null,
+      startX: 0,
+      startY: 0,
+      lastX: 0,
+      lastY: 0,
+      startTime: 0,
+      tracking: false
     };
 
     function setSaved(key, value) { localStorage.setItem(key, value); }
@@ -1299,6 +1319,16 @@
       gesture.captureEl = null;
     }
 
+    function clearTouchGesture() {
+      touchGesture.identifier = null;
+      touchGesture.startX = 0;
+      touchGesture.startY = 0;
+      touchGesture.lastX = 0;
+      touchGesture.lastY = 0;
+      touchGesture.startTime = 0;
+      touchGesture.tracking = false;
+    }
+
     function canUseGestures() {
       return !!state.player && !els.overlay.classList.contains('show');
     }
@@ -1328,6 +1358,14 @@
       }
     }
 
+    function findTrackedTouch(touchList) {
+      if (!touchList || touchGesture.identifier === null) return null;
+      for (const touch of touchList) {
+        if (touch.identifier === touchGesture.identifier) return touch;
+      }
+      return null;
+    }
+
     function attachGestureEvents() {
       const zone = els.gestureZone;
       if (!zone) return;
@@ -1336,6 +1374,7 @@
         if (!canUseGestures()) return;
         if (!event.isPrimary) return;
         if (event.pointerType === 'mouse' && event.button !== 0) return;
+        if (event.pointerType === 'touch') return;
         if (isInteractiveTarget(event.target)) return;
 
         gesture.pointerId = event.pointerId;
@@ -1402,6 +1441,67 @@
       zone.addEventListener('pointerleave', () => {
         if (gesture.pointerType === 'mouse' && !gesture.captureEl) clearGesture();
       }, { passive: true });
+
+      zone.addEventListener('touchstart', (event) => {
+        if (!canUseGestures()) return;
+        if (touchGesture.tracking) return;
+        if (isInteractiveTarget(event.target)) return;
+        const touch = event.changedTouches && event.changedTouches[0];
+        if (!touch) return;
+        touchGesture.identifier = touch.identifier;
+        touchGesture.startX = touch.clientX;
+        touchGesture.startY = touch.clientY;
+        touchGesture.lastX = touch.clientX;
+        touchGesture.lastY = touch.clientY;
+        touchGesture.startTime = performance.now();
+        touchGesture.tracking = true;
+      }, { passive: true });
+
+      zone.addEventListener('touchmove', (event) => {
+        if (!touchGesture.tracking) return;
+        const touch = findTrackedTouch(event.changedTouches) || findTrackedTouch(event.touches);
+        if (!touch) return;
+        touchGesture.lastX = touch.clientX;
+        touchGesture.lastY = touch.clientY;
+        const dx = touchGesture.lastX - touchGesture.startX;
+        const dy = touchGesture.lastY - touchGesture.startY;
+        if (Math.hypot(dx, dy) > 14) {
+          event.preventDefault();
+        }
+      }, { passive: false });
+
+      const finishTouchGesture = async (event) => {
+        if (!touchGesture.tracking) return;
+        const touch = findTrackedTouch(event.changedTouches) || { clientX: touchGesture.lastX, clientY: touchGesture.lastY };
+        const dx = touch.clientX - touchGesture.startX;
+        const dy = touch.clientY - touchGesture.startY;
+        const absX = Math.abs(dx);
+        const absY = Math.abs(dy);
+        const duration = performance.now() - touchGesture.startTime;
+
+        clearTouchGesture();
+
+        const horizontalThreshold = 56;
+        const verticalThreshold = 52;
+        const dominance = 1.28;
+
+        if (duration > 950) return;
+        if (absX < horizontalThreshold && absY < verticalThreshold) return;
+
+        event.preventDefault();
+
+        if (absX >= horizontalThreshold && absX > absY * dominance) {
+          await runGestureAction(dx > 0 ? 'right' : 'left');
+          return;
+        }
+
+        if (absY >= verticalThreshold && absY > absX * dominance) {
+          await runGestureAction(dy < 0 ? 'up' : 'down');
+        }
+      };
+
+      zone.addEventListener('touchend', finishTouchGesture, { passive: false });
+      zone.addEventListener('touchcancel', clearTouchGesture, { passive: true });
     }
 
     function setPlayPauseVisual(isPaused) {
