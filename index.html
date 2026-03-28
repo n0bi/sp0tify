@@ -63,25 +63,9 @@
       isolation: isolate;
     }
 
-    .bg-art {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      filter: blur(54px) saturate(1.18);
-      transform: scale(1.12);
-      opacity: 0.44;
-      pointer-events: none;
-    }
-
+    .bg-art,
     .bg-vignette {
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(180deg, rgba(0,0,0,0.16), rgba(0,0,0,0.46)),
-        linear-gradient(90deg, rgba(10,10,12,0.84) 0%, rgba(10,10,12,0.48) 52%, rgba(10,10,12,0.84) 100%);
-      pointer-events: none;
+      display: none;
     }
 
     .frame {
@@ -90,20 +74,19 @@
       width: 100%;
       min-height: 100dvh;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) clamp(220px, 24vw, 340px);
+      grid-template-columns: 1fr;
       grid-template-rows: minmax(0, 1fr) auto auto;
       grid-template-areas:
-        "hero utility"
-        "timeline utility"
-        "transport utility";
-      column-gap: clamp(18px, 3vw, 34px);
-      row-gap: clamp(14px, 2vh, 24px);
+        "hero"
+        "timeline"
+        "transport";
+      row-gap: clamp(12px, 1.8vh, 22px);
       align-items: stretch;
       padding:
         calc(var(--pad-y) + var(--safe-top))
-        calc(var(--pad-x) + var(--safe-right))
+        calc(max(10px, var(--pad-x) * 0.72) + var(--safe-right))
         calc(var(--pad-y) + var(--safe-bottom))
-        calc(var(--pad-x) + var(--safe-left));
+        calc(max(10px, var(--pad-x) * 0.72) + var(--safe-left));
     }
 
     .topbar {
@@ -143,6 +126,7 @@
       align-items: center;
       min-height: 0;
       height: 100%;
+      width: 100%;
     }
 
     .art-wrap {
@@ -210,7 +194,8 @@
       display: grid;
       gap: clamp(8px, 1.05vh, 14px);
       min-height: 0;
-      padding-top: clamp(6px, 0.9vh, 14px);
+      width: 100%;
+      padding-top: clamp(2px, 0.5vh, 10px);
     }
 
     .time-row {
@@ -288,13 +273,17 @@
     .transport-row {
       grid-area: transport;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(220px, auto);
-      gap: clamp(16px, 2.2vw, 28px);
+      grid-template-columns: minmax(0, 1fr) minmax(220px, 28vw) auto;
+      grid-template-areas: "controls volume utility";
+      gap: clamp(14px, 2vw, 22px);
       align-items: center;
       min-height: 0;
+      width: 100%;
+      margin-top: clamp(2px, 0.6vh, 8px);
     }
 
     .controls {
+      grid-area: controls;
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: clamp(10px, 1.8vw, 20px);
@@ -334,13 +323,16 @@
     .ctrl.heart.active { color: var(--green); }
 
     .volume-wrap {
-      min-width: min(32vw, 280px);
-      max-width: 360px;
-      justify-self: end;
+      grid-area: volume;
+      min-width: 0;
+      width: 100%;
+      max-width: none;
+      justify-self: stretch;
       display: grid;
-      grid-template-columns: auto minmax(140px, 1fr);
+      grid-template-columns: auto minmax(0, 1fr);
       gap: 12px;
       align-items: center;
+      min-height: clamp(48px, 5vw, 58px);
       padding: 10px 14px;
       border-radius: 999px;
       background: rgba(18,18,20,0.32);
@@ -377,15 +369,13 @@
 
     .utility-row {
       grid-area: utility;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: flex-end;
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      justify-content: end;
+      align-items: center;
       gap: 10px;
       min-height: 0;
-      width: 100%;
-      min-width: 0;
-      align-self: center;
+      align-self: stretch;
     }
 
     .secondary-btn {
@@ -527,14 +517,8 @@
 
     @media (max-width: 900px), (orientation: portrait) {
       .frame {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto auto auto auto;
-        grid-template-areas:
-          "hero"
-          "timeline"
-          "transport"
-          "utility";
-        row-gap: 16px;
+        grid-template-rows: auto auto auto;
+        row-gap: 14px;
       }
 
       .hero-inner {
@@ -559,7 +543,13 @@
       }
 
       .transport-row {
-        grid-template-columns: minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+          "controls controls"
+          "volume utility";
+        column-gap: 12px;
+        row-gap: 14px;
+        align-items: center;
       }
 
       .controls {
@@ -573,24 +563,20 @@
       }
 
       .utility-row {
-        margin-top: clamp(8px, 1.6vh, 20px);
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
+        justify-content: end;
+        align-self: center;
       }
     }
 
     @media (max-width: 640px) {
       :root {
-        --art-size: min(44vw, 220px);
+        --art-size: min(42vw, 212px);
         --title-size: clamp(28px, 8vw, 52px);
         --artist-size: clamp(18px, 5vw, 26px);
       }
 
       .frame {
-        gap: 14px;
+        gap: 12px;
       }
 
       .track-name {
@@ -603,6 +589,13 @@
 
       .ctrl {
         height: 64px;
+      }
+
+      .transport-row {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+          "controls controls"
+          "volume utility";
       }
 
       .utility-row {
@@ -628,6 +621,16 @@
       }
 
       .frame {
+        gap: 10px;
+      }
+
+      .hero-inner {
+        grid-template-columns: minmax(100px, 24vh) minmax(0, 1fr);
+        gap: 18px;
+      }
+
+      .transport-row {
+        grid-template-columns: minmax(0, 1fr) minmax(180px, 26vw) auto;
         gap: 10px;
       }
 
@@ -705,31 +708,31 @@
           </button>
           <input id="volumeSlider" type="range" min="0" max="100" value="80" step="1" aria-label="Volume" />
         </div>
-      </section>
 
-      <section class="utility-row" aria-label="Playback actions">
-        <button id="audioBtn" class="secondary-btn" type="button" aria-label="Audio" title="Audio" disabled>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-            <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
-          </svg>
-          <span class="mini-dot" aria-hidden="true"></span>
-        </button>
-        <button id="useDeviceBtn" class="secondary-btn" type="button" aria-label="Use this device" title="Use this device" disabled>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 2v10"></path>
-            <path d="M6.2 5.8a8 8 0 1 0 11.6 0"></path>
-          </svg>
-        </button>
-        <button id="fullscreenBtn" class="secondary-btn" type="button" aria-label="Toggle full screen" title="Toggle full screen">
-          <svg id="fullscreenIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M8 3H3v5"></path>
-            <path d="M16 3h5v5"></path>
-            <path d="M21 16v5h-5"></path>
-            <path d="M3 16v5h5"></path>
-          </svg>
-        </button>
-        <div id="statusLive" class="sr-only" aria-live="polite">Waiting for Spotify</div>
+        <div class="utility-row" aria-label="Playback actions">
+          <button id="audioBtn" class="secondary-btn" type="button" aria-label="Audio" title="Audio" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
+            </svg>
+            <span class="mini-dot" aria-hidden="true"></span>
+          </button>
+          <button id="useDeviceBtn" class="secondary-btn" type="button" aria-label="Use this device" title="Use this device" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 2v10"></path>
+              <path d="M6.2 5.8a8 8 0 1 0 11.6 0"></path>
+            </svg>
+          </button>
+          <button id="fullscreenBtn" class="secondary-btn" type="button" aria-label="Toggle full screen" title="Toggle full screen">
+            <svg id="fullscreenIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M8 3H3v5"></path>
+              <path d="M16 3h5v5"></path>
+              <path d="M21 16v5h-5"></path>
+              <path d="M3 16v5h5"></path>
+            </svg>
+          </button>
+          <div id="statusLive" class="sr-only" aria-live="polite">Waiting for Spotify</div>
+        </div>
       </section>
     </div>
 
