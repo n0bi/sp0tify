@@ -24,6 +24,8 @@
       --art-size: clamp(142px, 28vw, 340px);
       --title-size: clamp(38px, 6.4vw, 98px);
       --artist-size: clamp(21px, 2.9vw, 44px);
+      --hero-gap: clamp(24px, 4vw, 52px);
+      --hero-art-margin: clamp(10px, 1.2vw, 16px);
       --meta-size: clamp(15px, 1.6vw, 24px);
       --control-size: clamp(60px, 8.5vw, 96px);
       --icon-size: clamp(28px, 3.8vw, 48px);
@@ -122,7 +124,7 @@
     .hero-inner {
       display: grid;
       grid-template-columns: minmax(142px, var(--art-size)) minmax(0, 1fr);
-      gap: clamp(20px, 3.4vw, 42px);
+      gap: var(--hero-gap);
       align-items: center;
       min-height: 0;
       height: 100%;
@@ -134,6 +136,7 @@
       max-width: var(--art-size);
       min-width: var(--art-size);
       justify-self: start;
+      margin-inline-end: var(--hero-art-margin);
     }
 
     .album-art {
@@ -530,6 +533,7 @@
 
       .art-wrap {
         justify-self: center;
+        margin-inline-end: 0;
       }
 
       .meta {
@@ -622,7 +626,7 @@
 
       .hero-inner {
         grid-template-columns: minmax(100px, 24vh) minmax(0, 1fr);
-        gap: 18px;
+        gap: 24px;
       }
 
       .transport-row {
