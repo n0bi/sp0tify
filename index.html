@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Spotify Remote Dashboard</title>
+  <style>
+    :root {
+      --bg: #0b0b0d;
+      --panel: #15161a;
+      --panel-2: #1b1d22;
+      --text: #f4f5f7;
+      --muted: #9aa1ad;
+      --line: #2a2f39;
+      --accent: #1db954;
+      --accent-2: #18a048;
+      --danger: #d44b4b;
+      --radius: 24px;
+      --shadow: 0 20px 40px rgba(0,0,0,.35);
+      --touch: 64px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background:
+        radial-gradient(circle at top, rgba(29,185,84,.14), transparent 26%),
+        linear-gradient(180deg, #0c0d10 0%, #08090b 100%);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      min-height: 100%;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 720px;
+      display: grid;
+      gap: 16px;
+      padding-bottom: 18px;
+    }
+
+    .card {
+      background: rgba(21, 22, 26, 0.92);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .topbar {
+      padding: 18px 18px 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .title {
+      font-size: clamp(1.15rem, 1rem + 1.3vw, 1.75rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin: 0;
+    }
+
+    .subtitle,
+    .status,
+    .tiny,
+    .artist,
+    .album,
+    .hint,
+    .uri {
+      color: var(--muted);
+    }
+
+    .subtitle,
+    .status,
+    .tiny,
+    .hint,
+    .uri {
+      font-size: .95rem;
+      line-height: 1.4;
+    }
+
+    .status {
+      padding: 10px 14px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 16px;
+      word-break: break-word;
+    }
+
+    .settings {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    label {
+      font-size: .88rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    input[type="url"] {
+      width: 100%;
+      min-height: 52px;
+      padding: 12px 14px;
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      outline: none;
+      font-size: 1rem;
+    }
+
+    input[readonly] {
+      opacity: .9;
+    }
+
+    .actions,
+    .setup-actions,
+    .transport {
+      display: grid;
+      gap: 12px;
+    }
+
+    .actions,
+    .setup-actions {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .btn {
+      min-height: 54px;
+      border: 0;
+      border-radius: 18px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 800;
+      padding: 0 16px;
+      transition: transform .08s ease, opacity .2s ease, background .2s ease;
+      color: var(--text);
+      background: var(--panel-2);
+      border: 1px solid rgba(255,255,255,.06);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+    }
+
+    .btn:active {
+      transform: scale(.98);
+    }
+
+    .btn:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    .btn.primary {
+      background: linear-gradient(180deg, var(--accent) 0%, var(--accent-2) 100%);
+      color: #061108;
+      border: 0;
+    }
+
+    .btn.subtle {
+      background: rgba(255,255,255,.03);
+    }
+
+    .btn.danger {
+      background: rgba(212,75,75,.12);
+      color: #ffb1b1;
+    }
+
+    .player {
+      padding: 18px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .art-wrap {
+      display: flex;
+      justify-content: center;
+    }
+
+    .art {
+      width: min(84vw, 360px);
+      aspect-ratio: 1 / 1;
+      border-radius: 28px;
+      object-fit: cover;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.02)),
+        linear-gradient(180deg, #1e2128, #101116);
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: 0 18px 50px rgba(0,0,0,.35);
+    }
+
+    .meta {
+      text-align: center;
+      display: grid;
+      gap: 6px;
+    }
+
+    .track {
+      font-size: clamp(1.2rem, 1rem + 1.8vw, 2rem);
+      font-weight: 900;
+      letter-spacing: -.03em;
+      margin: 0;
+    }
+
+    .artist,
+    .album {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .transport {
+      grid-template-columns: 1fr 1.35fr 1fr;
+      align-items: center;
+    }
+
+    .icon-btn,
+    .play-btn {
+      min-height: var(--touch);
+      min-width: 0;
+      border-radius: 22px;
+      font-size: 1.1rem;
+    }
+
+    .play-btn {
+      font-size: 1.08rem;
+    }
+
+    .volume {
+      display: grid;
+      gap: 10px;
+      padding: 4px 6px 2px;
+    }
+
+    .volume-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+      min-height: 36px;
+    }
+
+    .footer-note {
+      padding: 0 4px;
+    }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 520px) {
+      .actions,
+      .setup-actions {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="card topbar">
+      <h1 class="title">Spotify Remote Dashboard</h1>
+      <div class="subtitle">Big controls for album art, previous, play/pause, next, and volume.</div>
+      <div id="status" class="status">Set your Client ID, sign in, then activate audio and use this browser as the Spotify device.</div>
+    </section>
+
+    <section class="card settings">
+      <div class="grid">
+        <div class="field">
+          <label for="clientId">Spotify Client ID</label>
+          <input id="clientId" type="text" placeholder="Paste your Spotify app Client ID" autocomplete="off" spellcheck="false" />
+        </div>
+        <div class="field">
+          <label for="deviceName">Device name shown in Spotify Connect</label>
+          <input id="deviceName" type="text" placeholder="My Spotify Dashboard" autocomplete="off" spellcheck="false" />
+        </div>
+        <div class="field">
+          <label for="redirectUri">Redirect URI to register in Spotify Dashboard</label>
+          <input id="redirectUri" type="url" readonly />
+          <div class="tiny">This must match exactly in your Spotify app settings.</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="saveSettings" class="btn subtle">Save settings</button>
+        <button id="loginBtn" class="btn primary">Sign in with Spotify</button>
+      </div>
+
+      <div class="setup-actions">
+        <button id="activateBtn" class="btn" disabled>Activate audio</button>
+        <button id="transferBtn" class="btn" disabled>Use this device</button>
+      </div>
+
+      <button id="logoutBtn" class="btn danger hidden">Sign out</button>
+    </section>
+
+    <section class="card player">
+      <div class="art-wrap">
+        <img id="albumArt" class="art" alt="Album art" />
+      </div>
+
+      <div class="meta">
+        <h2 id="trackName" class="track">Nothing playing here yet</h2>
+        <p id="artistName" class="artist">Sign in and transfer playback to this browser.</p>
+        <p id="albumName" class="album"></p>
+      </div>
+
+      <div class="transport">
+        <button id="prevBtn" class="btn icon-btn" disabled>◀◀</button>
+        <button id="playPauseBtn" class="btn primary play-btn" disabled>Play / Pause</button>
+        <button id="nextBtn" class="btn icon-btn" disabled>▶▶</button>
+      </div>
+
+      <div class="volume">
+        <div class="volume-row">
+          <span>Volume</span>
+          <span id="volumeValue">70%</span>
+        </div>
+        <input id="volumeSlider" type="range" min="0" max="100" value="70" />
+      </div>
+
+      <div class="footer-note hint">
+        One-time setup on mobile: after sign-in, tap <strong>Activate audio</strong>, then tap <strong>Use this device</strong>. If Spotify still does not start, begin a song once in Spotify and tap <strong>Use this device</strong> again.
+      </div>
+      <div id="deviceInfo" class="uri mono tiny"></div>
+    </section>
+  </main>
+
+  <script src="https://sdk.scdn.co/spotify-player.js"></script>
+  <script>
+    const STORAGE_KEYS = {
+      clientId: 'spotify_dashboard_client_id',
+      deviceName: 'spotify_dashboard_device_name',
+      accessToken: 'spotify_dashboard_access_token',
+      refreshToken: 'spotify_dashboard_refresh_token',
+      expiresAt: 'spotify_dashboard_expires_at',
+      codeVerifier: 'spotify_dashboard_code_verifier',
+      oauthState: 'spotify_dashboard_oauth_state',
+      volume: 'spotify_dashboard_volume'
+    };
+
+    const SCOPES = [
+      'streaming',
+      'user-read-playback-state',
+      'user-modify-playback-state',
+      'user-read-currently-playing'
+    ];
+
+    const els = {
+      status: document.getElementById('status'),
+      clientId: document.getElementById('clientId'),
+      deviceName: document.getElementById('deviceName'),
+      redirectUri: document.getElementById('redirectUri'),
+      saveSettings: document.getElementById('saveSettings'),
+      loginBtn: document.getElementById('loginBtn'),
+      activateBtn: document.getElementById('activateBtn'),
+      transferBtn: document.getElementById('transferBtn'),
+      logoutBtn: document.getElementById('logoutBtn'),
+      albumArt: document.getElementById('albumArt'),
+      trackName: document.getElementById('trackName'),
+      artistName: document.getElementById('artistName'),
+      albumName: document.getElementById('albumName'),
+      prevBtn: document.getElementById('prevBtn'),
+      playPauseBtn: document.getElementById('playPauseBtn'),
+      nextBtn: document.getElementById('nextBtn'),
+      volumeSlider: document.getElementById('volumeSlider'),
+      volumeValue: document.getElementById('volumeValue'),
+      deviceInfo: document.getElementById('deviceInfo')
+    };
+
+    const DEFAULT_ART = `data:image/svg+xml;utf8,${encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
+        <defs>
+          <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+            <stop stop-color="#20242b"/>
+            <stop offset="1" stop-color="#0f1116"/>
+          </linearGradient>
+        </defs>
+        <rect width="800" height="800" fill="url(#g)"/>
+        <circle cx="400" cy="400" r="250" fill="#171a20" stroke="#2c3440" stroke-width="18"/>
+        <circle cx="400" cy="400" r="82" fill="#0b0d11" stroke="#3a4554" stroke-width="12"/>
+        <path d="M270 305c110-44 235-26 318 46" fill="none" stroke="#1db954" stroke-linecap="round" stroke-width="26" opacity=".88"/>
+        <path d="M290 385c88-30 183-16 254 40" fill="none" stroke="#1db954" stroke-linecap="round" stroke-width="22" opacity=".78"/>
+        <path d="M320 465c58-16 116-8 165 22" fill="none" stroke="#1db954" stroke-linecap="round" stroke-width="18" opacity=".7"/>
+      </svg>
+    `)}`;
+
+    const state = {
+      player: null,
+      deviceId: null,
+      activated: false,
+      sdkReady: false,
+      connected: false,
+      playbackState: null,
+      refreshInFlight: null,
+      pollTimer: null
+    };
+
+    function cleanRedirectUri() {
+      return `${location.origin}${location.pathname}`;
+    }
+
+    function setStatus(message) {
+      els.status.textContent = message;
+    }
+
+    function getSaved(key) {
+      return localStorage.getItem(key) || '';
+    }
+
+    function setSaved(key, value) {
+      localStorage.setItem(key, value);
+    }
+
+    function removeSaved(key) {
+      localStorage.removeItem(key);
+    }
+
+    function hasTokens() {
+      return !!getSaved(STORAGE_KEYS.accessToken) && !!getSaved(STORAGE_KEYS.refreshToken);
+    }
+
+    function loadSettings() {
+      els.clientId.value = getSaved(STORAGE_KEYS.clientId);
+      els.deviceName.value = getSaved(STORAGE_KEYS.deviceName) || 'My Spotify Dashboard';
+      els.redirectUri.value = cleanRedirectUri();
+      const savedVolume = getSaved(STORAGE_KEYS.volume);
+      if (savedVolume) {
+        els.volumeSlider.value = savedVolume;
+      }
+      updateVolumeLabel();
+      resetTrackUI();
+    }
+
+    function saveSettings() {
+      const clientId = els.clientId.value.trim();
+      const deviceName = els.deviceName.value.trim() || 'My Spotify Dashboard';
+      setSaved(STORAGE_KEYS.clientId, clientId);
+      setSaved(STORAGE_KEYS.deviceName, deviceName);
+      setSaved(STORAGE_KEYS.volume, String(els.volumeSlider.value));
+      setStatus(clientId ? 'Settings saved. You can sign in now.' : 'Settings saved, but you still need a Spotify Client ID.');
+    }
+
+    function resetTrackUI() {
+      els.albumArt.src = DEFAULT_ART;
+      els.trackName.textContent = 'Nothing playing here yet';
+      els.artistName.textContent = 'Sign in and transfer playback to this browser.';
+      els.albumName.textContent = '';
+      els.deviceInfo.textContent = state.deviceId ? `Device ID: ${state.deviceId}` : '';
+    }
+
+    function setControlsEnabled(enabled) {
+      els.prevBtn.disabled = !enabled;
+      els.playPauseBtn.disabled = !enabled;
+      els.nextBtn.disabled = !enabled;
+      els.volumeSlider.disabled = !enabled;
+    }
+
+    function updateVolumeLabel() {
+      els.volumeValue.textContent = `${els.volumeSlider.value}%`;
+    }
+
+    function randomString(length = 64) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let result = '';
+      const array = new Uint8Array(length);
+      crypto.getRandomValues(array);
+      for (let i = 0; i < array.length; i++) result += chars[array[i] % chars.length];
+      return result;
+    }
+
+    async function sha256(input) {
+      const data = new TextEncoder().encode(input);
+      return crypto.subtle.digest('SHA-256', data);
+    }
+
+    function base64UrlEncode(buffer) {
+      const bytes = new Uint8Array(buffer);
+      let binary = '';
+      for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+      return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+    }
+
+    async function beginLogin() {
+      saveSettings();
+      const clientId = getSaved(STORAGE_KEYS.clientId);
+      if (!clientId) {
+        setStatus('Paste your Spotify Client ID first.');
+        return;
+      }
+
+      const verifier = randomString(96);
+      const challenge = base64UrlEncode(await sha256(verifier));
+      const oauthState = randomString(24);
+      const redirectUri = cleanRedirectUri();
+
+      setSaved(STORAGE_KEYS.codeVerifier, verifier);
+      setSaved(STORAGE_KEYS.oauthState, oauthState);
+
+      const params = new URLSearchParams({
+        client_id: clientId,
+        response_type: 'code',
+        redirect_uri: redirectUri,
+        code_challenge_method: 'S256',
+        code_challenge: challenge,
+        scope: SCOPES.join(' '),
+        state: oauthState,
+        show_dialog: 'false'
+      });
+
+      location.href = `https://accounts.spotify.com/authorize?${params.toString()}`;
+    }
+
+    async function exchangeCodeForToken(code) {
+      const clientId = getSaved(STORAGE_KEYS.clientId);
+      const verifier = getSaved(STORAGE_KEYS.codeVerifier);
+      const redirectUri = cleanRedirectUri();
+
+      const response = await fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          client_id: clientId,
+          grant_type: 'authorization_code',
+          code,
+          redirect_uri: redirectUri,
+          code_verifier: verifier
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error_description || data.error || 'Token exchange failed');
+      }
+
+      setSaved(STORAGE_KEYS.accessToken, data.access_token);
+      if (data.refresh_token) setSaved(STORAGE_KEYS.refreshToken, data.refresh_token);
+      setSaved(STORAGE_KEYS.expiresAt, String(Date.now() + (data.expires_in * 1000) - 60000));
+      removeSaved(STORAGE_KEYS.codeVerifier);
+      removeSaved(STORAGE_KEYS.oauthState);
+    }
+
+    async function refreshAccessToken() {
+      if (state.refreshInFlight) return state.refreshInFlight;
+      const clientId = getSaved(STORAGE_KEYS.clientId);
+      const refreshToken = getSaved(STORAGE_KEYS.refreshToken);
+      if (!clientId || !refreshToken) throw new Error('Missing refresh token or Client ID');
+
+      state.refreshInFlight = fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: refreshToken,
+          client_id: clientId
+        })
+      })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error_description || data.error || 'Refresh failed');
+        }
+        setSaved(STORAGE_KEYS.accessToken, data.access_token);
+        setSaved(STORAGE_KEYS.expiresAt, String(Date.now() + (data.expires_in * 1000) - 60000));
+        if (data.refresh_token) setSaved(STORAGE_KEYS.refreshToken, data.refresh_token);
+        return data.access_token;
+      })
+      .finally(() => {
+        state.refreshInFlight = null;
+      });
+
+      return state.refreshInFlight;
+    }
+
+    async function getValidAccessToken() {
+      const token = getSaved(STORAGE_KEYS.accessToken);
+      const expiresAt = Number(getSaved(STORAGE_KEYS.expiresAt) || 0);
+      if (token && Date.now() < expiresAt) return token;
+      return refreshAccessToken();
+    }
+
+    async function spotifyFetch(path, options = {}) {
+      const token = await getValidAccessToken();
+      const response = await fetch(`https://api.spotify.com${path}`, {
+        ...options,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          ...(options.headers || {})
+        }
+      });
+
+      if (response.status === 204) return null;
+
+      if (!response.ok) {
+        let message = `Spotify API error ${response.status}`;
+        try {
+          const data = await response.json();
+          message = data.error?.message || message;
+        } catch (_) {}
+        throw new Error(message);
+      }
+
+      const text = await response.text();
+      return text ? JSON.parse(text) : null;
+    }
+
+    function updateAuthUI() {
+      const authed = hasTokens();
+      els.logoutBtn.classList.toggle('hidden', !authed);
+      els.activateBtn.disabled = !authed || !state.player;
+      els.transferBtn.disabled = !authed || !state.deviceId;
+    }
+
+    function updateTrackUIFromState(playbackState) {
+      if (!playbackState || !playbackState.track_window || !playbackState.track_window.current_track) {
+        return;
+      }
+
+      const track = playbackState.track_window.current_track;
+      const image = track.album?.images?.[0]?.url || DEFAULT_ART;
+      const artist = (track.artists || []).map(a => a.name).join(', ');
+
+      els.albumArt.src = image;
+      els.trackName.textContent = track.name || 'Unknown track';
+      els.artistName.textContent = artist || 'Unknown artist';
+      els.albumName.textContent = track.album?.name || '';
+      els.playPauseBtn.textContent = playbackState.paused ? 'Play' : 'Pause';
+    }
+
+    async function hydrateFromPlayerState() {
+      if (!state.player) return;
+      try {
+        const playbackState = await state.player.getCurrentState();
+        if (playbackState) {
+          state.playbackState = playbackState;
+          updateTrackUIFromState(playbackState);
+          setControlsEnabled(true);
+          setStatus('Connected. This browser is controlling Spotify playback.');
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    async function transferPlayback() {
+      if (!state.deviceId) {
+        setStatus('Spotify device is not ready yet.');
+        return;
+      }
+
+      if (!state.activated && state.player) {
+        try {
+          await state.player.activateElement();
+          state.activated = true;
+        } catch (_) {}
+      }
+
+      try {
+        await spotifyFetch('/v1/me/player', {
+          method: 'PUT',
+          body: JSON.stringify({ device_ids: [state.deviceId], play: true })
+        });
+        setStatus('Playback transferred to this browser dashboard.');
+        setControlsEnabled(true);
+        setTimeout(hydrateFromPlayerState, 1200);
+      } catch (error) {
+        setStatus(`Transfer failed: ${error.message}`);
+      }
+    }
+
+    async function activateAudio() {
+      if (!state.player) return;
+      try {
+        await state.player.activateElement();
+        state.activated = true;
+        setStatus('Audio activated. Tap "Use this device" next.');
+      } catch (error) {
+        setStatus(`Audio activation failed: ${error.message}`);
+      }
+    }
+
+    function signOut() {
+      [
+        STORAGE_KEYS.accessToken,
+        STORAGE_KEYS.refreshToken,
+        STORAGE_KEYS.expiresAt,
+        STORAGE_KEYS.codeVerifier,
+        STORAGE_KEYS.oauthState
+      ].forEach(removeSaved);
+
+      if (state.player) {
+        try { state.player.disconnect(); } catch (_) {}
+      }
+
+      state.player = null;
+      state.deviceId = null;
+      state.connected = false;
+      state.activated = false;
+      updateAuthUI();
+      resetTrackUI();
+      setControlsEnabled(false);
+      setStatus('Signed out.');
+    }
+
+    function installPlayer() {
+      if (!window.Spotify || state.player || !hasTokens()) {
+        updateAuthUI();
+        return;
+      }
+
+      const volume = Number(els.volumeSlider.value) / 100;
+      const deviceName = getSaved(STORAGE_KEYS.deviceName) || 'My Spotify Dashboard';
+
+      state.player = new Spotify.Player({
+        name: deviceName,
+        getOAuthToken: async (cb) => {
+          try {
+            cb(await getValidAccessToken());
+          } catch (error) {
+            setStatus(`Token error: ${error.message}`);
+          }
+        },
+        volume,
+        enableMediaSession: true
+      });
+
+      state.player.addListener('ready', ({ device_id }) => {
+        state.deviceId = device_id;
+        state.connected = true;
+        els.deviceInfo.textContent = `Device ID: ${device_id}`;
+        els.activateBtn.disabled = false;
+        els.transferBtn.disabled = false;
+        setStatus('Spotify is ready. Tap "Activate audio" and then "Use this device".');
+        updateAuthUI();
+      });
+
+      state.player.addListener('not_ready', ({ device_id }) => {
+        setStatus(`Spotify device went offline: ${device_id}`);
+      });
+
+      state.player.addListener('player_state_changed', (playbackState) => {
+        if (!playbackState) return;
+        state.playbackState = playbackState;
+        updateTrackUIFromState(playbackState);
+        setControlsEnabled(true);
+      });
+
+      state.player.addListener('autoplay_failed', () => {
+        setStatus('Browser autoplay blocked playback. Tap "Activate audio" first.');
+      });
+
+      state.player.addListener('initialization_error', ({ message }) => setStatus(`Initialization error: ${message}`));
+      state.player.addListener('authentication_error', ({ message }) => setStatus(`Authentication error: ${message}`));
+      state.player.addListener('account_error', ({ message }) => setStatus(`Account error: ${message}`));
+      state.player.addListener('playback_error', ({ message }) => setStatus(`Playback error: ${message}`));
+
+      state.player.connect().then(success => {
+        if (!success) {
+          setStatus('Spotify player could not connect.');
+          return;
+        }
+        updateAuthUI();
+      });
+
+      if (state.pollTimer) clearInterval(state.pollTimer);
+      state.pollTimer = setInterval(hydrateFromPlayerState, 4000);
+    }
+
+    async function maybeHandleAuthRedirect() {
+      const params = new URLSearchParams(location.search);
+      const code = params.get('code');
+      const incomingState = params.get('state');
+      const error = params.get('error');
+
+      if (error) {
+        setStatus(`Spotify login failed: ${error}`);
+        history.replaceState({}, document.title, cleanRedirectUri());
+        return;
+      }
+
+      if (!code) return;
+
+      const expectedState = getSaved(STORAGE_KEYS.oauthState);
+      if (!incomingState || incomingState !== expectedState) {
+        setStatus('Spotify login failed: invalid state.');
+        history.replaceState({}, document.title, cleanRedirectUri());
+        return;
+      }
+
+      try {
+        setStatus('Finishing Spotify login...');
+        await exchangeCodeForToken(code);
+        history.replaceState({}, document.title, cleanRedirectUri());
+        setStatus('Spotify login complete. Initializing player...');
+      } catch (error) {
+        setStatus(`Spotify login failed: ${error.message}`);
+        history.replaceState({}, document.title, cleanRedirectUri());
+      }
+    }
+
+    function attachEvents() {
+      els.saveSettings.addEventListener('click', saveSettings);
+      els.loginBtn.addEventListener('click', beginLogin);
+      els.activateBtn.addEventListener('click', activateAudio);
+      els.transferBtn.addEventListener('click', transferPlayback);
+      els.logoutBtn.addEventListener('click', signOut);
+
+      els.prevBtn.addEventListener('click', async () => {
+        if (!state.player) return;
+        try { await state.player.previousTrack(); } catch (error) { setStatus(`Previous failed: ${error.message}`); }
+      });
+
+      els.playPauseBtn.addEventListener('click', async () => {
+        if (!state.player) return;
+        try { await state.player.togglePlay(); } catch (error) { setStatus(`Play/pause failed: ${error.message}`); }
+      });
+
+      els.nextBtn.addEventListener('click', async () => {
+        if (!state.player) return;
+        try { await state.player.nextTrack(); } catch (error) { setStatus(`Next failed: ${error.message}`); }
+      });
+
+      els.volumeSlider.addEventListener('input', () => {
+        updateVolumeLabel();
+        setSaved(STORAGE_KEYS.volume, String(els.volumeSlider.value));
+      });
+
+      els.volumeSlider.addEventListener('change', async () => {
+        if (!state.player) return;
+        try {
+          await state.player.setVolume(Number(els.volumeSlider.value) / 100);
+        } catch (error) {
+          setStatus(`Volume change failed: ${error.message}`);
+        }
+      });
+    }
+
+    window.onSpotifyWebPlaybackSDKReady = () => {
+      state.sdkReady = true;
+      installPlayer();
+    };
+
+    (async function init() {
+      loadSettings();
+      attachEvents();
+      setControlsEnabled(false);
+      await maybeHandleAuthRedirect();
+      updateAuthUI();
+      if (window.Spotify) installPlayer();
+      if (hasTokens()) {
+        setStatus('Existing Spotify session found. Initializing player...');
+      }
+    })();
+  </script>
+</body>
+</html>
