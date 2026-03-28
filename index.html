@@ -124,7 +124,7 @@
     .hero-inner {
       display: grid;
       grid-template-columns: minmax(142px, var(--art-size)) minmax(0, 1fr);
-      gap: var(--hero-gap);
+      gap: clamp(32px, 5vw, 72px);
       align-items: center;
       min-height: 0;
       height: 100%;
@@ -136,7 +136,7 @@
       max-width: var(--art-size);
       min-width: var(--art-size);
       justify-self: start;
-      margin-inline-end: var(--hero-art-margin);
+      margin-inline-end: clamp(14px, 2vw, 22px);
     }
 
     .album-art {
@@ -156,6 +156,7 @@
       gap: clamp(8px, 1.2vh, 16px);
       align-content: center;
       align-self: stretch;
+      padding-inline-start: clamp(8px, 1vw, 16px);
     }
 
     .meta-top {
@@ -539,6 +540,7 @@
       .meta {
         justify-items: center;
         align-content: start;
+        padding-inline-start: 0;
       }
 
 
@@ -626,7 +628,15 @@
 
       .hero-inner {
         grid-template-columns: minmax(100px, 24vh) minmax(0, 1fr);
-        gap: 24px;
+        gap: clamp(32px, 5vw, 56px);
+      }
+
+      .art-wrap {
+        margin-inline-end: clamp(14px, 2vw, 20px);
+      }
+
+      .meta {
+        padding-inline-start: clamp(12px, 1.8vw, 20px);
       }
 
       .transport-row {
@@ -641,7 +651,7 @@
   </style>
 </head>
 <body>
-  <main class="screen" aria-label="Spotify remote dashboard">
+  <main id="screen" class="screen" aria-label="Spotify remote dashboard">
     <img id="bgArt" class="bg-art" alt="" aria-hidden="true" />
     <div class="bg-vignette"></div>
 
@@ -742,8 +752,8 @@
         <p id="overlayCopy" class="overlay-copy">Sign in once, then the dashboard keeps your session in this browser until you sign out, clear site data, or revoke the app.</p>
         <div class="overlay-actions">
           <button id="loginBtn" class="overlay-btn primary" type="button">Sign in</button>
-          <button id="activateOverlayBtn" class="overlay-btn hidden" type="button">Activate audio</button>
-          <button id="useDeviceOverlayBtn" class="overlay-btn hidden" type="button">Use this device</button>
+          <button id="setupAudioBtn" class="overlay-btn hidden" type="button">Activate audio</button>
+          <button id="setupDeviceBtn" class="overlay-btn hidden" type="button">Use this device</button>
           <button id="closeOverlayBtn" class="overlay-btn hidden" type="button">Close</button>
         </div>
       </div>
@@ -795,6 +805,7 @@
     `)}`;
 
     const els = {
+      screen: document.getElementById('screen'),
       statusLive: document.getElementById('statusLive'),
       signOutMiniBtn: document.getElementById('signOutMiniBtn'),
       bgArt: document.getElementById('bgArt'),
@@ -821,8 +832,8 @@
       overlayTitle: document.getElementById('overlayTitle'),
       overlayCopy: document.getElementById('overlayCopy'),
       loginBtn: document.getElementById('loginBtn'),
-      activateOverlayBtn: document.getElementById('activateOverlayBtn'),
-      useDeviceOverlayBtn: document.getElementById('useDeviceOverlayBtn'),
+      setupAudioBtn: document.getElementById('setupAudioBtn'),
+      setupDeviceBtn: document.getElementById('setupDeviceBtn'),
       closeOverlayBtn: document.getElementById('closeOverlayBtn')
     };
 
@@ -843,7 +854,20 @@
       redirectMismatch: false,
       volumeSyncPending: null,
       volume: 0.8,
-      previousVolume: 0.8
+      previousVolume: 0.8,
+      gestureCooldownUntil: 0
+    };
+
+    const gesture = {
+      pointerId: null,
+      startX: 0,
+      startY: 0,
+      lastX: 0,
+      lastY: 0,
+      startTime: 0,
+      tracking: false,
+      active: false,
+      pointerType: ''
     };
 
     function setSaved(key, value) { localStorage.setItem(key, value); }
@@ -905,28 +929,33 @@
       }
     }
 
+    function updateSetupOverlayButtons() {
+      if (!els.setupAudioBtn || !els.setupDeviceBtn || !els.closeOverlayBtn) return;
+      els.setupAudioBtn.disabled = !state.player;
+      els.setupDeviceBtn.disabled = !state.deviceId;
+      els.setupAudioBtn.textContent = state.activated ? 'Audio ready' : 'Activate audio';
+    }
+
     function setOverlay(mode) {
       const show = mode !== 'hidden';
       els.overlay.classList.toggle('show', show);
 
       els.loginBtn.classList.add('hidden');
-      els.activateOverlayBtn.classList.add('hidden');
-      els.useDeviceOverlayBtn.classList.add('hidden');
+      els.setupAudioBtn.classList.add('hidden');
+      els.setupDeviceBtn.classList.add('hidden');
       els.closeOverlayBtn.classList.add('hidden');
 
       if (mode === 'signin') {
         els.overlayTitle.textContent = 'Connect Spotify';
         els.overlayCopy.textContent = 'Sign in once, then this browser can keep the session for quick access.';
         els.loginBtn.classList.remove('hidden');
-      } else if (mode === 'activate') {
-        els.overlayTitle.textContent = 'Activate audio';
-        els.overlayCopy.textContent = 'This browser needs one tap so Spotify can transfer playback here cleanly.';
-        els.activateOverlayBtn.classList.remove('hidden');
-      } else if (mode === 'transfer') {
-        els.overlayTitle.textContent = 'Use this device';
-        els.overlayCopy.textContent = 'Spotify is ready. Transfer playback to this dashboard to control the current song here.';
-        els.useDeviceOverlayBtn.classList.remove('hidden');
+      } else if (mode === 'setup') {
+        els.overlayTitle.textContent = 'Set up playback';
+        els.overlayCopy.textContent = 'Activate audio, switch playback to this dashboard, or close this prompt if you do not want to use this device right now.';
+        els.setupAudioBtn.classList.remove('hidden');
+        els.setupDeviceBtn.classList.remove('hidden');
         els.closeOverlayBtn.classList.remove('hidden');
+        updateSetupOverlayButtons();
       }
     }
 
@@ -945,6 +974,7 @@
       els.audioBtn.classList.toggle('active', !!state.activated);
       els.audioBtn.setAttribute('aria-pressed', state.activated ? 'true' : 'false');
       els.audioBtn.setAttribute('title', state.activated ? 'Audio active' : 'Activate audio');
+      updateSetupOverlayButtons();
     }
 
     function updateAuxButtons() {
@@ -953,6 +983,7 @@
       els.audioBtn.disabled = !authed || !state.player;
       els.useDeviceBtn.disabled = !authed || !state.deviceId;
       updateAudioButton();
+      updateSetupOverlayButtons();
     }
 
     function syncFullscreenButton() {
@@ -985,6 +1016,118 @@
       } finally {
         syncFullscreenButton();
       }
+    }
+
+
+    function isInteractiveTarget(target) {
+      return !!target?.closest('button, input, .overlay-card, a, label');
+    }
+
+    function clearGesture() {
+      gesture.pointerId = null;
+      gesture.startX = 0;
+      gesture.startY = 0;
+      gesture.lastX = 0;
+      gesture.lastY = 0;
+      gesture.startTime = 0;
+      gesture.tracking = false;
+      gesture.active = false;
+      gesture.pointerType = '';
+    }
+
+    function canUseGestures() {
+      return !!state.player && !els.overlay.classList.contains('show');
+    }
+
+    async function runGestureAction(direction) {
+      if (!state.player || Date.now() < state.gestureCooldownUntil) return;
+      state.gestureCooldownUntil = Date.now() + 360;
+
+      try {
+        if (direction === 'right') {
+          await state.player.nextTrack();
+          setStatus('Next track', 'good');
+        } else if (direction === 'left') {
+          await state.player.previousTrack();
+          setStatus('Previous track', 'good');
+        } else if (direction === 'up') {
+          const nextVolume = Math.min(1, state.volume + 0.08);
+          await applyVolume(nextVolume);
+          setStatus(`Volume ${Math.round(nextVolume * 100)}%`, 'good');
+        } else if (direction === 'down') {
+          const nextVolume = Math.max(0, state.volume - 0.08);
+          await applyVolume(nextVolume);
+          setStatus(`Volume ${Math.round(nextVolume * 100)}%`, 'good');
+        }
+      } catch (error) {
+        setStatus(`Gesture failed: ${error.message}`, 'error');
+      }
+    }
+
+    function attachGestureEvents() {
+      if (!els.screen) return;
+
+      els.screen.addEventListener('pointerdown', (event) => {
+        if (!canUseGestures()) return;
+        if (!event.isPrimary) return;
+        if (event.pointerType === 'mouse' && event.button !== 0) return;
+        if (isInteractiveTarget(event.target)) return;
+
+        gesture.pointerId = event.pointerId;
+        gesture.startX = event.clientX;
+        gesture.startY = event.clientY;
+        gesture.lastX = event.clientX;
+        gesture.lastY = event.clientY;
+        gesture.startTime = performance.now();
+        gesture.tracking = true;
+        gesture.active = false;
+        gesture.pointerType = event.pointerType || 'mouse';
+      }, { passive: true });
+
+      els.screen.addEventListener('pointermove', (event) => {
+        if (!gesture.tracking || event.pointerId !== gesture.pointerId) return;
+        gesture.lastX = event.clientX;
+        gesture.lastY = event.clientY;
+
+        const dx = gesture.lastX - gesture.startX;
+        const dy = gesture.lastY - gesture.startY;
+        if (Math.hypot(dx, dy) > 18) gesture.active = true;
+      }, { passive: true });
+
+      const finishGesture = async (event) => {
+        if (!gesture.tracking || event.pointerId !== gesture.pointerId) return;
+
+        const dx = (typeof event.clientX === 'number' ? event.clientX : gesture.lastX) - gesture.startX;
+        const dy = (typeof event.clientY === 'number' ? event.clientY : gesture.lastY) - gesture.startY;
+        const absX = Math.abs(dx);
+        const absY = Math.abs(dy);
+        const duration = performance.now() - gesture.startTime;
+        const pointerType = gesture.pointerType;
+
+        clearGesture();
+
+        const horizontalThreshold = pointerType === 'mouse' ? 120 : 72;
+        const verticalThreshold = pointerType === 'mouse' ? 100 : 64;
+        const dominance = 1.35;
+
+        if (duration > 900) return;
+        if (absX < horizontalThreshold && absY < verticalThreshold) return;
+
+        if (absX >= horizontalThreshold && absX > absY * dominance) {
+          await runGestureAction(dx > 0 ? 'right' : 'left');
+          return;
+        }
+
+        if (absY >= verticalThreshold && absY > absX * dominance) {
+          await runGestureAction(dy < 0 ? 'up' : 'down');
+        }
+      };
+
+      els.screen.addEventListener('pointerup', finishGesture, { passive: true });
+      els.screen.addEventListener('pointercancel', clearGesture, { passive: true });
+      els.screen.addEventListener('pointerleave', (event) => {
+        if (gesture.pointerType === 'mouse') clearGesture();
+      }, { passive: true });
     }
 
     function setPlayPauseVisual(isPaused) {
@@ -1293,11 +1436,12 @@
         state.activated = true;
         updateAudioButton();
         setStatus('Audio activated', 'good');
-        setOverlay(state.deviceId ? 'transfer' : 'hidden');
+        if (els.overlay.classList.contains('show')) setOverlay('setup');
       } catch (error) {
         state.activated = false;
         updateAudioButton();
         setStatus(`Audio activation failed: ${error.message}`, 'error');
+        if (els.overlay.classList.contains('show')) setOverlay('setup');
       }
     }
 
@@ -1379,12 +1523,8 @@
 
         if (!state.activated) {
           const dismissed = getSaved(STORAGE_KEYS.overlayDismissed) === '1';
-          setOverlay(dismissed ? 'hidden' : 'activate');
+          setOverlay(dismissed ? 'hidden' : 'setup');
         }
-
-        try {
-          await transferPlayback();
-        } catch (_) {}
       });
 
       state.player.addListener('not_ready', () => {
@@ -1402,7 +1542,7 @@
 
       state.player.addListener('autoplay_failed', () => {
         setStatus('Tap Activate audio', 'warn');
-        setOverlay('activate');
+        setOverlay('setup');
       });
 
       state.player.addListener('initialization_error', ({ message }) => setStatus(`Initialization error: ${message}`, 'error'));
@@ -1467,9 +1607,9 @@
     function attachEvents() {
       els.loginBtn.addEventListener('click', beginLogin);
       els.audioBtn.addEventListener('click', activateAudio);
-      els.activateOverlayBtn.addEventListener('click', activateAudio);
+      els.setupAudioBtn.addEventListener('click', activateAudio);
       els.useDeviceBtn.addEventListener('click', transferPlayback);
-      els.useDeviceOverlayBtn.addEventListener('click', transferPlayback);
+      els.setupDeviceBtn.addEventListener('click', transferPlayback);
       els.fullscreenBtn.addEventListener('click', toggleFullscreen);
       els.closeOverlayBtn.addEventListener('click', () => {
         setSaved(STORAGE_KEYS.overlayDismissed, '1');
@@ -1549,6 +1689,7 @@
       updateRangeVisual(els.timeline);
       updateRangeVisual(els.volumeSlider);
       attachEvents();
+      attachGestureEvents();
       updateAuxButtons();
       updateAudioButton();
       syncFullscreenButton();
