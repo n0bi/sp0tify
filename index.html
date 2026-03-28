@@ -389,6 +389,7 @@
       min-height: clamp(48px, 5vw, 58px);
       padding: 10px 14px;
       border-radius: 999px;
+      overflow: hidden;
       background: rgba(18,18,20,0.32);
       border: 1px solid rgba(255,255,255,0.08);
       backdrop-filter: blur(10px);
@@ -462,8 +463,11 @@
     }
 
     .secondary-btn.remote-btn svg {
-      width: 27px;
-      height: 27px;
+      width: 24px;
+      height: 24px;
+      display: block;
+      margin: auto;
+      flex: 0 0 auto;
     }
 
     .ctrl.recommend.active {
@@ -578,37 +582,48 @@
     .device-sheet.show { display: flex; }
 
     .device-card {
-      width: min(100%, 560px);
-      max-height: min(78dvh, 720px);
+      width: min(100%, 460px);
+      max-height: min(74dvh, 620px);
       overflow: hidden;
-      padding: 18px;
-      border-radius: 24px;
-      background: rgba(19,19,22,0.94);
+      padding: 14px;
+      border-radius: 22px;
+      background: rgba(19,19,22,0.96);
       border: 1px solid rgba(255,255,255,0.08);
       box-shadow: 0 20px 60px rgba(0,0,0,0.42);
       display: grid;
-      gap: 14px;
-      grid-template-rows: auto auto minmax(0, 1fr) auto;
+      gap: 10px;
+      grid-template-rows: auto minmax(0, 1fr);
     }
 
-    .device-title {
-      margin: 0;
-      font-size: clamp(22px, 2.6vw, 32px);
-      font-weight: 900;
-      letter-spacing: -0.04em;
-      line-height: 1;
+    .device-toolbar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
     }
 
-    .device-copy {
-      margin: 0;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.45;
+    .device-tool-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.09);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .device-tool-btn svg {
+      width: 18px;
+      height: 18px;
+      display: block;
     }
 
     .device-list {
       display: grid;
-      gap: 10px;
+      gap: 8px;
       overflow: auto;
       padding-right: 2px;
       min-height: 120px;
@@ -618,9 +633,9 @@
       width: 100%;
       text-align: left;
       display: grid;
-      gap: 6px;
-      padding: 14px 16px;
-      border-radius: 18px;
+      gap: 5px;
+      padding: 12px 14px;
+      border-radius: 16px;
       border: 1px solid rgba(255,255,255,0.09);
       background: rgba(255,255,255,0.05);
       color: var(--text);
@@ -651,17 +666,17 @@
     .device-item-meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 6px;
       color: var(--muted);
-      font-size: 13px;
-      line-height: 1.35;
+      font-size: 12px;
+      line-height: 1.3;
     }
 
     .device-chip {
       display: inline-flex;
       align-items: center;
-      min-height: 26px;
-      padding: 0 10px;
+      min-height: 22px;
+      padding: 0 8px;
       border-radius: 999px;
       background: rgba(255,255,255,0.08);
       border: 1px solid rgba(255,255,255,0.07);
@@ -673,27 +688,9 @@
       border-color: rgba(46,214,100,0.34);
     }
 
-    .device-actions {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .device-btn {
-      min-height: 48px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.09);
-      background: rgba(255,255,255,0.08);
-      color: var(--text);
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .device-btn.primary {
-      background: linear-gradient(180deg, #2ae06c, #19b856);
-      color: #041008;
-      border: 0;
-    }
+    .device-actions { display: none; }
+    .device-btn { display: none; }
+    .device-btn.primary { display: none; }
 
     .hidden { display: none !important; }
 
@@ -932,7 +929,7 @@
             </svg>
           </button>
           <button id="connectRemoteBtn" class="secondary-btn remote-btn" type="button" aria-label="Choose Spotify Connect device" title="Choose Spotify Connect device" disabled>
-            <svg viewBox="0 0 110 135" fill="currentColor" aria-hidden="true">
+            <svg viewBox="10 15 90 90" fill="currentColor" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
               <path d="M55,105.19c24.92,0,45.19-20.27,45.19-45.19S79.92,14.81,55,14.81,9.81,35.08,9.81,60s20.27,45.19,45.19,45.19ZM55,21.06c21.47,0,38.94,17.47,38.94,38.94s-17.47,38.94-38.94,38.94-38.94-17.47-38.94-38.94S33.53,21.06,55,21.06Z"></path>
               <path d="M55,75.19c8.38,0,15.19-6.82,15.19-15.19s-6.82-15.19-15.19-15.19-15.19,6.82-15.19,15.19,6.82,15.19,15.19,15.19ZM55,51.06c4.93,0,8.94,4.01,8.94,8.94s-4.01,8.94-8.94,8.94-8.94-4.01-8.94-8.94,4.01-8.94,8.94-8.94Z"></path>
               <path d="M51.93,37.4h6.15c1.15,0,2.21-.63,2.76-1.65.54-1.02.48-2.25-.16-3.21l-3.07-4.62c-1.16-1.74-4.04-1.74-5.2,0l-3.07,4.62c-.64.96-.7,2.19-.16,3.21s1.6,1.65,2.76,1.65h0Z"></path>
@@ -968,14 +965,26 @@
     </div>
 
     <div id="deviceSheet" class="device-sheet" aria-hidden="true">
-      <div class="device-card" role="dialog" aria-modal="true" aria-labelledby="deviceSheetTitle">
-        <h2 id="deviceSheetTitle" class="device-title">Choose a Spotify Connect device</h2>
-        <p class="device-copy">Pick which Spotify Connect target this dashboard controls. Selecting one makes it the device this UI sends play, pause, skip, seek, queue, and volume commands to.</p>
-        <div id="deviceList" class="device-list" aria-live="polite"></div>
-        <div class="device-actions">
-          <button id="refreshDevicesBtn" class="device-btn primary" type="button">Refresh</button>
-          <button id="closeDevicesBtn" class="device-btn" type="button">Close</button>
+      <div class="device-card" role="dialog" aria-modal="true" aria-label="Spotify Connect devices">
+        <div class="device-toolbar">
+          <button id="refreshDevicesBtn" class="device-tool-btn" type="button" aria-label="Refresh devices" title="Refresh devices">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12a9 9 0 0 1-15.5 6.36"></path>
+              <path d="M3 12A9 9 0 0 1 18.5 5.64"></path>
+              <path d="M18.5 5.64H14"></path>
+              <path d="M18.5 5.64V10"></path>
+              <path d="M5.5 18.36H10"></path>
+              <path d="M5.5 18.36V14"></path>
+            </svg>
+          </button>
+          <button id="closeDevicesBtn" class="device-tool-btn" type="button" aria-label="Close device list" title="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M18 6 6 18"></path>
+              <path d="M6 6l12 12"></path>
+            </svg>
+          </button>
         </div>
+        <div id="deviceList" class="device-list" aria-live="polite"></div>
       </div>
     </div>
   </main>
@@ -1502,6 +1511,10 @@
       state.playbackDeviceId = device?.id || '';
       state.playbackDeviceName = device?.name || '';
       state.playbackDeviceSupportsVolume = device ? device.supports_volume !== false : true;
+      const targetId = getCommandDeviceId();
+      if (device && Number.isFinite(device.volume_percent) && (!targetId || device.id === targetId || (!state.selectedDeviceId && device.id === state.playbackDeviceId))) {
+        syncVolumeFromPlaybackDevice(device, false);
+      }
       if (!state.selectedDeviceId) updateTransportButtons(!!state.playbackState || !!state.ready);
       updateRemoteButton();
     }
@@ -1549,7 +1562,7 @@
     function renderDeviceList() {
       if (!els.deviceList) return;
       if (!state.devices.length) {
-        els.deviceList.innerHTML = '<div class="device-item" style="cursor:default"><div class="device-item-head"><span>No Spotify Connect devices found</span></div><div class="device-item-meta"><span class="device-chip">Open Spotify on the device first, then refresh.</span></div></div>';
+        els.deviceList.innerHTML = '<div class="device-item" style="cursor:default"><div class="device-item-head"><span>No devices found</span></div><div class="device-item-meta"><span class="device-chip">Open Spotify on the device first, then refresh.</span></div></div>';
         return;
       }
       const activeId = state.playbackDeviceId;
@@ -1562,6 +1575,7 @@
           `<span class="device-chip">${device.type || 'device'}</span>`,
           isActive ? '<span class="device-chip good">Active</span>' : '',
           isLocal ? '<span class="device-chip">This browser</span>' : '',
+          isSelected ? '<span class="device-chip good">Selected</span>' : '',
           device.supports_volume === false ? '<span class="device-chip">No volume API</span>' : '',
           device.is_restricted ? '<span class="device-chip">Restricted</span>' : ''
         ].filter(Boolean).join('');
@@ -1569,7 +1583,6 @@
           <button class="device-item ${isSelected ? 'active' : ''}" type="button" data-device-id="${device.id || ''}" ${device.is_restricted || !device.id ? 'disabled' : ''}>
             <div class="device-item-head">
               <span>${device.name || 'Unnamed device'}</span>
-              ${isSelected ? '<span class="device-chip good">Selected</span>' : ''}
             </div>
             <div class="device-item-meta">${chips}</div>
           </button>
@@ -1587,6 +1600,7 @@
               body: JSON.stringify({ device_ids: [device.id], play: false })
             });
             updatePlaybackDeviceInfo(device);
+            syncVolumeFromPlaybackDevice(device, false);
             setStatus(`Now controlling ${device.name}`, 'good');
             closeDeviceSheet();
             await hydratePlaybackState();
@@ -1602,7 +1616,7 @@
       if (!hasTokens()) return;
       els.deviceSheet.classList.add('show');
       els.deviceSheet.setAttribute('aria-hidden', 'false');
-      els.deviceList.innerHTML = '<div class="device-item" style="cursor:default"><div class="device-item-head"><span>Loading devices…</span></div></div>';
+      els.deviceList.innerHTML = '<div class="device-item" style="cursor:default"><div class="device-item-head"><span>Loading…</span></div></div>';
       try {
         await fetchAvailableDevices(true);
       } catch (error) {
@@ -1936,6 +1950,13 @@
       if (bounded > 0.001 && persist) setSaved(STORAGE_KEYS.previousVolume, String(bounded));
     }
 
+    function syncVolumeFromPlaybackDevice(device = null, persist = false) {
+      if (!device || !Number.isFinite(device.volume_percent)) return;
+      const nextVolume = Math.max(0, Math.min(1, device.volume_percent / 100));
+      setVolumeUI(nextVolume, persist);
+      if (nextVolume > 0.001) state.previousVolume = nextVolume;
+    }
+
     function loadSavedVolume() {
       const savedVolume = Number(getSaved(STORAGE_KEYS.volume));
       const savedPrevious = Number(getSaved(STORAGE_KEYS.previousVolume));
@@ -1962,6 +1983,7 @@
       if (volume > 0.001) state.previousVolume = volume;
       try {
         await commandSetVolume(state.volume);
+        syncPlaybackFlags().catch(() => {});
       } catch (error) {
         setStatus(`Volume failed: ${error.message}`, 'error');
       }
@@ -2129,7 +2151,10 @@
         if (playback && typeof playback.shuffle_state === 'boolean') {
           setShuffleVisual(playback.shuffle_state);
         }
-        if (playback?.device) updatePlaybackDeviceInfo(playback.device);
+        if (playback?.device) {
+          updatePlaybackDeviceInfo(playback.device);
+          syncVolumeFromPlaybackDevice(playback.device, false);
+        }
       } catch (error) {
         if (!/204/.test(String(error?.message || ''))) {
           console.error(error);
@@ -2320,7 +2345,10 @@
     async function hydratePlaybackState() {
       try {
         const playback = await spotifyFetch('/v1/me/player');
-        if (playback?.device) updatePlaybackDeviceInfo(playback.device);
+        if (playback?.device) {
+          updatePlaybackDeviceInfo(playback.device);
+          syncVolumeFromPlaybackDevice(playback.device, false);
+        }
         if (playback?.item) {
           const normalized = normalizePlaybackState(playback, 'api');
           if (normalized) {
