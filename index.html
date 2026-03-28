@@ -6,28 +6,39 @@
   <title>Spotify Car UI Remote</title>
   <style>
     :root {
-      --bg: #0a0a0b;
-      --panel: rgba(18, 18, 20, 0.88);
-      --panel-strong: rgba(26, 26, 30, 0.94);
-      --line: rgba(255,255,255,0.12);
+      --bg: #080809;
+      --line: rgba(255,255,255,0.1);
       --line-soft: rgba(255,255,255,0.08);
       --text: #ffffff;
       --muted: rgba(255,255,255,0.72);
-      --muted-2: rgba(255,255,255,0.48);
+      --muted-2: rgba(255,255,255,0.5);
       --green: #1ed760;
+      --warn: #f0c14b;
       --danger: #ff6a6a;
-      --shadow: 0 28px 70px rgba(0,0,0,0.5);
-      --radius: 28px;
-      --card-radius: 24px;
-      --control-size: clamp(58px, 8vw, 86px);
-      --side-pad: clamp(18px, 3vw, 36px);
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --pad-x: clamp(16px, 3.2vw, 40px);
+      --pad-y: clamp(16px, 3.2vh, 34px);
+      --art-size: clamp(120px, 24vw, 290px);
+      --title-size: clamp(32px, 5.6vw, 84px);
+      --artist-size: clamp(18px, 2.4vw, 38px);
+      --meta-size: clamp(14px, 1.4vw, 22px);
+      --control-size: clamp(60px, 8.5vw, 96px);
+      --icon-size: clamp(28px, 3.8vw, 48px);
+      --play-icon-size: clamp(34px, 4.6vw, 56px);
+      --pill-height: clamp(40px, 5.4vw, 50px);
+      --radius: clamp(18px, 2.4vw, 28px);
     }
 
     * { box-sizing: border-box; }
 
     html, body {
       margin: 0;
+      width: 100%;
       min-height: 100%;
+      overflow: hidden;
       background:
         radial-gradient(circle at top, rgba(255,255,255,0.07), transparent 28%),
         linear-gradient(180deg, #111216 0%, #070708 100%);
@@ -36,20 +47,20 @@
     }
 
     body {
-      display: grid;
-      place-items: center;
-      padding: 20px;
+      min-height: 100dvh;
+    }
+
+    button, input {
+      font: inherit;
     }
 
     .screen {
       position: relative;
-      width: min(100%, 1080px);
-      aspect-ratio: 16 / 9;
+      width: 100vw;
+      min-height: 100dvh;
       background: #070708;
-      border-radius: 34px;
       overflow: hidden;
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(255,255,255,0.08);
+      isolation: isolate;
     }
 
     .bg-art {
@@ -58,9 +69,9 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      filter: blur(38px) saturate(1.18);
-      transform: scale(1.08);
-      opacity: 0.42;
+      filter: blur(54px) saturate(1.18);
+      transform: scale(1.12);
+      opacity: 0.44;
       pointer-events: none;
     }
 
@@ -68,8 +79,8 @@
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.4)),
-        linear-gradient(90deg, rgba(10,10,12,0.78) 0%, rgba(10,10,12,0.52) 58%, rgba(10,10,12,0.86) 100%);
+        linear-gradient(180deg, rgba(0,0,0,0.16), rgba(0,0,0,0.46)),
+        linear-gradient(90deg, rgba(10,10,12,0.84) 0%, rgba(10,10,12,0.48) 52%, rgba(10,10,12,0.84) 100%);
       pointer-events: none;
     }
 
@@ -77,61 +88,30 @@
       position: relative;
       z-index: 1;
       width: 100%;
-      height: 100%;
+      min-height: 100dvh;
       display: grid;
-      grid-template-rows: auto 1fr auto;
-      gap: clamp(10px, 1.7vw, 18px);
-      padding: clamp(14px, 2vw, 22px);
+      grid-template-rows: 1fr auto auto auto;
+      gap: clamp(14px, 2vh, 26px);
+      padding:
+        calc(var(--pad-y) + var(--safe-top))
+        calc(var(--pad-x) + var(--safe-right))
+        calc(var(--pad-y) + var(--safe-bottom))
+        calc(var(--pad-x) + var(--safe-left));
     }
 
-    .statusbar {
+    .topbar {
       display: flex;
+      justify-content: flex-end;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      min-height: 34px;
+      min-height: 0;
     }
-
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      min-height: 34px;
-      max-width: 100%;
-      padding: 0 14px;
-      border-radius: 999px;
-      background: rgba(18,18,20,0.44);
-      border: 1px solid rgba(255,255,255,0.09);
-      backdrop-filter: blur(10px);
-      color: var(--muted);
-      font-size: clamp(12px, 1.5vw, 15px);
-      font-weight: 600;
-      letter-spacing: 0.01em;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      flex: 1;
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #8b8f98;
-      flex: 0 0 auto;
-      box-shadow: 0 0 0 4px rgba(255,255,255,0.05);
-    }
-
-    .status-pill.good .status-dot { background: var(--green); }
-    .status-pill.warn .status-dot { background: #f0c14b; }
-    .status-pill.error .status-dot { background: #ff6a6a; }
 
     .icon-mini-btn {
-      width: 34px;
-      height: 34px;
+      width: 40px;
+      height: 40px;
       border: 0;
-      border-radius: 50%;
-      background: rgba(18,18,20,0.44);
+      border-radius: 999px;
+      background: rgba(18,18,20,0.34);
       border: 1px solid rgba(255,255,255,0.09);
       color: rgba(255,255,255,0.82);
       display: grid;
@@ -145,54 +125,33 @@
       cursor: not-allowed;
     }
 
-    .card {
-      position: relative;
-      align-self: stretch;
-      width: 100%;
-      height: 100%;
-      padding: clamp(18px, 2.8vw, 34px);
-      background: linear-gradient(180deg, rgba(72,58,76,0.84), rgba(55,40,62,0.84));
-      border-radius: var(--card-radius);
-      border: 1px solid rgba(255,255,255,0.08);
-      overflow: hidden;
+    .hero {
       display: grid;
-      grid-template-rows: 1fr auto auto;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
-    }
-
-    .card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)),
-        radial-gradient(circle at top left, rgba(255,255,255,0.08), transparent 34%);
-      pointer-events: none;
-    }
-
-    .main-row {
-      position: relative;
-      display: grid;
-      grid-template-columns: clamp(120px, 21vw, 250px) minmax(0, 1fr);
-      gap: clamp(18px, 3vw, 34px);
-      min-height: 0;
       align-items: center;
-      padding-right: clamp(2px, 0.4vw, 8px);
+      min-height: 0;
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: minmax(120px, var(--art-size)) minmax(0, 1fr);
+      gap: clamp(18px, 3.2vw, 38px);
+      align-items: center;
+      min-height: 0;
     }
 
     .art-wrap {
-      align-self: start;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 100%;
+      max-width: var(--art-size);
+      justify-self: start;
     }
 
     .album-art {
+      display: block;
       width: 100%;
       aspect-ratio: 1 / 1;
       object-fit: cover;
-      border-radius: 12px;
-      box-shadow: 0 18px 36px rgba(0,0,0,0.26);
+      border-radius: clamp(10px, 1.4vw, 16px);
+      box-shadow: 0 18px 42px rgba(0,0,0,0.28);
       border: 1px solid rgba(255,255,255,0.09);
       background: rgba(0,0,0,0.2);
     }
@@ -200,12 +159,13 @@
     .meta {
       min-width: 0;
       display: grid;
-      gap: clamp(8px, 1.6vw, 14px);
+      gap: clamp(8px, 1.2vh, 16px);
       align-content: center;
+      align-self: stretch;
     }
 
     .meta-top {
-      font-size: clamp(15px, 2vw, 28px);
+      font-size: var(--meta-size);
       color: rgba(255,255,255,0.74);
       font-weight: 700;
       letter-spacing: -0.02em;
@@ -216,10 +176,10 @@
 
     .track-name {
       margin: 0;
-      font-size: clamp(30px, 4.9vw, 74px);
+      font-size: var(--title-size);
       line-height: 0.95;
       font-weight: 900;
-      letter-spacing: -0.05em;
+      letter-spacing: -0.055em;
       max-width: 100%;
       display: -webkit-box;
       -webkit-line-clamp: 3;
@@ -230,43 +190,47 @@
 
     .artist-name {
       margin: 0;
-      font-size: clamp(20px, 2.8vw, 40px);
+      font-size: var(--artist-size);
       font-weight: 600;
-      line-height: 1.05;
-      color: rgba(255,255,255,0.9);
+      line-height: 1.06;
+      color: rgba(255,255,255,0.92);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    .timeline-block {
-      position: relative;
+    .timeline-section {
       display: grid;
-      gap: 8px;
-      padding-top: clamp(10px, 1.8vw, 16px);
-      padding-bottom: clamp(10px, 1.4vw, 14px);
-      border-top: 1px solid rgba(255,255,255,0.08);
+      gap: clamp(10px, 1.2vh, 16px);
+      min-height: 0;
     }
 
     .time-row {
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
       align-items: center;
-      color: rgba(255,255,255,0.55);
-      font-size: clamp(12px, 1.55vw, 18px);
+      gap: 12px;
+      color: rgba(255,255,255,0.6);
+      font-size: clamp(13px, 1.5vw, 19px);
       font-weight: 700;
       letter-spacing: 0.02em;
-      min-height: 18px;
+    }
+
+    .time-row::before {
+      content: "";
+      height: 0;
     }
 
     input[type="range"] {
+      --progress: 0%;
       -webkit-appearance: none;
       appearance: none;
       width: 100%;
-      height: 28px;
+      height: 30px;
       background: transparent;
       margin: 0;
       padding: 0;
+      touch-action: pan-y;
     }
 
     input[type="range"]::-webkit-slider-runnable-track {
@@ -308,12 +272,21 @@
       box-shadow: 0 4px 18px rgba(0,0,0,0.35);
     }
 
+    .transport-row {
+      display: grid;
+      grid-template-columns: 1fr minmax(0, auto);
+      gap: clamp(14px, 2vw, 26px);
+      align-items: center;
+      min-height: 0;
+    }
+
     .controls {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: clamp(10px, 1.8vw, 20px);
       align-items: center;
       min-height: 0;
+      width: min(100%, 760px);
     }
 
     .ctrl {
@@ -334,37 +307,107 @@
     .ctrl:disabled { opacity: 0.4; cursor: not-allowed; }
 
     .ctrl svg {
-      width: clamp(28px, 4vw, 48px);
-      height: clamp(28px, 4vw, 48px);
+      width: var(--icon-size);
+      height: var(--icon-size);
       display: block;
     }
 
     .ctrl.play svg {
-      width: clamp(32px, 4.6vw, 54px);
-      height: clamp(32px, 4.6vw, 54px);
+      width: var(--play-icon-size);
+      height: var(--play-icon-size);
     }
 
     .ctrl.heart.active { color: var(--green); }
 
-    .bottom-tools {
+    .volume-wrap {
+      min-width: min(34vw, 280px);
+      max-width: 320px;
+      justify-self: end;
+      display: grid;
+      grid-template-columns: auto minmax(120px, 1fr);
+      gap: 12px;
+      align-items: center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(18,18,20,0.32);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+    }
+
+    .volume-wrap input[type="range"] {
+      height: 26px;
+    }
+
+    .volume-wrap .volume-btn {
+      width: 42px;
+      height: 42px;
+      border: 0;
+      background: transparent;
+      color: rgba(255,255,255,0.92);
+      display: grid;
+      place-items: center;
+      padding: 0;
+      cursor: pointer;
+      border-radius: 999px;
+    }
+
+    .volume-wrap .volume-btn:hover {
+      background: rgba(255,255,255,0.06);
+    }
+
+    .volume-wrap svg {
+      width: 24px;
+      height: 24px;
+      display: block;
+    }
+
+    .utility-row {
       display: flex;
-      justify-content: flex-end;
-      gap: 8px;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
       min-height: 0;
     }
 
+    .status-pill,
     .secondary-btn {
-      min-height: 40px;
-      padding: 0 14px;
-      border: 0;
+      min-height: var(--pill-height);
       border-radius: 999px;
-      background: rgba(18,18,20,0.42);
-      color: rgba(255,255,255,0.88);
+      padding: 0 16px;
       border: 1px solid rgba(255,255,255,0.09);
       backdrop-filter: blur(10px);
-      font-size: 13px;
+      background: rgba(18,18,20,0.34);
+      font-size: clamp(13px, 1.45vw, 16px);
       font-weight: 700;
       letter-spacing: 0.01em;
+      color: rgba(255,255,255,0.88);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #8b8f98;
+      flex: 0 0 auto;
+      box-shadow: 0 0 0 4px rgba(255,255,255,0.05);
+    }
+
+    .status-pill.good .status-dot { background: var(--green); }
+    .status-pill.warn .status-dot { background: var(--warn); }
+    .status-pill.error .status-dot { background: var(--danger); }
+
+    .secondary-btn {
       cursor: pointer;
     }
 
@@ -381,14 +424,14 @@
       justify-content: center;
       padding: 22px;
       z-index: 5;
-      background: rgba(3,3,4,0.48);
+      background: rgba(3,3,4,0.52);
       backdrop-filter: blur(12px);
     }
 
     .overlay.show { display: flex; }
 
     .overlay-card {
-      width: min(100%, 540px);
+      width: min(100%, 560px);
       padding: 20px;
       border-radius: 24px;
       background: rgba(19,19,22,0.9);
@@ -445,32 +488,95 @@
 
     .hidden { display: none !important; }
 
-    @media (max-width: 760px) {
-      body { padding: 0; }
-      .screen {
-        width: 100vw;
-        min-height: 100vh;
-        aspect-ratio: auto;
-        border-radius: 0;
+    @media (max-width: 900px) {
+      .hero-inner {
+        grid-template-columns: minmax(0, 1fr);
+        justify-items: center;
+        text-align: center;
       }
+
+      .art-wrap {
+        justify-self: center;
+      }
+
+      .meta {
+        justify-items: center;
+        align-content: start;
+      }
+
+      .meta-top,
+      .artist-name {
+        white-space: normal;
+        text-overflow: initial;
+      }
+
+      .transport-row {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .controls {
+        width: 100%;
+      }
+
+      .volume-wrap {
+        width: 100%;
+        max-width: none;
+        justify-self: stretch;
+      }
+    }
+
+    @media (max-width: 640px) {
+      :root {
+        --art-size: min(44vw, 220px);
+        --title-size: clamp(28px, 8vw, 52px);
+        --artist-size: clamp(18px, 5vw, 26px);
+      }
+
       .frame {
-        min-height: 100vh;
+        grid-template-rows: auto 1fr auto auto;
+        gap: 14px;
       }
-      .card {
-        grid-template-rows: 1fr auto auto;
-      }
-      .main-row {
-        grid-template-columns: 96px minmax(0, 1fr);
-        gap: 16px;
-      }
+
       .track-name {
         -webkit-line-clamp: 4;
       }
+
+      .controls {
+        gap: 6px;
+      }
+
+      .ctrl {
+        height: 64px;
+      }
+
+      .utility-row {
+        gap: 8px;
+      }
+
+      .status-pill,
+      .secondary-btn {
+        padding: 0 14px;
+      }
+
       .overlay-actions {
         grid-template-columns: 1fr;
       }
-      .bottom-tools {
-        justify-content: space-between;
+    }
+
+    @media (max-height: 520px) and (orientation: landscape) {
+      :root {
+        --pad-y: 10px;
+        --art-size: min(28vh, 180px);
+        --title-size: clamp(28px, 7vh, 52px);
+        --artist-size: clamp(16px, 4.5vh, 24px);
+      }
+
+      .frame {
+        gap: 10px;
+      }
+
+      .ctrl {
+        height: 56px;
       }
     }
   </style>
@@ -481,11 +587,7 @@
     <div class="bg-vignette"></div>
 
     <div class="frame">
-      <div class="statusbar">
-        <div id="statusPill" class="status-pill warn">
-          <span class="status-dot"></span>
-          <span id="statusText">Waiting for Spotify</span>
-        </div>
+      <div class="topbar">
         <button id="signOutMiniBtn" class="icon-mini-btn hidden" type="button" aria-label="Sign out">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -495,8 +597,8 @@
         </button>
       </div>
 
-      <section class="card" aria-live="polite">
-        <div class="main-row">
+      <section class="hero" aria-live="polite">
+        <div class="hero-inner">
           <div class="art-wrap">
             <img id="albumArt" class="album-art" alt="Album art" />
           </div>
@@ -507,15 +609,18 @@
             <p id="artistName" class="artist-name">Sign in and start playback</p>
           </div>
         </div>
+      </section>
 
-        <div class="timeline-block">
-          <div class="time-row">
-            <span id="currentTime">0:00</span>
-            <span id="totalTime">0:00</span>
-          </div>
-          <input id="timeline" type="range" min="0" max="1000" value="0" step="1" aria-label="Track timeline" />
+      <section class="timeline-section" aria-label="Track timeline and progress">
+        <div class="time-row">
+          <span id="currentTime">0:00</span>
+          <span></span>
+          <span id="totalTime">0:00</span>
         </div>
+        <input id="timeline" type="range" min="0" max="1000" value="0" step="1" aria-label="Track timeline" />
+      </section>
 
+      <section class="transport-row" aria-label="Playback controls and volume">
         <div class="controls" role="group" aria-label="Playback controls">
           <button id="prevBtn" class="ctrl prev" type="button" aria-label="Previous track" disabled>
             <svg viewBox="0 0 64 64" fill="currentColor" aria-hidden="true">
@@ -544,12 +649,27 @@
             </svg>
           </button>
         </div>
+
+        <div class="volume-wrap" aria-label="Volume controls">
+          <button id="muteBtn" class="volume-btn" type="button" aria-label="Mute or restore volume">
+            <svg id="volumeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
+              <path d="M18.5 5.5a9 9 0 0 1 0 13"></path>
+            </svg>
+          </button>
+          <input id="volumeSlider" type="range" min="0" max="100" value="80" step="1" aria-label="Volume" />
+        </div>
       </section>
 
-      <div class="bottom-tools">
+      <section class="utility-row" aria-label="Status and playback actions">
+        <div id="statusPill" class="status-pill warn">
+          <span class="status-dot"></span>
+          <span id="statusText">Waiting for Spotify</span>
+        </div>
         <button id="activateBtn" class="secondary-btn" type="button" disabled>Activate audio</button>
         <button id="useDeviceBtn" class="secondary-btn" type="button" disabled>Use this device</button>
-      </div>
+      </section>
     </div>
 
     <div id="overlay" class="overlay show" aria-live="polite">
@@ -580,7 +700,9 @@
       expiresAt: 'spotify_car_ui_expires_at',
       codeVerifier: 'spotify_car_ui_code_verifier',
       oauthState: 'spotify_car_ui_oauth_state',
-      overlayDismissed: 'spotify_car_ui_overlay_dismissed'
+      overlayDismissed: 'spotify_car_ui_overlay_dismissed',
+      volume: 'spotify_car_ui_volume',
+      previousVolume: 'spotify_car_ui_previous_volume'
     };
 
     const SCOPES = [
@@ -624,6 +746,9 @@
       playPauseIcon: document.getElementById('playPauseIcon'),
       nextBtn: document.getElementById('nextBtn'),
       heartBtn: document.getElementById('heartBtn'),
+      muteBtn: document.getElementById('muteBtn'),
+      volumeIcon: document.getElementById('volumeIcon'),
+      volumeSlider: document.getElementById('volumeSlider'),
       activateBtn: document.getElementById('activateBtn'),
       useDeviceBtn: document.getElementById('useDeviceBtn'),
       overlay: document.getElementById('overlay'),
@@ -646,11 +771,13 @@
       likeRequest: null,
       currentUri: '',
       currentLiked: false,
-      likeType: 'track',
       seeking: false,
       timelineTimer: null,
       lastPlayerSnapshotAt: 0,
-      redirectMismatch: false
+      redirectMismatch: false,
+      volumeSyncPending: null,
+      volume: 0.8,
+      previousVolume: 0.8
     };
 
     function setSaved(key, value) { localStorage.setItem(key, value); }
@@ -741,6 +868,8 @@
       els.nextBtn.disabled = !enabled;
       els.timeline.disabled = !enabled;
       els.heartBtn.disabled = !enabled;
+      els.volumeSlider.disabled = !enabled || !state.player;
+      els.muteBtn.disabled = !enabled || !state.player;
     }
 
     function updateAuxButtons() {
@@ -769,6 +898,53 @@
         svg.setAttribute('fill', 'none');
         svg.setAttribute('stroke', 'currentColor');
       }
+    }
+
+    function setVolumeIcon(volume) {
+      if (volume <= 0.001) {
+        els.volumeIcon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line>';
+      } else if (volume < 0.5) {
+        els.volumeIcon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.5 8.5a5 5 0 0 1 0 7"></path>';
+      } else {
+        els.volumeIcon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.5 8.5a5 5 0 0 1 0 7"></path><path d="M18.5 5.5a9 9 0 0 1 0 13"></path>';
+      }
+    }
+
+    function setVolumeUI(volume, persist = true) {
+      const bounded = Math.max(0, Math.min(1, Number.isFinite(volume) ? volume : 0.8));
+      state.volume = bounded;
+      els.volumeSlider.value = String(Math.round(bounded * 100));
+      updateRangeVisual(els.volumeSlider);
+      setVolumeIcon(bounded);
+      if (persist) setSaved(STORAGE_KEYS.volume, String(bounded));
+      if (bounded > 0.001 && persist) setSaved(STORAGE_KEYS.previousVolume, String(bounded));
+    }
+
+    function loadSavedVolume() {
+      const savedVolume = Number(getSaved(STORAGE_KEYS.volume));
+      const savedPrevious = Number(getSaved(STORAGE_KEYS.previousVolume));
+      state.volume = Number.isFinite(savedVolume) && savedVolume >= 0 && savedVolume <= 1 ? savedVolume : 0.8;
+      state.previousVolume = Number.isFinite(savedPrevious) && savedPrevious > 0 && savedPrevious <= 1 ? savedPrevious : Math.max(state.volume, 0.8);
+      setVolumeUI(state.volume, false);
+    }
+
+    async function syncPlayerVolume(volume) {
+      if (!state.player) return;
+      if (state.volumeSyncPending) return state.volumeSyncPending = state.volumeSyncPending.then(() => state.player.setVolume(volume)).catch(() => state.player.setVolume(volume));
+      state.volumeSyncPending = state.player.setVolume(volume)
+        .catch((error) => {
+          setStatus(`Volume failed: ${error.message}`, 'error');
+        })
+        .finally(() => {
+          state.volumeSyncPending = null;
+        });
+      return state.volumeSyncPending;
+    }
+
+    async function applyVolume(volume) {
+      setVolumeUI(volume);
+      if (volume > 0.001) state.previousVolume = volume;
+      if (state.player) await syncPlayerVolume(state.volume);
     }
 
     function clearTrack() {
@@ -1076,7 +1252,7 @@
             setStatus(`Token error: ${error.message}`, 'error');
           }
         },
-        volume: 0.8,
+        volume: state.volume,
         enableMediaSession: true
       });
 
@@ -1084,7 +1260,9 @@
         state.deviceId = device_id;
         state.ready = true;
         updateAuxButtons();
+        updateTransportButtons(true);
         setStatus('Spotify ready', 'good');
+        await syncPlayerVolume(state.volume);
 
         if (!state.activated) {
           const dismissed = getSaved(STORAGE_KEYS.overlayDismissed) === '1';
@@ -1222,6 +1400,25 @@
       els.timeline.addEventListener('change', finishSeek);
       els.timeline.addEventListener('pointerup', finishSeek);
       els.timeline.addEventListener('touchend', finishSeek);
+
+      els.volumeSlider.addEventListener('input', () => {
+        const volume = Number(els.volumeSlider.value) / 100;
+        setVolumeUI(volume);
+      });
+
+      const finishVolume = async () => {
+        const volume = Number(els.volumeSlider.value) / 100;
+        await applyVolume(volume);
+      };
+
+      els.volumeSlider.addEventListener('change', finishVolume);
+      els.volumeSlider.addEventListener('pointerup', finishVolume);
+      els.volumeSlider.addEventListener('touchend', finishVolume);
+
+      els.muteBtn.addEventListener('click', async () => {
+        const target = state.volume > 0.001 ? 0 : (state.previousVolume > 0.001 ? state.previousVolume : 0.8);
+        await applyVolume(target);
+      });
     }
 
     window.onSpotifyWebPlaybackSDKReady = () => {
@@ -1230,8 +1427,10 @@
     };
 
     (async function init() {
+      loadSavedVolume();
       clearTrack();
       updateRangeVisual(els.timeline);
+      updateRangeVisual(els.volumeSlider);
       attachEvents();
       updateAuxButtons();
       startProgressLoop();
