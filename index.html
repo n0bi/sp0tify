@@ -358,7 +358,7 @@
     }
 
     .ctrl.shuffle svg {
-      transform: translateY(2px);
+      transform: translateY(4px);
       transform-origin: center;
     }
 
@@ -1117,7 +1117,8 @@
       playbackDeviceName: '',
       playbackDeviceSupportsVolume: true,
       devices: [],
-      playbackPollTimer: null
+      playbackPollTimer: null,
+      gradientArtSrc: ''
     };
 
     const gesture = {
@@ -1268,28 +1269,15 @@
       };
     }
 
-    function hashString(input = '') {
-      let hash = 0;
-      for (let i = 0; i < input.length; i++) {
-        hash = ((hash << 5) - hash) + input.charCodeAt(i);
-        hash |= 0;
-      }
-      return Math.abs(hash);
-    }
 
-    function setBackgroundGradient(colors, variant = 0) {
+    function setBackgroundGradient(colors) {
       const screen = els.screen;
       if (!screen) return;
-      const primary = tuneColor(colors.primary, { saturationBoost: 1.25, lightness: 0.26 });
-      const secondary = tuneColor(colors.secondary, { saturationBoost: 1.15, lightness: 0.22 });
-      const tertiary = tuneColor(colors.tertiary, { saturationBoost: 1.08, lightness: 0.18 });
-      const accent = tuneColor(colors.accent, { saturationBoost: 1.3, lightness: 0.32 });
-      const gradients = [
-        `radial-gradient(circle at 16% 18%, ${rgbaFromColor(primary, 0.34)} 0%, transparent 44%), linear-gradient(160deg, ${rgbaFromColor(secondary, 0.2)} 0%, #0a0b0d 72%)`,
-        `radial-gradient(circle at 84% 18%, ${rgbaFromColor(accent, 0.3)} 0%, transparent 42%), linear-gradient(180deg, ${rgbaFromColor(primary, 0.16)} 0%, #09090b 76%)`,
-        `radial-gradient(circle at 50% 0%, ${rgbaFromColor(tertiary, 0.28)} 0%, transparent 48%), linear-gradient(150deg, ${rgbaFromColor(primary, 0.18)} 0%, #09090b 78%)`
-      ];
-      screen.style.background = gradients[variant % gradients.length].replace(/\s+/g, ' ');
+      const primary = tuneColor(colors.primary, { saturationBoost: 1.22, lightness: 0.24 });
+      const secondary = tuneColor(colors.secondary, { saturationBoost: 1.08, lightness: 0.18 });
+      const accent = tuneColor(colors.accent, { saturationBoost: 1.18, lightness: 0.3 });
+      const gradient = `radial-gradient(circle at 18% 16%, ${rgbaFromColor(accent, 0.26)} 0%, transparent 42%), linear-gradient(160deg, ${rgbaFromColor(primary, 0.16)} 0%, ${rgbaFromColor(secondary, 0.12)} 38%, #09090b 78%)`;
+      screen.style.background = gradient.replace(/\s+/g, ' ');
     }
 
     function setDefaultBackground() {
@@ -1298,10 +1286,10 @@
         secondary: { r: 58, g: 104, b: 150 },
         tertiary: { r: 104, g: 74, b: 82 },
         accent: { r: 140, g: 98, b: 165 }
-      }, 0);
+      });
     }
 
-    async function extractPaletteFromImage(src, variantHint = '') {
+    async function extractPaletteFromImage(src) {
       const canvas = els.paletteCanvas;
       const ctx = canvas?.getContext('2d', { willReadFrequently: true });
       if (!canvas || !ctx || !src) {
@@ -1354,7 +1342,8 @@
           secondary: saturatedMix,
           tertiary: darkMix,
           accent: brightMix
-        }, hashString(variantHint || src));
+        });
+        state.gradientArtSrc = src;
       } catch (error) {
         console.warn('Background palette extraction failed', error);
         setDefaultBackground();
@@ -2382,7 +2371,9 @@
 
       els.albumArt.src = image;
       els.bgArt.src = image;
-      extractPaletteFromImage(image, current.uri || current.name || artist || contextName);
+      if (image && image !== state.gradientArtSrc) {
+        extractPaletteFromImage(image);
+      }
       els.trackName.textContent = current.name || 'Unknown track';
       els.artistName.textContent = artist || 'Unknown artist';
       els.metaTop.textContent = contextName;
