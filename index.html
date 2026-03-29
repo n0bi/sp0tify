@@ -6,141 +6,498 @@
   <title>sp0tify // dos</title>
   <style>
     :root {
-      --bg: #000;
-      --fg: #e8ffe8;
+      --bg: #000000;
+      --fg: #f4fff4;
+      --line: #88b8ff;
+      --line-soft: rgba(136, 184, 255, 0.42);
       --green: #39ff14;
-      --cyan: #4ad9d9;
-      --yellow: #f0e04a;
-      --red: #ff5757;
-      --muted: #8fbf8f;
-      --panel: #031403;
+      --cyan: #58d7ff;
+      --yellow: #ffe45c;
+      --red: #ff6a6a;
+      --muted: #b7cfd8;
+      --muted-2: #8ca2aa;
+      --panel: #000000;
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-right: env(safe-area-inset-right, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
       --safe-left: env(safe-area-inset-left, 0px);
     }
+
     * { box-sizing: border-box; }
-    html, body { margin: 0; min-height: 100%; background: #000; color: var(--fg); font-family: "Courier New", "Lucida Console", monospace; overflow: hidden; }
-    body { min-height: 100vh; min-height: 100dvh; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: "Courier New", "Lucida Console", monospace;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+    }
+
     button, input { font: inherit; }
-    .screen { width: 100vw; min-height: 100vh; min-height: 100dvh; background: #000; color: var(--fg); padding: calc(8px + var(--safe-top)) calc(10px + var(--safe-right)) calc(14px + var(--safe-bottom)) calc(10px + var(--safe-left)); display: grid; grid-template-rows: auto 1fr auto auto auto; gap: 10px; }
-    .ascii-rule { color: var(--cyan); white-space: nowrap; overflow: hidden; text-overflow: clip; font-size: clamp(11px, 1.1vw, 15px); line-height: 1; letter-spacing: 0; user-select: none; }
-    .terminal { display: grid; grid-template-columns: minmax(220px, 32vw) 1fr; gap: 18px; min-height: 0; align-items: start; }
-    .panel { background: transparent; min-width: 0; }
-    .ascii-art-wrap { display: grid; gap: 6px; align-content: start; }
-    .ascii-caption, .meta-top, .time-row, .status-line { font-size: clamp(12px, 1.2vw, 16px); color: var(--muted); }
-    .ascii-art { margin: 0; padding: 10px 12px; min-height: 22ch; background: rgba(3, 20, 3, 0.55); color: var(--green); border: 1px solid rgba(57,255,20,0.24); white-space: pre; font-size: clamp(7px, 0.58vw, 10px); line-height: 1; letter-spacing: 0.05em; overflow: hidden; text-shadow: 0 0 5px rgba(57,255,20,0.25); }
-    .meta-pane { display: grid; gap: 8px; align-content: start; min-width: 0; }
-    .meta-top { color: var(--cyan); text-transform: uppercase; }
-    .track-name { margin: 0; color: var(--fg); font-size: clamp(22px, 3vw, 42px); font-weight: 700; line-height: 1.05; letter-spacing: 0; word-break: break-word; }
-    .artist-name { margin: 0; color: var(--fg); font-size: clamp(15px, 1.8vw, 26px); line-height: 1.2; }
-    .status-line { color: var(--yellow); min-height: 1.2em; }
+
+    .screen {
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding:
+        calc(8px + var(--safe-top))
+        calc(10px + var(--safe-right))
+        calc(12px + var(--safe-bottom))
+        calc(10px + var(--safe-left));
+      display: grid;
+      place-items: center;
+      background: #000000;
+      color: var(--fg);
+    }
+
+    .dash {
+      width: min(100%, 980px);
+      display: grid;
+      gap: 10px;
+    }
+
+    .terminal-box {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      min-width: 0;
+    }
+
+    .main-box {
+      padding: 10px 12px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .box-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-width: 0;
+      flex-wrap: wrap;
+    }
+
+    .box-kicker,
+    .section-title,
+    .info-label,
+    .time-row,
+    .status-line,
+    .mini-line,
+    .control-note {
+      font-size: clamp(11px, 1.55vw, 15px);
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .box-kicker,
+    .section-title,
+    .info-label {
+      color: var(--cyan);
+      text-transform: uppercase;
+    }
+
+    .track-name {
+      margin: 0;
+      color: var(--fg);
+      font-size: clamp(19px, 4.6vw, 34px);
+      line-height: 1.08;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .artist-name,
+    .album-name,
+    .mini-line {
+      margin: 0;
+      color: var(--fg);
+      font-size: clamp(12px, 2vw, 18px);
+      line-height: 1.22;
+      word-break: break-word;
+    }
+
+    .album-name,
+    .mini-line { color: var(--muted); }
+
+    .status-line {
+      color: var(--yellow);
+      min-height: 1.2em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     .status-line[data-tone="good"] { color: var(--green); }
     .status-line[data-tone="warn"] { color: var(--yellow); }
     .status-line[data-tone="error"] { color: var(--red); }
-    .hidden-source, .sr-only { position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; opacity: 0 !important; pointer-events: none !important; }
-    .controls-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-    .ctrl, .secondary-btn, .overlay-btn, .device-tool-btn, .device-item, .icon-mini-btn, .volume-btn { appearance: none; border: 1px solid rgba(232,255,232,0.25); background: rgba(3,20,3,0.55); color: var(--fg); padding: 8px 10px; min-height: 40px; border-radius: 0; cursor: pointer; box-shadow: none; text-transform: uppercase; letter-spacing: 0; }
-    .ctrl:hover, .secondary-btn:hover, .overlay-btn:hover, .device-tool-btn:hover, .device-item:hover, .icon-mini-btn:hover, .volume-btn:hover { background: rgba(10,32,10,0.9); }
-    .ctrl:disabled, .secondary-btn:disabled, .overlay-btn:disabled, .device-tool-btn:disabled, .device-item:disabled, .volume-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-    .ctrl.active, .secondary-btn.active, .device-item.active { color: var(--green); border-color: rgba(57,255,20,0.55); }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
+    }
+
+    .info-cell {
+      min-width: 0;
+      padding: 8px 10px;
+      display: grid;
+      gap: 4px;
+      border-right: 1px solid var(--line);
+    }
+
+    .info-cell:last-child { border-right: 0; }
+
+    .info-value {
+      color: var(--green);
+      font-size: clamp(12px, 1.8vw, 18px);
+      line-height: 1.16;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .control-box {
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .ctrl,
+    .secondary-btn,
+    .overlay-btn,
+    .device-tool-btn,
+    .device-item,
+    .icon-mini-btn,
+    .volume-btn {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: #000000;
+      color: var(--fg);
+      min-height: 42px;
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 0;
+      cursor: pointer;
+      box-shadow: none;
+      letter-spacing: 0;
+      text-transform: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      touch-action: manipulation;
+    }
+
+    .ctrl:hover,
+    .secondary-btn:hover,
+    .overlay-btn:hover,
+    .device-tool-btn:hover,
+    .device-item:hover,
+    .icon-mini-btn:hover,
+    .volume-btn:hover {
+      background: rgba(17, 23, 34, 0.9);
+    }
+
+    .ctrl:disabled,
+    .secondary-btn:disabled,
+    .overlay-btn:disabled,
+    .device-tool-btn:disabled,
+    .device-item:disabled,
+    .volume-btn:disabled {
+      opacity: 0.38;
+      cursor: not-allowed;
+    }
+
+    .ctrl.active,
+    .secondary-btn.active,
+    .device-item.active {
+      color: var(--green);
+      border-color: var(--green);
+    }
+
     .ctrl.recommend.loading { color: var(--yellow); }
-    .transport-wrap { display: grid; gap: 8px; }
-    .volume-wrap { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center; }
-    .ascii-slider { position: relative; min-height: 40px; display: flex; align-items: center; padding: 0 10px; border: 1px solid rgba(232,255,232,0.25); background: rgba(3,20,3,0.55); overflow: hidden; }
-    .ascii-slider input[type="range"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; margin: 0; }
-    .bar-text { white-space: pre; overflow: hidden; font-size: clamp(12px, 1vw, 16px); color: var(--green); text-overflow: clip; width: 100%; }
-    .timeline-section { display: grid; gap: 6px; min-width: 0; }
-    .time-row { display: flex; justify-content: space-between; gap: 12px; color: var(--yellow); }
-    .overlay, .device-sheet { position: fixed; inset: 0; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; padding: 18px; z-index: 10; }
-    .overlay.show, .device-sheet.show { display: flex; }
-    .overlay-card, .device-card { width: min(100%, 700px); background: #000; border: 1px solid rgba(57,255,20,0.35); padding: 16px; display: grid; gap: 12px; }
-    .overlay-title { margin: 0; color: var(--cyan); font-size: clamp(18px, 2vw, 28px); }
-    .overlay-copy { margin: 0; color: var(--fg); font-size: clamp(14px, 1.2vw, 18px); line-height: 1.4; }
-    .overlay-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-    .device-toolbar { display: flex; justify-content: flex-end; gap: 8px; }
-    .device-list { display: grid; gap: 8px; max-height: min(60vh, 500px); overflow: auto; }
-    .device-item { text-align: left; display: grid; gap: 4px; }
-    .device-item-head { display: flex; justify-content: space-between; gap: 8px; color: var(--fg); }
-    .device-item-meta { display: flex; flex-wrap: wrap; gap: 6px; color: var(--muted); font-size: 12px; }
-    .device-chip { padding: 0 6px; border: 1px solid rgba(232,255,232,0.15); }
-    .device-chip.good { color: var(--green); border-color: rgba(57,255,20,0.4); }
+
+    .control-note {
+      color: var(--muted-2);
+      padding-inline: 2px;
+    }
+
+    .timeline-box {
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .time-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      color: var(--yellow);
+    }
+
+    .ascii-slider {
+      position: relative;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      background: #000000;
+      overflow: hidden;
+    }
+
+    .ascii-slider input[type="range"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+      margin: 0;
+    }
+
+    .bar-text {
+      width: 100%;
+      white-space: pre;
+      overflow: hidden;
+      text-overflow: clip;
+      color: var(--green);
+      font-size: clamp(11px, 1.55vw, 16px);
+      line-height: 1;
+    }
+
+    .status-mini { color: var(--muted); }
+
+    .overlay,
+    .device-sheet {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.94);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 10;
+    }
+
+    .overlay.show,
+    .device-sheet.show { display: flex; }
+
+    .overlay-card,
+    .device-card {
+      width: min(100%, 700px);
+      background: #000000;
+      border: 1px solid var(--line);
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .overlay-title {
+      margin: 0;
+      color: var(--cyan);
+      font-size: clamp(18px, 2vw, 28px);
+    }
+
+    .overlay-copy {
+      margin: 0;
+      color: var(--fg);
+      font-size: clamp(14px, 1.2vw, 18px);
+      line-height: 1.4;
+    }
+
+    .overlay-actions,
+    .device-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .device-toolbar { justify-content: flex-end; }
+
+    .device-list {
+      display: grid;
+      gap: 8px;
+      max-height: min(60vh, 500px);
+      overflow: auto;
+    }
+
+    .device-item {
+      text-align: left;
+      display: grid;
+      gap: 4px;
+      justify-content: stretch;
+    }
+
+    .device-item-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--fg);
+    }
+
+    .device-item-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .device-chip {
+      padding: 0 6px;
+      border: 1px solid var(--line-soft);
+    }
+
+    .device-chip.good {
+      color: var(--green);
+      border-color: var(--green);
+    }
+
+    .signout-wrap {
+      position: fixed;
+      right: calc(10px + var(--safe-right));
+      bottom: calc(10px + var(--safe-bottom));
+      z-index: 11;
+    }
+
+    .hidden-source,
+    .sr-only {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      overflow: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
     .hidden { display: none !important; }
-    .signout-wrap { display: flex; justify-content: flex-end; }
     .icon-mini-btn[hidden] { display: none !important; }
-    @media (max-width: 900px) {
-      .terminal { grid-template-columns: 1fr; }
-      .ascii-art { min-height: 18ch; }
+
+    @media (max-width: 860px) {
+      .controls-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .info-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .info-cell:nth-child(2) { border-right: 0; }
+      .info-cell:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
+    }
+
+    @media (max-width: 560px) {
+      .screen {
+        place-items: stretch;
+        padding:
+          calc(8px + var(--safe-top))
+          calc(8px + var(--safe-right))
+          calc(10px + var(--safe-bottom))
+          calc(8px + var(--safe-left));
+      }
+
+      .dash { width: 100%; }
+      .controls-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .ctrl,
+      .secondary-btn,
+      .volume-btn { min-height: 40px; padding-inline: 6px; }
+      .bar-text { font-size: 12px; }
+      .box-head { align-items: flex-start; }
     }
   </style>
 </head>
 <body>
-  <main id="screen" class="screen" aria-label="Spotify remote dashboard ASCII edition">
-    <div class="ascii-rule">........................................................................................................................................................................</div>
+  <main id="screen" class="screen" aria-label="Spotify remote dashboard DOS edition">
+    <section class="dash">
+      <section id="gestureZone" class="terminal-box main-box" aria-live="polite">
+        <div class="box-head">
+          <span id="metaTop" class="box-kicker">SP0TIFY // DOS MODE</span>
+          <span id="statusText" class="status-line" data-tone="warn">[ WARN ] Waiting for Spotify</span>
+        </div>
+        <h1 id="trackName" class="track-name">Nothing playing</h1>
+        <p id="artistName" class="artist-name">Sign in and start playback</p>
+        <p id="albumName" class="album-name">ALBUM // --</p>
+      </section>
 
-    <section class="terminal">
-      <div class="panel ascii-art-wrap">
-        <div class="ascii-caption">ASCII // ALBUM VIEW</div>
-        <pre id="asciiArt" class="ascii-art">loading...</pre>
-        <img id="albumArt" class="hidden-source" alt="" aria-hidden="true" />
-      </div>
+      <section class="terminal-box info-grid" aria-label="Track details">
+        <div class="info-cell">
+          <span class="info-label">LIST</span>
+          <span id="contextText" class="info-value">Spotify</span>
+        </div>
+        <div class="info-cell">
+          <span class="info-label">ALBM</span>
+          <span id="albumInfo" class="info-value">--</span>
+        </div>
+        <div class="info-cell">
+          <span class="info-label">DEVC</span>
+          <span id="deviceInfo" class="info-value">No device</span>
+        </div>
+        <div class="info-cell">
+          <span class="info-label">STAT</span>
+          <span id="statusMini" class="info-value">Waiting</span>
+        </div>
+      </section>
 
-      <section class="panel meta-pane" aria-live="polite">
-        <div id="gestureZone" class="meta-pane">
-          <div id="metaTop" class="meta-top">SP0TIFY // DOS MODE</div>
-          <h1 id="trackName" class="track-name">Nothing playing</h1>
-          <p id="artistName" class="artist-name">Sign in and start playback</p>
-          <div id="statusText" class="status-line" data-tone="warn">[WARN] Waiting for Spotify</div>
+      <section class="terminal-box control-box" aria-label="Playback controls and device controls">
+        <div class="controls-grid" role="group" aria-label="Playback controls">
+          <button id="shuffleBtn" class="ctrl shuffle" type="button" aria-label="Shuffle" title="Shuffle" disabled>[  SHF  ]</button>
+          <button id="recommendBtn" class="ctrl recommend" type="button" aria-label="Queue a recommended track" title="Queue a recommended track" disabled>[  REC  ]</button>
+          <button id="prevBtn" class="ctrl prev" type="button" aria-label="Previous track" disabled>[  |<<  ]</button>
+          <button id="playPauseBtn" class="ctrl play" type="button" aria-label="Play or pause" disabled><span id="playPauseIcon">[  ||  ]</span></button>
+          <button id="nextBtn" class="ctrl next" type="button" aria-label="Next track" disabled>[  >>|  ]</button>
+          <button id="heartBtn" class="ctrl heart" type="button" aria-label="Save to library" disabled>[  SAVE  ]</button>
+          <button id="muteBtn" class="volume-btn" type="button" aria-label="Mute or restore volume"><span id="volumeIcon">[  VOL+  ]</span></button>
+          <button id="audioBtn" class="secondary-btn audio-btn" type="button" aria-label="Audio" title="Audio" disabled>[  AUDIO  ]</button>
+          <button id="useDeviceBtn" class="secondary-btn" type="button" aria-label="Use this device" title="Use this device" disabled>[  THIS  ]</button>
+          <button id="connectRemoteBtn" class="secondary-btn remote-btn" type="button" aria-label="Choose Spotify Connect device" title="Choose Spotify Connect device" disabled>[  CONN  ]</button>
+          <button id="fullscreenBtn" class="secondary-btn" type="button" aria-label="Toggle full screen" title="Toggle full screen"><span id="fullscreenIcon">[  FULL  ]</span></button>
+          <div id="statusLive" class="sr-only" aria-live="polite">Waiting for Spotify</div>
+        </div>
+        <div class="control-note">Text-only interface. No album art. Mobile-ready Spotify remote.</div>
+      </section>
+
+      <section class="terminal-box timeline-box" aria-label="Track timeline and volume">
+        <div class="box-head">
+          <span class="section-title">PLAYBACK</span>
+          <div class="time-row">
+            <span id="currentTime">0:00</span>
+            <span id="totalTime">0:00</span>
+          </div>
+        </div>
+        <div class="ascii-slider">
+          <div id="timelineAscii" class="bar-text">&lt; O................................................................. &gt;</div>
+          <input id="timeline" type="range" min="0" max="1000" value="0" step="1" aria-label="Track timeline" />
+        </div>
+        <div class="box-head">
+          <span class="section-title">VOLUME</span>
+          <span id="volumeText" class="mini-line">080%</span>
+        </div>
+        <div class="ascii-slider">
+          <div id="volumeAscii" class="bar-text">VOL 080% &lt; #............................ &gt;</div>
+          <input id="volumeSlider" type="range" min="0" max="100" value="80" step="1" aria-label="Volume" />
         </div>
       </section>
     </section>
-
-    <section class="transport-wrap" aria-label="Playback controls and volume">
-      <div class="controls-row" role="group" aria-label="Playback controls">
-        <button id="shuffleBtn" class="ctrl shuffle" type="button" aria-label="Shuffle" title="Shuffle" disabled>[SHF]</button>
-        <button id="recommendBtn" class="ctrl recommend" type="button" aria-label="Queue a recommended track" title="Queue a recommended track" disabled>[REC]</button>
-        <button id="prevBtn" class="ctrl prev" type="button" aria-label="Previous track" disabled>[|<<]</button>
-        <button id="playPauseBtn" class="ctrl play" type="button" aria-label="Play or pause" disabled><span id="playPauseIcon">[||]</span></button>
-        <button id="nextBtn" class="ctrl next" type="button" aria-label="Next track" disabled>[>>|]</button>
-        <button id="heartBtn" class="ctrl heart" type="button" aria-label="Save to library" disabled>[SAVE]</button>
-        <button id="muteBtn" class="volume-btn" type="button" aria-label="Mute or restore volume"><span id="volumeIcon">[VOL+]</span></button>
-        <button id="audioBtn" class="secondary-btn audio-btn" type="button" aria-label="Audio" title="Audio" disabled>[AUDIO]</button>
-        <button id="useDeviceBtn" class="secondary-btn" type="button" aria-label="Use this device" title="Use this device" disabled>[THIS]</button>
-        <button id="connectRemoteBtn" class="secondary-btn remote-btn" type="button" aria-label="Choose Spotify Connect device" title="Choose Spotify Connect device" disabled>[CONN]</button>
-        <button id="fullscreenBtn" class="secondary-btn" type="button" aria-label="Toggle full screen" title="Toggle full screen"><span id="fullscreenIcon">[FULL]</span></button>
-        <div id="statusLive" class="sr-only" aria-live="polite">Waiting for Spotify</div>
-      </div>
-
-      <div class="volume-wrap" aria-label="Volume controls">
-        <div class="ascii-slider">
-          <div id="volumeAscii" class="bar-text">VOL 080% <#..........................></div>
-          <input id="volumeSlider" type="range" min="0" max="100" value="80" step="1" aria-label="Volume" />
-        </div>
-      </div>
-    </section>
-
-    <section class="timeline-section" aria-label="Track timeline and progress">
-      <div class="time-row">
-        <span id="currentTime">0:00</span>
-        <span id="totalTime">0:00</span>
-      </div>
-      <div class="ascii-slider">
-        <div id="timelineAscii" class="bar-text"><O..................................................................................></div>
-        <input id="timeline" type="range" min="0" max="1000" value="0" step="1" aria-label="Track timeline" />
-      </div>
-    </section>
-
-    <div class="ascii-rule">&lt;....................................................................................................................................................................&gt;</div>
 
     <div id="overlay" class="overlay show" aria-live="polite">
       <div class="overlay-card">
         <h2 id="overlayTitle" class="overlay-title">OPEN SP0TIFY</h2>
         <p id="overlayCopy" class="overlay-copy">Sign in once. This browser stays ready until you sign out, clear site data, or revoke the app.</p>
         <div class="overlay-actions">
-          <button id="loginBtn" class="overlay-btn primary" type="button">[SIGN IN]</button>
-          <button id="setupAudioBtn" class="overlay-btn hidden" type="button">[ACTIVATE AUDIO]</button>
-          <button id="setupDeviceBtn" class="overlay-btn hidden" type="button">[USE THIS DEVICE]</button>
-          <button id="closeOverlayBtn" class="overlay-btn hidden" type="button">[CLOSE]</button>
+          <button id="loginBtn" class="overlay-btn primary" type="button">[  SIGN IN  ]</button>
+          <button id="setupAudioBtn" class="overlay-btn hidden" type="button">[  AUDIO  ]</button>
+          <button id="setupDeviceBtn" class="overlay-btn hidden" type="button">[  THIS DEVICE  ]</button>
+          <button id="closeOverlayBtn" class="overlay-btn hidden" type="button">[  CLOSE  ]</button>
         </div>
       </div>
     </div>
@@ -148,8 +505,8 @@
     <div id="deviceSheet" class="device-sheet" aria-hidden="true">
       <div class="device-card" role="dialog" aria-modal="true" aria-label="Spotify Connect devices">
         <div class="device-toolbar">
-          <button id="refreshDevicesBtn" class="device-tool-btn refresh-btn" type="button" aria-label="Refresh devices" title="Refresh devices">[REFRESH]</button>
-          <button id="closeDevicesBtn" class="device-tool-btn" type="button" aria-label="Close device list" title="Close">[CLOSE]</button>
+          <button id="refreshDevicesBtn" class="device-tool-btn refresh-btn" type="button" aria-label="Refresh devices" title="Refresh devices">[  REFRESH  ]</button>
+          <button id="closeDevicesBtn" class="device-tool-btn" type="button" aria-label="Close device list" title="Close">[  CLOSE  ]</button>
         </div>
         <div id="deviceList" class="device-list" aria-live="polite"></div>
       </div>
@@ -157,9 +514,10 @@
   </main>
 
   <div class="signout-wrap">
-    <button id="signOutMiniBtn" class="icon-mini-btn hidden" type="button" aria-label="Sign out" hidden>[SIGN OUT]</button>
+    <button id="signOutMiniBtn" class="icon-mini-btn hidden" type="button" aria-label="Sign out" hidden>[  SIGN OUT  ]</button>
   </div>
 
+  <img id="albumArt" class="hidden-source" alt="" aria-hidden="true" />
   <img id="bgArt" class="hidden-source" alt="" aria-hidden="true" />
   <canvas id="paletteCanvas" class="hidden-source" width="32" height="32" aria-hidden="true"></canvas>
 
@@ -205,6 +563,12 @@
           metaTop: document.getElementById('metaTop'),
           trackName: document.getElementById('trackName'),
           artistName: document.getElementById('artistName'),
+          albumName: document.getElementById('albumName'),
+          contextText: document.getElementById('contextText'),
+          albumInfo: document.getElementById('albumInfo'),
+          deviceInfo: document.getElementById('deviceInfo'),
+          statusMini: document.getElementById('statusMini'),
+          volumeText: document.getElementById('volumeText'),
           currentTime: document.getElementById('currentTime'),
           totalTime: document.getElementById('totalTime'),
           timeline: document.getElementById('timeline'),
@@ -236,7 +600,6 @@
           closeDevicesBtn: document.getElementById('closeDevicesBtn')
         };
 
-        els.asciiArt = document.getElementById('asciiArt');
         els.timelineAscii = document.getElementById('timelineAscii');
         els.volumeAscii = document.getElementById('volumeAscii');
         els.statusText = document.getElementById('statusText');
@@ -349,89 +712,53 @@
           return Math.max(min, Math.min(max, value));
         }
 
-    
+        function boxLabel(label) {
+          return `[  ${String(label)}  ]`;
+        }
+
+        function getTimelineBarLength() {
+          const width = window.innerWidth || 1024;
+          if (width <= 420) return 30;
+          if (width <= 560) return 38;
+          if (width <= 820) return 52;
+          return 66;
+        }
+
+        function getVolumeBarLength() {
+          const width = window.innerWidth || 1024;
+          if (width <= 420) return 16;
+          if (width <= 560) return 20;
+          if (width <= 820) return 24;
+          return 28;
+        }
+
+        function updateDeviceInfoText(name = '') {
+          if (els.deviceInfo) els.deviceInfo.textContent = name || 'No device';
+        }
+
         function rgbaFromColor(color, alpha) {
           return `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`;
         }
 
-        function renderPlaceholderArt(label = 'NO TRACK') {
-          if (!els.asciiArt) return;
-          const lines = [
-            '............................',
-            '.                          .',
-            '.        SP0TIFY //        .',
-            '.                          .',
-            `.   ${String(label).slice(0,16).padEnd(16, ' ')}   .`,
-            '.                          .',
-            '.    [ PLAY SOMETHING ]    .',
-            '.                          .',
-            '............................'
-          ];
-          els.asciiArt.textContent = lines.join('\n');
+        function renderPlaceholderArt() {
+          return;
         }
 
-        async function renderAsciiArt(src) {
-          if (!els.asciiArt) return;
-          if (!src) {
-            renderPlaceholderArt('NO TRACK');
-            return;
-          }
-          try {
-            const img = new Image();
-            img.crossOrigin = 'anonymous';
-            img.decoding = 'async';
-            img.referrerPolicy = 'no-referrer';
-            await new Promise((resolve, reject) => {
-              img.onload = resolve;
-              img.onerror = reject;
-              img.src = src;
-            });
-            const canvas = els.paletteCanvas;
-            const ctx = canvas?.getContext('2d', { willReadFrequently: true });
-            if (!canvas || !ctx) {
-              renderPlaceholderArt('NO CANVAS');
-              return;
-            }
-            const cols = 28;
-            const rows = 20;
-            canvas.width = cols;
-            canvas.height = rows;
-            ctx.clearRect(0, 0, cols, rows);
-            ctx.drawImage(img, 0, 0, cols, rows);
-            const data = ctx.getImageData(0, 0, cols, rows).data;
-            const chars = ' .,:;-=+*#%@';
-            const out = [];
-            for (let y = 0; y < rows; y++) {
-              let line = '';
-              for (let x = 0; x < cols; x++) {
-                const i = (y * cols + x) * 4;
-                const r = data[i];
-                const g = data[i + 1];
-                const b = data[i + 2];
-                const a = data[i + 3] / 255;
-                const luminance = ((0.299 * r) + (0.587 * g) + (0.114 * b)) * a;
-                const idx = Math.max(0, Math.min(chars.length - 1, Math.round((luminance / 255) * (chars.length - 1))));
-                line += chars[idx];
-              }
-              out.push(line);
-            }
-            els.asciiArt.textContent = out.join('\n');
-          } catch (error) {
-            renderPlaceholderArt('ART ERROR');
-          }
+        async function renderAsciiArt() {
+          return;
         }
 
         function makeAsciiBar(percent, length, marker = 'O') {
           const safePercent = Math.max(0, Math.min(100, Number.isFinite(percent) ? percent : 0));
-          const usable = Math.max(8, length - 2);
+          const usable = Math.max(8, length);
           const markerIndex = Math.max(0, Math.min(usable - 1, Math.round((safePercent / 100) * (usable - 1))));
-          let line = '<';
+          let line = '< ';
           for (let i = 0; i < usable; i++) {
             if (i === markerIndex) line += marker;
             else if (i < markerIndex) line += '=';
             else line += '.';
           }
-          line += '>';
+          line += ' >';
           return line;
         }
 
@@ -441,28 +768,29 @@
             const max = Number(els.timeline.max || 1000);
             const value = Number(els.timeline.value || 0);
             const percent = max > min ? ((value - min) / (max - min)) * 100 : 0;
-            els.timelineAscii.textContent = makeAsciiBar(percent, 84, 'O');
+            els.timelineAscii.textContent = makeAsciiBar(percent, getTimelineBarLength(), 'O');
           }
           if (els.volumeAscii && els.volumeSlider) {
             const value = Number(els.volumeSlider.value || 0);
             const percent = Math.max(0, Math.min(100, value));
-            els.volumeAscii.textContent = `VOL ${String(Math.round(percent)).padStart(3, '0')}% ${makeAsciiBar(percent, 28, '#')}`;
+            const rounded = Math.round(percent);
+            els.volumeAscii.textContent = `VOL ${String(rounded).padStart(3, '0')}% ${makeAsciiBar(percent, getVolumeBarLength(), '#')}`;
+            if (els.volumeText) els.volumeText.textContent = `${String(rounded).padStart(3, '0')}%`;
           }
         }
 
-        function setBackgroundGradient(colors) {
+        function setBackgroundGradient() {
           if (els.screen) els.screen.style.background = '#000000';
         }
 
         function setDefaultBackground() {
           if (els.screen) els.screen.style.background = '#000000';
-          renderPlaceholderArt('NO TRACK');
         }
 
-        async function extractPaletteFromImage(src) {
+        async function extractPaletteFromImage() {
           if (els.screen) els.screen.style.background = '#000000';
-          await renderAsciiArt(src);
         }
+
 
         function normalizeUrl(rawUrl) {
 
@@ -476,9 +804,10 @@
     function setStatus(message, tone = 'warn') {
       if (els.statusLive) els.statusLive.textContent = message;
       if (els.statusText) {
-        els.statusText.textContent = `[${tone.toUpperCase()}] ${message}`;
+        els.statusText.textContent = `[ ${tone.toUpperCase()} ] ${message}`;
         els.statusText.dataset.tone = tone;
       }
+      if (els.statusMini) els.statusMini.textContent = message;
       if (els.audioBtn) {
         els.audioBtn.dataset.statusTone = tone;
         els.audioBtn.title = message;
@@ -490,7 +819,7 @@
           if (!els.setupAudioBtn || !els.setupDeviceBtn || !els.closeOverlayBtn) return;
           els.setupAudioBtn.disabled = !state.player;
           els.setupDeviceBtn.disabled = !state.deviceId;
-          els.setupAudioBtn.textContent = state.activated ? 'Audio ready' : 'Activate audio';
+          els.setupAudioBtn.textContent = state.activated ? boxLabel('AUDIO ON') : boxLabel('AUDIO');
         }
 
         function setOverlay(mode) {
@@ -503,11 +832,11 @@
           els.closeOverlayBtn.classList.add('hidden');
 
           if (mode === 'signin') {
-            els.overlayTitle.textContent = 'Open sp0tify';
+            els.overlayTitle.textContent = 'OPEN SP0TIFY';
             els.overlayCopy.textContent = 'Sign in once, then this browser stays ready for quick access.';
             els.loginBtn.classList.remove('hidden');
           } else if (mode === 'setup') {
-            els.overlayTitle.textContent = 'Set up playback';
+            els.overlayTitle.textContent = 'SET UP PLAYBACK';
             els.overlayCopy.textContent = 'Activate audio, switch playback to this dashboard, or close this prompt if you do not want to use this device right now.';
             els.setupAudioBtn.classList.remove('hidden');
             els.setupDeviceBtn.classList.remove('hidden');
@@ -549,7 +878,7 @@
     function updateAudioButton() {
       if (!els.audioBtn) return;
       els.audioBtn.classList.toggle('active', !!state.activated);
-      els.audioBtn.textContent = state.activated ? '[AUDIO*]' : '[AUDIO]';
+      els.audioBtn.textContent = state.activated ? boxLabel('AUDIO*') : boxLabel('AUDIO');
       els.audioBtn.setAttribute('aria-pressed', state.activated ? 'true' : 'false');
       els.audioBtn.setAttribute('title', state.activated ? 'Audio active' : 'Activate audio');
       updateSetupOverlayButtons();
@@ -561,7 +890,7 @@
       if (!els.useDeviceBtn) return;
       const localSelected = !!state.ready && !!state.deviceId && !!state.selectedDeviceId && state.selectedDeviceId === state.deviceId;
       els.useDeviceBtn.classList.toggle('active', localSelected);
-      els.useDeviceBtn.textContent = localSelected ? '[THIS*]' : '[THIS]';
+      els.useDeviceBtn.textContent = localSelected ? boxLabel('THIS*') : boxLabel('THIS');
       els.useDeviceBtn.setAttribute('aria-pressed', localSelected ? 'true' : 'false');
       els.useDeviceBtn.setAttribute('title', localSelected ? 'Controlling this browser' : 'Use this device');
       els.useDeviceBtn.setAttribute('aria-label', localSelected ? 'Controlling this browser' : 'Use this device');
@@ -574,7 +903,7 @@
       const hasSelection = !!state.selectedDeviceId && state.selectedDeviceId !== state.deviceId;
       els.connectRemoteBtn.disabled = !hasTokens();
       els.connectRemoteBtn.classList.toggle('active', hasSelection || els.deviceSheet.classList.contains('show'));
-      els.connectRemoteBtn.textContent = hasSelection ? '[CONN*]' : '[CONN]';
+      els.connectRemoteBtn.textContent = hasSelection ? boxLabel('CONN*') : boxLabel('CONN');
       const label = state.selectedDeviceName || state.playbackDeviceName || 'Choose Spotify Connect device';
       els.connectRemoteBtn.setAttribute('title', hasSelection ? `Controlling ${label}` : 'Choose Spotify Connect device');
       els.connectRemoteBtn.setAttribute('aria-label', hasSelection ? `Controlling ${label}` : 'Choose Spotify Connect device');
@@ -604,11 +933,11 @@
         }
 
         function getEnterFullscreenMarkup() {
-          return '[FULL]';
+          return boxLabel('FULL');
         }
 
         function getExitFullscreenMarkup() {
-          return '[EXIT]';
+          return boxLabel('EXIT');
         }
 
     
@@ -693,6 +1022,7 @@
             syncVolumeFromPlaybackDevice(device, false);
           }
           if (!state.selectedDeviceId) updateTransportButtons(!!state.playbackState || !!state.ready);
+          updateDeviceInfoText(state.selectedDeviceName || state.playbackDeviceName || 'No device');
           updateRemoteButton();
         }
 
@@ -1074,7 +1404,7 @@
 
     
     function setPlayPauseVisual(isPaused) {
-      els.playPauseIcon.textContent = isPaused ? '[>]' : '[||]';
+      els.playPauseIcon.textContent = isPaused ? boxLabel('>') : boxLabel('||');
       els.playPauseBtn.setAttribute('aria-label', isPaused ? 'Play' : 'Pause');
       els.playPauseBtn.setAttribute('title', isPaused ? 'Play' : 'Pause');
     }
@@ -1084,7 +1414,7 @@
     function setHeartVisual(active) {
       state.currentLiked = !!active;
       els.heartBtn.classList.toggle('active', !!active);
-      els.heartBtn.textContent = active ? '[SAVED]' : '[SAVE]';
+      els.heartBtn.textContent = active ? boxLabel('SAVED') : boxLabel('SAVE');
       els.heartBtn.setAttribute('aria-label', active ? 'Saved to library' : 'Save to library');
       els.heartBtn.setAttribute('title', active ? 'Saved to library' : 'Save to library');
     }
@@ -1094,7 +1424,7 @@
     function setShuffleVisual(active) {
       state.shuffleEnabled = !!active;
       els.shuffleBtn.classList.toggle('active', !!active);
-      els.shuffleBtn.textContent = active ? '[SHF*]' : '[SHF]';
+      els.shuffleBtn.textContent = active ? boxLabel('SHF*') : boxLabel('SHF');
       els.shuffleBtn.setAttribute('aria-pressed', active ? 'true' : 'false');
       els.shuffleBtn.setAttribute('title', active ? 'Shuffle on' : 'Shuffle off');
       els.shuffleBtn.setAttribute('aria-label', active ? 'Shuffle on' : 'Shuffle off');
@@ -1105,7 +1435,7 @@
     function setRecommendVisual(active) {
       state.discoveryQueued = !!active;
       els.recommendBtn.classList.toggle('active', !!active);
-      els.recommendBtn.textContent = active ? '[REC*]' : '[REC]';
+      els.recommendBtn.textContent = active ? boxLabel('REC*') : boxLabel('REC');
       els.recommendBtn.setAttribute('aria-pressed', active ? 'true' : 'false');
       els.recommendBtn.setAttribute('title', active ? 'Recommended track queued' : 'Queue a recommended track');
       els.recommendBtn.setAttribute('aria-label', active ? 'Recommended track queued' : 'Queue a recommended track');
@@ -1115,11 +1445,11 @@
     
     function setVolumeIcon(volume) {
       if (volume <= 0.001) {
-        els.volumeIcon.textContent = '[MUTE]';
+        els.volumeIcon.textContent = boxLabel('MUTE');
       } else if (volume < 0.5) {
-        els.volumeIcon.textContent = '[VOL-]';
+        els.volumeIcon.textContent = boxLabel('VOL-');
       } else {
-        els.volumeIcon.textContent = '[VOL+]';
+        els.volumeIcon.textContent = boxLabel('VOL+');
       }
     }
 
@@ -1180,6 +1510,11 @@
       setDefaultBackground();
       els.trackName.textContent = 'Nothing playing';
       els.artistName.textContent = 'Sign in and start playback';
+      if (els.albumName) els.albumName.textContent = 'ALBUM // --';
+      if (els.contextText) els.contextText.textContent = 'Spotify';
+      if (els.albumInfo) els.albumInfo.textContent = '--';
+      updateDeviceInfoText('No device');
+      if (els.statusMini) els.statusMini.textContent = 'Waiting for Spotify';
       els.metaTop.textContent = 'SP0TIFY // DOS MODE';
       els.currentTime.textContent = '0:00';
       els.totalTime.textContent = '0:00';
@@ -1506,19 +1841,15 @@
     function updateTrackFromState(playbackState) {
       if (!playbackState || !playbackState.track_window?.current_track) return;
       const current = playbackState.track_window.current_track;
-      const image = current.album?.images?.[0]?.url || DEFAULT_ART;
       const artist = (current.artists || []).map(artist => artist.name).join(', ');
+      const album = current.album?.name || '--';
       const contextName = playbackState.context?.metadata?.context_description || current.album?.name || 'Spotify';
 
-      if (image) {
-        els.albumArt.src = image;
-        els.bgArt.src = image;
-        extractPaletteFromImage(image);
-      } else {
-        renderPlaceholderArt('NO ART');
-      }
       els.trackName.textContent = current.name || 'Unknown track';
       els.artistName.textContent = artist || 'Unknown artist';
+      if (els.albumName) els.albumName.textContent = `ALBUM // ${album}`;
+      if (els.contextText) els.contextText.textContent = contextName;
+      if (els.albumInfo) els.albumInfo.textContent = album;
       els.metaTop.textContent = contextName;
       setPlayPauseVisual(!!playbackState.paused);
       if (playbackState.device) updatePlaybackDeviceInfo(playbackState.device);
@@ -1858,6 +2189,7 @@
           document.addEventListener('webkitfullscreenchange', syncFullscreenButton);
           document.addEventListener('fullscreenerror', () => setStatus('Full screen failed', 'error'));
           document.addEventListener('webkitfullscreenerror', () => setStatus('Full screen failed', 'error'));
+          window.addEventListener('resize', renderAsciiSliders);
           document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape' && els.deviceSheet.classList.contains('show')) closeDeviceSheet();
           });
