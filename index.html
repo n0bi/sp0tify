@@ -137,7 +137,7 @@
 
     .info-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 0;
     }
 
@@ -168,7 +168,7 @@
 
     .controls-grid {
       display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
       gap: 8px;
       align-items: stretch;
     }
@@ -200,6 +200,8 @@
       overflow: hidden;
       text-overflow: ellipsis;
       touch-action: manipulation;
+      font-size: clamp(11px, 1.45vw, 14px);
+      line-height: 1.1;
     }
 
     .ctrl:hover,
@@ -247,6 +249,27 @@
       justify-content: space-between;
       align-items: center;
       gap: 12px;
+      color: var(--yellow);
+    }
+
+    .volume-row {
+      display: grid;
+      grid-template-columns: max-content minmax(0, 1fr);
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .volume-row .volume-btn {
+      width: auto;
+      min-width: 116px;
+      padding-inline: 12px;
+    }
+
+    .volume-meta {
+      color: var(--muted);
+    }
+
+    .volume-meta #volumeText {
       color: var(--yellow);
     }
 
@@ -390,7 +413,6 @@
     .icon-mini-btn[hidden] { display: none !important; }
 
     @media (max-width: 860px) {
-      .controls-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
       .info-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .info-cell:nth-child(2) { border-right: 0; }
       .info-cell:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
@@ -407,12 +429,18 @@
       }
 
       .dash { width: 100%; }
-      .controls-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .controls-grid { grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); }
       .ctrl,
       .secondary-btn,
       .volume-btn { min-height: 40px; padding-inline: 6px; }
       .bar-text { font-size: 12px; }
       .box-head { align-items: flex-start; }
+      .volume-row {
+        grid-template-columns: 98px minmax(0, 1fr);
+      }
+      .volume-row .volume-btn {
+        min-width: 98px;
+      }
     }
   </style>
 </head>
@@ -431,60 +459,56 @@
 
       <section class="terminal-box info-grid" aria-label="Track details">
         <div class="info-cell">
-          <span class="info-label">LIST</span>
+          <span class="info-label">PLAYLIST</span>
           <span id="contextText" class="info-value">Spotify</span>
         </div>
         <div class="info-cell">
-          <span class="info-label">ALBM</span>
+          <span class="info-label">ALBUM</span>
           <span id="albumInfo" class="info-value">--</span>
         </div>
         <div class="info-cell">
-          <span class="info-label">DEVC</span>
-          <span id="deviceInfo" class="info-value">No device</span>
-        </div>
-        <div class="info-cell">
-          <span class="info-label">STAT</span>
+          <span class="info-label">STATUS</span>
           <span id="statusMini" class="info-value">Waiting</span>
         </div>
       </section>
 
       <section class="terminal-box control-box" aria-label="Playback controls and device controls">
         <div class="controls-grid" role="group" aria-label="Playback controls">
-          <button id="shuffleBtn" class="ctrl shuffle" type="button" aria-label="Shuffle" title="Shuffle" disabled>[  SHF  ]</button>
+          <button id="shuffleBtn" class="ctrl shuffle" type="button" aria-label="Shuffle" title="Shuffle" disabled>[  SHUFFLE  ]</button>
           <button id="recommendBtn" class="ctrl recommend" type="button" aria-label="Queue a recommended track" title="Queue a recommended track" disabled>[  REC  ]</button>
-          <button id="prevBtn" class="ctrl prev" type="button" aria-label="Previous track" disabled>[  |<<  ]</button>
+          <button id="prevBtn" class="ctrl prev" type="button" aria-label="Previous track" disabled>[  |<-  ]</button>
           <button id="playPauseBtn" class="ctrl play" type="button" aria-label="Play or pause" disabled><span id="playPauseIcon">[  ||  ]</span></button>
-          <button id="nextBtn" class="ctrl next" type="button" aria-label="Next track" disabled>[  >>|  ]</button>
+          <button id="nextBtn" class="ctrl next" type="button" aria-label="Next track" disabled>[  ->|  ]</button>
           <button id="heartBtn" class="ctrl heart" type="button" aria-label="Save to library" disabled>[  SAVE  ]</button>
-          <button id="muteBtn" class="volume-btn" type="button" aria-label="Mute or restore volume"><span id="volumeIcon">[  VOL+  ]</span></button>
           <button id="audioBtn" class="secondary-btn audio-btn" type="button" aria-label="Audio" title="Audio" disabled>[  AUDIO  ]</button>
-          <button id="useDeviceBtn" class="secondary-btn" type="button" aria-label="Use this device" title="Use this device" disabled>[  THIS  ]</button>
-          <button id="connectRemoteBtn" class="secondary-btn remote-btn" type="button" aria-label="Choose Spotify Connect device" title="Choose Spotify Connect device" disabled>[  CONN  ]</button>
-          <button id="fullscreenBtn" class="secondary-btn" type="button" aria-label="Toggle full screen" title="Toggle full screen"><span id="fullscreenIcon">[  FULL  ]</span></button>
+          <button id="useDeviceBtn" class="secondary-btn" type="button" aria-label="Use this device" title="Use this device" disabled>[  THIS DEVICE  ]</button>
+          <button id="connectRemoteBtn" class="secondary-btn remote-btn" type="button" aria-label="Choose Spotify Connect device" title="Choose Spotify Connect device" disabled>[  CONNECT  ]</button>
+          <button id="fullscreenBtn" class="secondary-btn" type="button" aria-label="Toggle full screen" title="Toggle full screen"><span id="fullscreenIcon">[  FULL SCREEN  ]</span></button>
           <div id="statusLive" class="sr-only" aria-live="polite">Waiting for Spotify</div>
         </div>
-        <div class="control-note">Text-only interface. No album art. Mobile-ready Spotify remote.</div>
+        <div class="control-note">Text-only Spotify remote. Mobile-ready. No album art.</div>
       </section>
 
       <section class="terminal-box timeline-box" aria-label="Track timeline and volume">
-        <div class="box-head">
-          <span class="section-title">PLAYBACK</span>
-          <div class="time-row">
-            <span id="currentTime">0:00</span>
-            <span id="totalTime">0:00</span>
-          </div>
-        </div>
+        <span class="section-title">PLAYBACK</span>
         <div class="ascii-slider">
           <div id="timelineAscii" class="bar-text">&lt; O................................................................. &gt;</div>
           <input id="timeline" type="range" min="0" max="1000" value="0" step="1" aria-label="Track timeline" />
         </div>
-        <div class="box-head">
-          <span class="section-title">VOLUME</span>
-          <span id="volumeText" class="mini-line">080%</span>
+        <div class="time-row">
+          <span id="currentTime">0:00</span>
+          <span id="totalTime">0:00</span>
         </div>
-        <div class="ascii-slider">
-          <div id="volumeAscii" class="bar-text">VOL 080% &lt; #............................ &gt;</div>
-          <input id="volumeSlider" type="range" min="0" max="100" value="80" step="1" aria-label="Volume" />
+        <div class="volume-row">
+          <button id="muteBtn" class="volume-btn" type="button" aria-label="Mute or restore volume"><span id="volumeIcon">[  MUTE  ]</span></button>
+          <div class="ascii-slider">
+            <div id="volumeAscii" class="bar-text">VOLUME &lt; #............................ &gt;</div>
+            <input id="volumeSlider" type="range" min="0" max="100" value="80" step="1" aria-label="Volume" />
+          </div>
+        </div>
+        <div class="time-row volume-meta">
+          <span class="mini-line">volume</span>
+          <span id="volumeText" class="mini-line">080%</span>
         </div>
       </section>
     </section>
@@ -716,20 +740,15 @@
           return `[  ${String(label)}  ]`;
         }
 
-        function getTimelineBarLength() {
-          const width = window.innerWidth || 1024;
-          if (width <= 420) return 30;
-          if (width <= 560) return 38;
-          if (width <= 820) return 52;
-          return 66;
-        }
-
-        function getVolumeBarLength() {
-          const width = window.innerWidth || 1024;
-          if (width <= 420) return 16;
-          if (width <= 560) return 20;
-          if (width <= 820) return 24;
-          return 28;
+        function getBarInnerLength(target, prefix = '') {
+          const host = target?.parentElement;
+          if (!host || !target) return 24;
+          const style = getComputedStyle(target);
+          const fontSize = Number.parseFloat(style.fontSize) || 14;
+          const charWidth = Math.max(6, fontSize * 0.61);
+          const totalChars = Math.floor(Math.max(0, host.clientWidth - 20) / charWidth);
+          const reserved = 4 + String(prefix || '').length;
+          return clamp(totalChars - reserved, 8, 160);
         }
 
         function updateDeviceInfoText(name = '') {
@@ -768,13 +787,16 @@
             const max = Number(els.timeline.max || 1000);
             const value = Number(els.timeline.value || 0);
             const percent = max > min ? ((value - min) / (max - min)) * 100 : 0;
-            els.timelineAscii.textContent = makeAsciiBar(percent, getTimelineBarLength(), 'O');
+            const length = getBarInnerLength(els.timelineAscii);
+            els.timelineAscii.textContent = makeAsciiBar(percent, length, 'O');
           }
           if (els.volumeAscii && els.volumeSlider) {
             const value = Number(els.volumeSlider.value || 0);
             const percent = Math.max(0, Math.min(100, value));
             const rounded = Math.round(percent);
-            els.volumeAscii.textContent = `VOL ${String(rounded).padStart(3, '0')}% ${makeAsciiBar(percent, getVolumeBarLength(), '#')}`;
+            const prefix = 'VOLUME ';
+            const length = getBarInnerLength(els.volumeAscii, prefix);
+            els.volumeAscii.textContent = `${prefix}${makeAsciiBar(percent, length, '#')}`;
             if (els.volumeText) els.volumeText.textContent = `${String(rounded).padStart(3, '0')}%`;
           }
         }
@@ -890,7 +912,7 @@
       if (!els.useDeviceBtn) return;
       const localSelected = !!state.ready && !!state.deviceId && !!state.selectedDeviceId && state.selectedDeviceId === state.deviceId;
       els.useDeviceBtn.classList.toggle('active', localSelected);
-      els.useDeviceBtn.textContent = localSelected ? boxLabel('THIS*') : boxLabel('THIS');
+      els.useDeviceBtn.textContent = localSelected ? boxLabel('THIS DEVICE*') : boxLabel('THIS DEVICE');
       els.useDeviceBtn.setAttribute('aria-pressed', localSelected ? 'true' : 'false');
       els.useDeviceBtn.setAttribute('title', localSelected ? 'Controlling this browser' : 'Use this device');
       els.useDeviceBtn.setAttribute('aria-label', localSelected ? 'Controlling this browser' : 'Use this device');
@@ -903,7 +925,7 @@
       const hasSelection = !!state.selectedDeviceId && state.selectedDeviceId !== state.deviceId;
       els.connectRemoteBtn.disabled = !hasTokens();
       els.connectRemoteBtn.classList.toggle('active', hasSelection || els.deviceSheet.classList.contains('show'));
-      els.connectRemoteBtn.textContent = hasSelection ? boxLabel('CONN*') : boxLabel('CONN');
+      els.connectRemoteBtn.textContent = hasSelection ? boxLabel('CONNECT*') : boxLabel('CONNECT');
       const label = state.selectedDeviceName || state.playbackDeviceName || 'Choose Spotify Connect device';
       els.connectRemoteBtn.setAttribute('title', hasSelection ? `Controlling ${label}` : 'Choose Spotify Connect device');
       els.connectRemoteBtn.setAttribute('aria-label', hasSelection ? `Controlling ${label}` : 'Choose Spotify Connect device');
@@ -933,11 +955,11 @@
         }
 
         function getEnterFullscreenMarkup() {
-          return boxLabel('FULL');
+          return boxLabel('FULL SCREEN');
         }
 
         function getExitFullscreenMarkup() {
-          return boxLabel('EXIT');
+          return boxLabel('EXIT FULL');
         }
 
     
@@ -1404,7 +1426,7 @@
 
     
     function setPlayPauseVisual(isPaused) {
-      els.playPauseIcon.textContent = isPaused ? boxLabel('>') : boxLabel('||');
+      els.playPauseIcon.textContent = isPaused ? boxLabel('->') : boxLabel('||');
       els.playPauseBtn.setAttribute('aria-label', isPaused ? 'Play' : 'Pause');
       els.playPauseBtn.setAttribute('title', isPaused ? 'Play' : 'Pause');
     }
@@ -1424,7 +1446,7 @@
     function setShuffleVisual(active) {
       state.shuffleEnabled = !!active;
       els.shuffleBtn.classList.toggle('active', !!active);
-      els.shuffleBtn.textContent = active ? boxLabel('SHF*') : boxLabel('SHF');
+      els.shuffleBtn.textContent = active ? boxLabel('SHUFFLE*') : boxLabel('SHUFFLE');
       els.shuffleBtn.setAttribute('aria-pressed', active ? 'true' : 'false');
       els.shuffleBtn.setAttribute('title', active ? 'Shuffle on' : 'Shuffle off');
       els.shuffleBtn.setAttribute('aria-label', active ? 'Shuffle on' : 'Shuffle off');
@@ -1444,13 +1466,10 @@
 
     
     function setVolumeIcon(volume) {
-      if (volume <= 0.001) {
-        els.volumeIcon.textContent = boxLabel('MUTE');
-      } else if (volume < 0.5) {
-        els.volumeIcon.textContent = boxLabel('VOL-');
-      } else {
-        els.volumeIcon.textContent = boxLabel('VOL+');
-      }
+      const muted = volume <= 0.001;
+      els.volumeIcon.textContent = muted ? boxLabel('UNMUTE') : boxLabel('MUTE');
+      els.muteBtn.setAttribute('aria-label', muted ? 'Restore volume' : 'Mute');
+      els.muteBtn.setAttribute('title', muted ? 'Restore volume' : 'Mute');
     }
 
 
@@ -1513,7 +1532,6 @@
       if (els.albumName) els.albumName.textContent = 'ALBUM // --';
       if (els.contextText) els.contextText.textContent = 'Spotify';
       if (els.albumInfo) els.albumInfo.textContent = '--';
-      updateDeviceInfoText('No device');
       if (els.statusMini) els.statusMini.textContent = 'Waiting for Spotify';
       els.metaTop.textContent = 'SP0TIFY // DOS MODE';
       els.currentTime.textContent = '0:00';
