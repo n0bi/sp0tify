@@ -7,16 +7,21 @@
   <style>
     :root {
       --bg: #000000;
-      --fg: #f4fff4;
-      --line: #88b8ff;
-      --line-soft: rgba(136, 184, 255, 0.42);
-      --green: #39ff14;
-      --cyan: #58d7ff;
+      --fg: #edf6ff;
+      --white: #edf6ff;
+      --panel-blue: #0a1cb0;
+      --panel-blue-2: #08157d;
+      --panel-teal: #14aeb7;
+      --panel-gray: #aeb4bc;
+      --panel-gray-dark: #7f8792;
+      --green: #00ff5a;
+      --green-dim: #0b5e2a;
+      --cyan: #88f2ff;
       --yellow: #ffe45c;
-      --red: #ff6a6a;
-      --muted: #b7cfd8;
-      --muted-2: #8ca2aa;
-      --panel: #000000;
+      --red: #ff8080;
+      --muted: #c8d0da;
+      --muted-2: #9aa5b2;
+      --shadow: #02072e;
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-right: env(safe-area-inset-right, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -31,6 +36,7 @@
       background: var(--bg);
       color: var(--fg);
       font-family: "Courier New", "Lucida Console", monospace;
+      -webkit-text-size-adjust: 100%;
     }
 
     body {
@@ -62,15 +68,56 @@
     }
 
     .terminal-box {
-      border: 1px solid var(--line);
-      background: var(--panel);
+      min-width: 0;
+      border: 2px solid var(--green);
+      box-shadow: inset 0 0 0 1px #001707;
+      background: var(--panel-blue);
+      overflow: hidden;
+    }
+
+    .title-shell {
+      background: #000000;
+      padding: 4px;
+    }
+
+    .title-shell .box-title {
+      font-size: clamp(16px, 2.3vw, 24px);
+      letter-spacing: 0.26em;
+      justify-content: center;
+      min-height: 48px;
+    }
+
+    .box-title {
+      min-height: 38px;
+      padding: 7px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: var(--panel-blue-2);
+      border-bottom: 1px solid var(--green);
+      color: var(--white);
+      font-size: clamp(12px, 1.7vw, 18px);
+      line-height: 1;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .window-body {
+      padding: 10px 12px;
+      display: grid;
+      gap: 8px;
       min-width: 0;
     }
 
     .main-box {
-      padding: 10px 12px;
-      display: grid;
-      gap: 8px;
+      background: var(--panel-blue);
+    }
+
+    .main-box .window-body {
+      gap: 10px;
     }
 
     .box-head {
@@ -88,7 +135,8 @@
     .time-row,
     .status-line,
     .mini-line,
-    .control-note {
+    .control-note,
+    .help-line {
       font-size: clamp(11px, 1.55vw, 15px);
       line-height: 1.2;
       letter-spacing: 0;
@@ -103,8 +151,8 @@
 
     .track-name {
       margin: 0;
-      color: var(--fg);
-      font-size: clamp(19px, 4.6vw, 34px);
+      color: var(--white);
+      font-size: clamp(19px, 4.5vw, 34px);
       line-height: 1.08;
       font-weight: 700;
       word-break: break-word;
@@ -114,7 +162,7 @@
     .album-name,
     .mini-line {
       margin: 0;
-      color: var(--fg);
+      color: var(--white);
       font-size: clamp(12px, 2vw, 18px);
       line-height: 1.22;
       word-break: break-word;
@@ -135,6 +183,10 @@
     .status-line[data-tone="warn"] { color: var(--yellow); }
     .status-line[data-tone="error"] { color: var(--red); }
 
+    .info-box {
+      background: var(--panel-blue);
+    }
+
     .info-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -143,10 +195,11 @@
 
     .info-cell {
       min-width: 0;
-      padding: 8px 10px;
+      padding: 10px 12px;
       display: grid;
-      gap: 4px;
-      border-right: 1px solid var(--line);
+      gap: 5px;
+      border-right: 1px solid var(--green);
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0));
     }
 
     .info-cell:last-child { border-right: 0; }
@@ -161,9 +214,17 @@
     }
 
     .control-box {
-      padding: 10px;
-      display: grid;
-      gap: 8px;
+      background: var(--panel-gray);
+      color: #06102a;
+    }
+
+    .control-box .box-title {
+      background: var(--panel-blue-2);
+      color: var(--white);
+    }
+
+    .control-box .window-body {
+      gap: 10px;
     }
 
     .controls-grid {
@@ -181,15 +242,15 @@
     .icon-mini-btn,
     .volume-btn {
       appearance: none;
-      border: 1px solid var(--line);
-      background: #000000;
-      color: var(--fg);
+      border: 1px solid var(--green);
+      background: var(--panel-blue);
+      color: var(--white);
       min-height: 42px;
       width: 100%;
       padding: 8px 10px;
       border-radius: 0;
       cursor: pointer;
-      box-shadow: none;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
       letter-spacing: 0;
       text-transform: none;
       display: inline-flex;
@@ -211,7 +272,7 @@
     .device-item:hover,
     .icon-mini-btn:hover,
     .volume-btn:hover {
-      background: rgba(17, 23, 34, 0.9);
+      background: #1027d1;
     }
 
     .ctrl:disabled,
@@ -220,28 +281,38 @@
     .device-tool-btn:disabled,
     .device-item:disabled,
     .volume-btn:disabled {
-      opacity: 0.38;
+      opacity: 0.42;
       cursor: not-allowed;
     }
 
     .ctrl.active,
     .secondary-btn.active,
     .device-item.active {
-      color: var(--green);
+      color: #001707;
+      background: var(--panel-teal);
       border-color: var(--green);
     }
 
     .ctrl.recommend.loading { color: var(--yellow); }
 
+    .overlay-btn.primary {
+      background: var(--panel-teal);
+      color: #001707;
+    }
+
     .control-note {
-      color: var(--muted-2);
-      padding-inline: 2px;
+      color: #06102a;
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(6, 16, 42, 0.25);
+      padding: 7px 9px;
     }
 
     .timeline-box {
-      padding: 10px;
-      display: grid;
-      gap: 8px;
+      background: var(--panel-blue);
+    }
+
+    .timeline-box .window-body {
+      gap: 9px;
     }
 
     .time-row {
@@ -278,10 +349,12 @@
       min-height: 42px;
       display: flex;
       align-items: center;
+      width: 100%;
       padding: 0 10px;
-      border: 1px solid var(--line);
+      border: 1px solid var(--green);
       background: #000000;
       overflow: hidden;
+      box-shadow: inset 0 0 0 1px #001707;
     }
 
     .ascii-slider input[type="range"] {
@@ -304,6 +377,28 @@
       line-height: 1;
     }
 
+    .help-box {
+      background: var(--panel-blue);
+    }
+
+    .help-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px 16px;
+      align-items: start;
+    }
+
+    .help-line {
+      color: var(--white);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .help-key {
+      color: var(--yellow);
+    }
+
     .status-mini { color: var(--muted); }
 
     .overlay,
@@ -324,8 +419,9 @@
     .overlay-card,
     .device-card {
       width: min(100%, 700px);
-      background: #000000;
-      border: 1px solid var(--line);
+      background: var(--panel-blue);
+      border: 2px solid var(--green);
+      box-shadow: inset 0 0 0 1px #001707;
       padding: 16px;
       display: grid;
       gap: 12px;
@@ -339,7 +435,7 @@
 
     .overlay-copy {
       margin: 0;
-      color: var(--fg);
+      color: var(--white);
       font-size: clamp(14px, 1.2vw, 18px);
       line-height: 1.4;
     }
@@ -371,7 +467,7 @@
       display: flex;
       justify-content: space-between;
       gap: 8px;
-      color: var(--fg);
+      color: var(--white);
     }
 
     .device-item-meta {
@@ -384,7 +480,7 @@
 
     .device-chip {
       padding: 0 6px;
-      border: 1px solid var(--line-soft);
+      border: 1px solid rgba(255,255,255,0.18);
     }
 
     .device-chip.good {
@@ -415,7 +511,8 @@
     @media (max-width: 860px) {
       .info-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .info-cell:nth-child(2) { border-right: 0; }
-      .info-cell:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
+      .info-cell:nth-child(-n + 2) { border-bottom: 1px solid var(--green); }
+      .help-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 560px) {
@@ -429,6 +526,11 @@
       }
 
       .dash { width: 100%; }
+      .title-shell .box-title {
+        min-height: 42px;
+        letter-spacing: 0.12em;
+        font-size: 16px;
+      }
       .controls-grid { grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); }
       .ctrl,
       .secondary-btn,
@@ -441,74 +543,106 @@
       .volume-row .volume-btn {
         min-width: 98px;
       }
+      .box-title {
+        min-height: 34px;
+        font-size: 13px;
+      }
+      .window-body {
+        padding: 9px 10px;
+      }
     }
   </style>
 </head>
 <body>
   <main id="screen" class="screen" aria-label="Spotify remote dashboard DOS edition">
     <section class="dash">
+      <header class="title-shell terminal-box" aria-label="Application title">
+        <div class="box-title">SP0TIFY DOS REMOTE</div>
+      </header>
+
       <section id="gestureZone" class="terminal-box main-box" aria-live="polite">
-        <div class="box-head">
-          <span id="metaTop" class="box-kicker">SP0TIFY // DOS MODE</span>
-          <span id="statusText" class="status-line" data-tone="warn">[ WARN ] Waiting for Spotify</span>
+        <div class="box-title">NOW PLAYING</div>
+        <div class="window-body">
+          <div class="box-head">
+            <span id="metaTop" class="box-kicker">SP0TIFY // DOS MODE</span>
+            <span id="statusText" class="status-line" data-tone="warn">[ WARN ] Waiting for Spotify</span>
+          </div>
+          <h1 id="trackName" class="track-name">Nothing playing</h1>
+          <p id="artistName" class="artist-name">Sign in and start playback</p>
+          <p id="albumName" class="album-name">ALBUM // --</p>
         </div>
-        <h1 id="trackName" class="track-name">Nothing playing</h1>
-        <p id="artistName" class="artist-name">Sign in and start playback</p>
-        <p id="albumName" class="album-name">ALBUM // --</p>
       </section>
 
-      <section class="terminal-box info-grid" aria-label="Track details">
-        <div class="info-cell">
-          <span class="info-label">PLAYLIST</span>
-          <span id="contextText" class="info-value">Spotify</span>
-        </div>
-        <div class="info-cell">
-          <span class="info-label">ALBUM</span>
-          <span id="albumInfo" class="info-value">--</span>
-        </div>
-        <div class="info-cell">
-          <span class="info-label">STATUS</span>
-          <span id="statusMini" class="info-value">Waiting</span>
+      <section class="terminal-box info-box" aria-label="Track details">
+        <div class="box-title">INFORMATION</div>
+        <div class="info-grid">
+          <div class="info-cell">
+            <span class="info-label">PLAYLIST</span>
+            <span id="contextText" class="info-value">Spotify</span>
+          </div>
+          <div class="info-cell">
+            <span class="info-label">ALBUM</span>
+            <span id="albumInfo" class="info-value">--</span>
+          </div>
+          <div class="info-cell">
+            <span class="info-label">STATUS</span>
+            <span id="statusMini" class="info-value">Waiting</span>
+          </div>
         </div>
       </section>
 
       <section class="terminal-box control-box" aria-label="Playback controls and device controls">
-        <div class="controls-grid" role="group" aria-label="Playback controls">
-          <button id="shuffleBtn" class="ctrl shuffle" type="button" aria-label="Shuffle" title="Shuffle" disabled>[  SHUFFLE  ]</button>
-          <button id="recommendBtn" class="ctrl recommend" type="button" aria-label="Queue a recommended track" title="Queue a recommended track" disabled>[  REC  ]</button>
-          <button id="prevBtn" class="ctrl prev" type="button" aria-label="Previous track" disabled>[  |<-  ]</button>
-          <button id="playPauseBtn" class="ctrl play" type="button" aria-label="Play or pause" disabled><span id="playPauseIcon">[  ||  ]</span></button>
-          <button id="nextBtn" class="ctrl next" type="button" aria-label="Next track" disabled>[  ->|  ]</button>
-          <button id="heartBtn" class="ctrl heart" type="button" aria-label="Save to library" disabled>[  SAVE  ]</button>
-          <button id="audioBtn" class="secondary-btn audio-btn" type="button" aria-label="Audio" title="Audio" disabled>[  AUDIO  ]</button>
-          <button id="useDeviceBtn" class="secondary-btn" type="button" aria-label="Use this device" title="Use this device" disabled>[  THIS DEVICE  ]</button>
-          <button id="connectRemoteBtn" class="secondary-btn remote-btn" type="button" aria-label="Choose Spotify Connect device" title="Choose Spotify Connect device" disabled>[  CONNECT  ]</button>
-          <button id="fullscreenBtn" class="secondary-btn" type="button" aria-label="Toggle full screen" title="Toggle full screen"><span id="fullscreenIcon">[  FULL SCREEN  ]</span></button>
-          <div id="statusLive" class="sr-only" aria-live="polite">Waiting for Spotify</div>
+        <div class="box-title">CONTROLS</div>
+        <div class="window-body">
+          <div class="controls-grid" role="group" aria-label="Playback controls">
+            <button id="shuffleBtn" class="ctrl shuffle" type="button" aria-label="Shuffle" title="Shuffle" disabled>[  SHUFFLE  ]</button>
+            <button id="recommendBtn" class="ctrl recommend" type="button" aria-label="Queue a recommended track" title="Queue a recommended track" disabled>[  REC  ]</button>
+            <button id="prevBtn" class="ctrl prev" type="button" aria-label="Previous track" disabled>[  |<<  ]</button>
+            <button id="playPauseBtn" class="ctrl play" type="button" aria-label="Play or pause" disabled><span id="playPauseIcon">[  ||  ]</span></button>
+            <button id="nextBtn" class="ctrl next" type="button" aria-label="Next track" disabled>[  >>|  ]</button>
+            <button id="heartBtn" class="ctrl heart" type="button" aria-label="Save to library" disabled>[  SAVE  ]</button>
+            <button id="audioBtn" class="secondary-btn audio-btn" type="button" aria-label="Audio" title="Audio" disabled>[  AUDIO  ]</button>
+            <button id="useDeviceBtn" class="secondary-btn" type="button" aria-label="Use this device" title="Use this device" disabled>[  THIS DEVICE  ]</button>
+            <button id="connectRemoteBtn" class="secondary-btn remote-btn" type="button" aria-label="Choose Spotify Connect device" title="Choose Spotify Connect device" disabled>[  CONNECT  ]</button>
+            <button id="fullscreenBtn" class="secondary-btn" type="button" aria-label="Toggle full screen" title="Toggle full screen"><span id="fullscreenIcon">[  FULL SCREEN  ]</span></button>
+            <div id="statusLive" class="sr-only" aria-live="polite">Waiting for Spotify</div>
+          </div>
+          <div class="control-note">Text-only Spotify remote with DOS-style panels and mobile-ready controls.</div>
         </div>
-        <div class="control-note">Text-only Spotify remote. Mobile-ready. No album art.</div>
       </section>
 
       <section class="terminal-box timeline-box" aria-label="Track timeline and volume">
-        <span class="section-title">PLAYBACK</span>
-        <div class="ascii-slider">
-          <div id="timelineAscii" class="bar-text">&lt; O................................................................. &gt;</div>
-          <input id="timeline" type="range" min="0" max="1000" value="0" step="1" aria-label="Track timeline" />
-        </div>
-        <div class="time-row">
-          <span id="currentTime">0:00</span>
-          <span id="totalTime">0:00</span>
-        </div>
-        <div class="volume-row">
-          <button id="muteBtn" class="volume-btn" type="button" aria-label="Mute or restore volume"><span id="volumeIcon">[  MUTE  ]</span></button>
+        <div class="box-title">PLAYBACK / VOLUME</div>
+        <div class="window-body">
           <div class="ascii-slider">
-            <div id="volumeAscii" class="bar-text">VOLUME &lt; #............................ &gt;</div>
-            <input id="volumeSlider" type="range" min="0" max="100" value="80" step="1" aria-label="Volume" />
+            <div id="timelineAscii" class="bar-text">&lt; O................................................................. &gt;</div>
+            <input id="timeline" type="range" min="0" max="1000" value="0" step="1" aria-label="Track timeline" />
+          </div>
+          <div class="time-row">
+            <span id="currentTime">0:00</span>
+            <span id="totalTime">0:00</span>
+          </div>
+          <div class="volume-row">
+            <button id="muteBtn" class="volume-btn" type="button" aria-label="Mute or restore volume"><span id="volumeIcon">[  MUTE  ]</span></button>
+            <div class="ascii-slider">
+              <div id="volumeAscii" class="bar-text">VOLUME &lt; #............................ &gt;</div>
+              <input id="volumeSlider" type="range" min="0" max="100" value="80" step="1" aria-label="Volume" />
+            </div>
+          </div>
+          <div class="time-row volume-meta">
+            <span class="mini-line">volume</span>
+            <span id="volumeText" class="mini-line">080%</span>
           </div>
         </div>
-        <div class="time-row volume-meta">
-          <span class="mini-line">volume</span>
-          <span id="volumeText" class="mini-line">080%</span>
+      </section>
+
+      <section class="terminal-box help-box" aria-label="Usage help">
+        <div class="box-title">USE</div>
+        <div class="window-body help-grid">
+          <div class="help-line"><span class="help-key">Tap</span> controls to play, pause, skip, save, or shuffle.</div>
+          <div class="help-line"><span class="help-key">Connect</span> opens the Spotify device list.</div>
+          <div class="help-line"><span class="help-key">This Device</span> transfers playback into this browser.</div>
+          <div class="help-line"><span class="help-key">Volume</span> and timeline bars are draggable on desktop and mobile.</div>
         </div>
       </section>
     </section>
@@ -1426,7 +1560,7 @@
 
     
     function setPlayPauseVisual(isPaused) {
-      els.playPauseIcon.textContent = isPaused ? boxLabel('->') : boxLabel('||');
+      els.playPauseIcon.textContent = isPaused ? boxLabel('>') : boxLabel('||');
       els.playPauseBtn.setAttribute('aria-label', isPaused ? 'Play' : 'Pause');
       els.playPauseBtn.setAttribute('title', isPaused ? 'Play' : 'Pause');
     }
