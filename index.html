@@ -51,6 +51,7 @@
     }
 
     body {
+      min-height: 100vh;
       min-height: 100dvh;
     }
 
@@ -61,6 +62,7 @@
     .screen {
       position: relative;
       width: 100vw;
+      min-height: 100vh;
       min-height: 100dvh;
       background:
         radial-gradient(circle at 18% 14%, rgba(116, 74, 156, 0.34), transparent 34%),
@@ -588,16 +590,16 @@
     .device-sheet.show { display: flex; }
 
     .device-card {
-      width: min(100%, 460px);
+      width: min(100%, 432px);
       max-height: min(74dvh, 620px);
       overflow: hidden;
-      padding: 14px;
+      padding: 12px;
       border-radius: 22px;
       background: rgba(19,19,22,0.96);
       border: 1px solid rgba(255,255,255,0.08);
       box-shadow: 0 20px 60px rgba(0,0,0,0.42);
       display: grid;
-      gap: 10px;
+      gap: 8px;
       grid-template-rows: auto minmax(0, 1fr);
     }
 
@@ -608,8 +610,8 @@
     }
 
     .device-tool-btn {
-      width: 38px;
-      height: 38px;
+      width: 40px;
+      height: 40px;
       border-radius: 999px;
       border: 1px solid rgba(255,255,255,0.09);
       background: rgba(255,255,255,0.06);
@@ -625,19 +627,22 @@
       width: 18px;
       height: 18px;
       display: block;
-    }
-
-    .device-tool-btn.refresh-btn svg {
-      width: 25px;
-      height: 25px;
-      display: block;
       margin: auto;
       flex: 0 0 auto;
     }
 
+    .device-tool-btn.refresh-btn svg {
+      width: 30px;
+      height: 30px;
+      display: block;
+      margin: auto;
+      flex: 0 0 auto;
+      transform: translateY(0.5px);
+    }
+
     .device-list {
       display: grid;
-      gap: 8px;
+      gap: 6px;
       overflow: auto;
       padding-right: 2px;
       min-height: 120px;
@@ -647,8 +652,8 @@
       width: 100%;
       text-align: left;
       display: grid;
-      gap: 5px;
-      padding: 12px 14px;
+      gap: 4px;
+      padding: 10px 12px;
       border-radius: 16px;
       border: 1px solid rgba(255,255,255,0.09);
       background: rgba(255,255,255,0.05);
@@ -672,7 +677,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 8px;
       font-weight: 800;
       letter-spacing: -0.02em;
     }
@@ -680,7 +685,7 @@
     .device-item-meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: 5px;
       color: var(--muted);
       font-size: 12px;
       line-height: 1.3;
@@ -954,10 +959,10 @@
           </button>
           <button id="fullscreenBtn" class="secondary-btn" type="button" aria-label="Toggle full screen" title="Toggle full screen">
             <svg id="fullscreenIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M8 3H3v5"></path>
-              <path d="M16 3h5v5"></path>
-              <path d="M21 16v5h-5"></path>
-              <path d="M3 16v5h5"></path>
+              <path d="M15 3h6v6"></path>
+              <path d="M9 21H3v-6"></path>
+              <path d="M21 15v6h-6"></path>
+              <path d="M3 9V3h6"></path>
             </svg>
           </button>
           <div id="statusLive" class="sr-only" aria-live="polite">Waiting for Spotify</div>
@@ -1452,7 +1457,7 @@
 
     function updateUseDeviceButton() {
       if (!els.useDeviceBtn) return;
-      const localSelected = !!state.deviceId && !!state.selectedDeviceId && state.selectedDeviceId === state.deviceId;
+      const localSelected = !!state.ready && !!state.deviceId && !!state.selectedDeviceId && state.selectedDeviceId === state.deviceId;
       els.useDeviceBtn.classList.toggle('active', localSelected);
       els.useDeviceBtn.setAttribute('aria-pressed', localSelected ? 'true' : 'false');
       els.useDeviceBtn.setAttribute('title', localSelected ? 'Controlling this browser' : 'Use this device');
@@ -1482,33 +1487,73 @@
       updateSetupOverlayButtons();
     }
 
+    function getFullscreenElement() {
+      return document.fullscreenElement || document.webkitFullscreenElement || null;
+    }
+
+    function canRequestFullscreen() {
+      const root = document.documentElement;
+      return !!(document.fullscreenEnabled || document.webkitFullscreenEnabled || typeof root.requestFullscreen === 'function' || typeof root.webkitRequestFullscreen === 'function');
+    }
+
+    function getEnterFullscreenMarkup() {
+      return '<path d="M15 3h6v6"></path><path d="M9 21H3v-6"></path><path d="M21 15v6h-6"></path><path d="M3 9V3h6"></path>';
+    }
+
+    function getExitFullscreenMarkup() {
+      return '<path d="M21 9h-6V3"></path><path d="M3 9h6V3"></path><path d="M21 15h-6v6"></path><path d="M3 15h6v6"></path>';
+    }
+
     function syncFullscreenButton() {
       if (!els.fullscreenBtn) return;
-      const supported = !!document.fullscreenEnabled && typeof document.documentElement.requestFullscreen === 'function';
-      const active = !!document.fullscreenElement;
+      const supported = canRequestFullscreen();
+      const active = !!getFullscreenElement();
       els.fullscreenBtn.disabled = !supported;
       els.fullscreenBtn.classList.toggle('active', active);
       els.fullscreenBtn.setAttribute('aria-pressed', active ? 'true' : 'false');
       els.fullscreenBtn.setAttribute('aria-label', active ? 'Exit full screen' : 'Enter full screen');
       els.fullscreenBtn.setAttribute('title', active ? 'Exit full screen' : 'Enter full screen');
       if (els.fullscreenIcon) {
-        els.fullscreenIcon.innerHTML = active
-          ? '<path d="M9 9H4V4"></path><path d="M15 9h5V4"></path><path d="M15 15h5v5"></path><path d="M9 15H4v5"></path>'
-          : '<path d="M8 3H3v5"></path><path d="M16 3h5v5"></path><path d="M21 16v5h-5"></path><path d="M3 16v5h5"></path>';
+        els.fullscreenIcon.innerHTML = active ? getExitFullscreenMarkup() : getEnterFullscreenMarkup();
       }
     }
 
+    async function requestFullscreenCompat() {
+      const root = document.documentElement;
+      if (typeof root.requestFullscreen === 'function') {
+        try {
+          return await root.requestFullscreen({ navigationUI: 'hide' });
+        } catch (error) {
+          return await root.requestFullscreen();
+        }
+      }
+      if (typeof root.webkitRequestFullscreen === 'function') {
+        return await root.webkitRequestFullscreen();
+      }
+      throw new Error('Full screen is not available in this browser');
+    }
+
+    async function exitFullscreenCompat() {
+      if (typeof document.exitFullscreen === 'function') {
+        return await document.exitFullscreen();
+      }
+      if (typeof document.webkitExitFullscreen === 'function') {
+        return await document.webkitExitFullscreen();
+      }
+      throw new Error('Full screen is not available in this browser');
+    }
+
     async function toggleFullscreen() {
-      if (!document.fullscreenEnabled || typeof document.documentElement.requestFullscreen !== 'function') {
+      if (!canRequestFullscreen()) {
         setStatus('Full screen is not available in this browser', 'warn');
         return;
       }
 
       try {
-        if (document.fullscreenElement) {
-          await document.exitFullscreen?.();
+        if (getFullscreenElement()) {
+          await exitFullscreenCompat();
         } else {
-          await document.documentElement.requestFullscreen({ navigationUI: 'hide' });
+          await requestFullscreenCompat();
         }
       } catch (error) {
         setStatus(`Full screen failed: ${error.message}`, 'error');
@@ -2687,7 +2732,9 @@
       });
 
       document.addEventListener('fullscreenchange', syncFullscreenButton);
+      document.addEventListener('webkitfullscreenchange', syncFullscreenButton);
       document.addEventListener('fullscreenerror', () => setStatus('Full screen failed', 'error'));
+      document.addEventListener('webkitfullscreenerror', () => setStatus('Full screen failed', 'error'));
       document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape' && els.deviceSheet.classList.contains('show')) closeDeviceSheet();
       });
