@@ -2159,11 +2159,13 @@
       if (localTarget && state.player) {
         try {
           await state.player.previousTrack();
+          resetPlaybackProgressUI(0);
           return;
         } catch (_) {}
       }
       try {
         await apiPlayerCommand('/v1/me/player/previous');
+        resetPlaybackProgressUI(0);
       } catch (error) {
         if (localTarget && state.player) {
           try {
@@ -2180,11 +2182,13 @@
       if (localTarget && state.player) {
         try {
           await state.player.nextTrack();
+          resetPlaybackProgressUI(0);
           return;
         } catch (_) {}
       }
       try {
         await apiPlayerCommand('/v1/me/player/next');
+        resetPlaybackProgressUI(0);
       } catch (error) {
         if (localTarget && state.player) {
           try {
@@ -2531,6 +2535,30 @@
       updateTransportButtons(false);
     }
 
+    function resetPlaybackProgressUI(position = 0, duration = null) {
+      const safePos = Math.max(0, Math.round(position || 0));
+      const derivedDuration = duration == null
+        ? (state.playbackState?.duration || state.playbackState?.track_window?.current_track?.duration_ms || 0)
+        : Math.max(0, Math.round(duration || 0));
+
+      if (state.playbackState) {
+        state.playbackState.position = safePos;
+        if (derivedDuration > 0) state.playbackState.duration = derivedDuration;
+      }
+
+      state.lastPlayerSnapshotAt = Date.now();
+
+      if (!state.seeking) {
+        const max = derivedDuration > 0 ? String(derivedDuration) : (els.timeline.max || '1000');
+        const val = String(Math.min(safePos, derivedDuration || Number(max) || 1000));
+        els.currentTime.textContent = formatTime(safePos);
+        if (derivedDuration > 0) els.totalTime.textContent = formatTime(derivedDuration);
+        if (els.timeline.max !== max) els.timeline.max = max;
+        els.timeline.value = val;
+        updateRangeVisual(els.timeline);
+      }
+    }
+
     function deriveNowPosition() {
       if (!state.playbackState) return 0;
       const duration = state.playbackState.duration || state.playbackState.track_window?.current_track?.duration_ms || 0;
@@ -2867,6 +2895,7 @@
         setRecommendVisual(false);
         state.currentUri = newUri;
         syncLikedState(newUri);
+        resetPlaybackProgressUI(playbackState.position || 0, playbackState.duration || current.duration_ms || 0);
       }
 
       updateTransportButtons(true);
@@ -3609,6 +3638,10 @@
       { label: 'Shuffle', value: isShuffleOn() ? 'On' : 'Off', action: () => clickLegacy(legacy.shuffleBtn) },
       { label: 'Recommend', value: legacy.recommendBtn && legacy.recommendBtn.classList.contains('active') ? 'Queued' : '', action: () => clickLegacy(legacy.recommendBtn) },
       { label: 'Like Song', value: isLiked() ? 'Yes' : '', action: () => clickLegacy(legacy.heartBtn) },
+      { label: 'Activate audio', value: state.activated ? 'Yes' : '', action: () => {
+        if (typeof activateAudio === 'function') activateAudio();
+        else clickLegacy(legacy.setupAudioBtn);
+      } },
       { label: 'Use this device', value: isUsingThisDevice() ? 'Yes' : '', action: () => { activateAudioAndUseDevice(); } },
       { label: 'Full Screen', value: isFullscreen() ? 'On' : '', action: toggleFullscreen }
     ];
@@ -3879,6 +3912,7 @@
       if (isUsingThisDevice() || !getCommandDeviceId()) {
         await activateAudioAndUseDevice();
       }
+      resetPlaybackProgressUI(0, picked.duration_ms || 0);
       const orderedUris = items.slice(index, index + 100).map((item) => item?.track?.uri).filter(Boolean);
       if (!orderedUris.length) orderedUris.push(picked.uri);
       await apiPlayerCommand('/v1/me/player/play', {
