@@ -877,8 +877,6 @@
     --screen-shadow: 0 1px 0 rgba(255,255,255,.06), inset 0 10px 16px rgba(255,255,255,.04), inset 0 -6px 14px rgba(0,0,0,.09), inset 0 0 0 1px rgba(255,255,255,.07);
     --wheel-shadow: 0 18px 40px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.06), inset 0 -2px 8px rgba(0,0,0,.22), inset 0 0 0 1px rgba(255,255,255,.04);
     --center-shadow: inset 0 1px 0 rgba(255,255,255,.08), inset 0 -2px 7px rgba(0,0,0,.28), 0 2px 10px rgba(0,0,0,.14);
-    --shine-x: 0px;
-    --shine-y: 0px;
     position: fixed;
     inset: 0;
     display: grid;
@@ -927,8 +925,7 @@
     position: absolute;
     inset: -18% -8%;
     background: linear-gradient(130deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.03) 26%, transparent 42%, rgba(255,255,255,.08) 82%, rgba(255,255,255,.12) 100%);
-    opacity: .4;
-    transform: translate3d(var(--shine-x), var(--shine-y), 0);
+    opacity: .34;
     pointer-events: none;
     mix-blend-mode: screen;
   }
@@ -1029,22 +1026,47 @@
   .np-wrap {
     height: 100%;
     display: grid;
-    grid-template-rows: auto auto 1fr;
-    gap: 9px;
+    grid-template-rows: auto 1fr auto;
+    gap: 8px;
     padding: 7px 8px 8px;
   }
-  .np-meta {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
+  .np-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 8px;
+    min-height: 16px;
     font-size: 12px;
     color: var(--screen-soft);
+  }
+  .np-context {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .np-like {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--screen-strong);
+    display: inline-grid;
+    place-items: center;
+    cursor: pointer;
+  }
+  .np-like svg {
+    width: 16px;
+    height: 16px;
+    display: block;
   }
   .np-main {
     display: grid;
     grid-template-columns: 88px 1fr;
     gap: 12px;
     align-items: start;
+    min-height: 0;
   }
   .np-art {
     width: 88px;
@@ -1059,12 +1081,15 @@
     object-fit: cover;
     filter: grayscale(1) contrast(.95);
   }
-  .np-text { min-width: 0; }
+  .np-text {
+    min-width: 0;
+    align-self: start;
+  }
   .np-title {
     font-size: clamp(16px, 4vw, 21px);
-    line-height: 1.02;
+    line-height: 1.04;
     font-weight: 700;
-    min-height: calc(1.04em * 2);
+    min-height: calc(1.08em * 2);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -1073,19 +1098,19 @@
   .np-artist, .np-album {
     margin-top: 6px;
     font-size: clamp(13px, 3.2vw, 17px);
-    line-height: 1.08;
+    line-height: 1.12;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   .np-album { opacity: .74; }
-  .np-progress {
-    margin-top: 4px;
+  .np-bottom {
+    align-self: end;
     display: grid;
     gap: 6px;
-    align-content: start;
+    padding-top: 4px;
   }
-  .np-bar, .np-volbar {
+  .np-bar {
     height: 8px;
     position: relative;
     overflow: hidden;
@@ -1093,13 +1118,13 @@
     background: rgba(255,255,255,.14);
     box-shadow: inset 0 1px 0 rgba(255,255,255,.15);
   }
-  .np-bar > span, .np-volbar > span {
+  .np-bar > span {
     position: absolute;
     inset: 0 auto 0 0;
     width: 0%;
     background: rgba(0,0,0,.88);
   }
-  .np-times, .np-subline {
+  .np-times {
     display: flex;
     justify-content: space-between;
     gap: 12px;
@@ -1129,15 +1154,6 @@
     touch-action: none;
     -webkit-tap-highlight-color: transparent;
     overflow: hidden;
-  }
-  .wheel::before {
-    content: '';
-    position: absolute;
-    inset: 17%;
-    border-radius: 50%;
-    border: 1px solid rgba(255,255,255,.05);
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,.22);
-    pointer-events: none;
   }
   .wheel::after {
     content: '';
@@ -1170,13 +1186,13 @@
   .wheel-label.next,
   .wheel-label.play {
     display: grid; place-items: center;
-    width: 16%; height: 16%;
-    font-size: clamp(26px, 6vw, 32px);
+    width: 19%; height: 19%;
+    font-size: clamp(24px, 5.6vw, 30px);
     line-height: 1;
   }
-  .wheel-label.prev { left: 10%; top: 50%; transform: translateY(-50%); }
-  .wheel-label.next { right: 10%; top: 50%; transform: translateY(-50%); }
-  .wheel-label.play { left: 50%; bottom: 9.5%; transform: translateX(-50%); }
+  .wheel-label.prev { left: 8%; top: 50%; transform: translateY(-50%); }
+  .wheel-label.next { right: 8%; top: 50%; transform: translateY(-50%); }
+  .wheel-label.play { left: 50%; bottom: 7.5%; transform: translateX(-50%); }
   .wheel-center {
     position: absolute;
     inset: 34%;
@@ -3207,11 +3223,25 @@
     startT: 0,
     moved: false,
     startDist: 0,
-    shineReady: false
+    likedTracks: [],
+    likedLoading: false,
+    likedLoaded: false,
+    playlists: [],
+    playlistsLoading: false,
+    playlistsLoaded: false,
+    playlistTracksById: {},
+    activePlaylist: null,
+    activePlaylistIndex: 0,
+    playbackClock: { positionMs: 0, durationMs: 0, stamp: Date.now(), playing: false, trackKey: '' }
   };
 
+  if (legacy.signOutBtn) {
+    legacy.signOutBtn.hidden = true;
+    legacy.signOutBtn.style.display = 'none';
+  }
+
   function isAuthed() {
-    return !!(legacy.signOutBtn && !legacy.signOutBtn.classList.contains('hidden'));
+    return typeof hasTokens === 'function' ? hasTokens() : false;
   }
   function isDisabled(el) { return !el || !!el.disabled; }
   function clickLegacy(el) { if (!el || el.disabled) return; el.click(); }
@@ -3224,6 +3254,56 @@
   function totalTime(){ return text(legacy.totalTime, '0:00'); }
   function progressValue(){ return legacy.timeline ? Number(legacy.timeline.value || 0) : 0; }
   function volumeValue(){ return legacy.volumeSlider ? Number(legacy.volumeSlider.value || 0) : 0; }
+  function parseTimeMs(value){
+    const raw = String(value || '').trim();
+    if (!raw) return 0;
+    const cleaned = raw.replace(/^-/, '');
+    const parts = cleaned.split(':').map((part) => Number(part));
+    if (parts.some((n) => Number.isNaN(n))) return 0;
+    if (parts.length === 3) return ((parts[0] * 60 + parts[1]) * 60 + parts[2]) * 1000;
+    if (parts.length === 2) return (parts[0] * 60 + parts[1]) * 1000;
+    return parts[0] * 1000;
+  }
+  function formatTimeMs(ms){
+    const totalSeconds = Math.max(0, Math.floor((ms || 0) / 1000));
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    if (hours > 0) return `${hours}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+    return `${minutes}:${String(seconds).padStart(2,'0')}`;
+  }
+  function syncPlaybackClock(){
+    const trackKey = `${currentTrackTitle()}|${currentArtist()}`;
+    const durationMs = parseTimeMs(totalTime());
+    const positionMs = parseTimeMs(currentTime());
+    const now = Date.now();
+    if (trackKey !== state.playbackClock.trackKey) {
+      state.playbackClock.trackKey = trackKey;
+      state.playbackClock.positionMs = positionMs;
+      state.playbackClock.durationMs = durationMs;
+      state.playbackClock.stamp = now;
+      state.playbackClock.playing = isPlaying();
+      return;
+    }
+    if (durationMs > 0) state.playbackClock.durationMs = durationMs;
+    if (Math.abs(positionMs - state.playbackClock.positionMs) > 1400 || !state.playbackClock.playing || !isPlaying()) {
+      state.playbackClock.positionMs = positionMs;
+    }
+    state.playbackClock.playing = isPlaying();
+    state.playbackClock.stamp = now;
+  }
+  function displayDurationMs(){
+    return Math.max(0, state.playbackClock.durationMs || parseTimeMs(totalTime()));
+  }
+  function displayPositionMs(){
+    const duration = displayDurationMs();
+    let position = Math.max(0, state.playbackClock.positionMs || parseTimeMs(currentTime()));
+    if (state.playbackClock.playing) {
+      position += Date.now() - (state.playbackClock.stamp || Date.now());
+    }
+    if (duration > 0) position = Math.min(duration, position);
+    return Math.max(0, position);
+  }
   function isShuffleOn(){ return !!legacy.shuffleBtn && legacy.shuffleBtn.classList.contains('active'); }
   function isLiked(){ return !!legacy.heartBtn && legacy.heartBtn.classList.contains('active'); }
   function isAudioReady(){ return !!legacy.audioBtn && legacy.audioBtn.classList.contains('active'); }
@@ -3260,18 +3340,19 @@
   }
 
   function buildHomeItems(){
-    return [
+    const items = [
       { label: 'Now Playing', value: '', type: 'nav', next: 'nowplaying' },
+      { label: 'Liked Songs', value: state.likedLoaded ? String(state.likedTracks.length || '') : '', type: 'nav', next: 'liked' },
+      { label: 'Playlists', value: state.playlistsLoaded ? String(state.playlists.length || '') : '', type: 'nav', next: 'playlists' },
       { label: 'Devices', value: state.devices.find((d) => d.active)?.label || '', type: 'nav', next: 'devices' },
       { label: 'Shuffle', value: isShuffleOn() ? 'On' : 'Off', action: () => clickLegacy(legacy.shuffleBtn) },
       { label: 'Recommend', value: legacy.recommendBtn && legacy.recommendBtn.classList.contains('active') ? 'Queued' : '', action: () => clickLegacy(legacy.recommendBtn) },
       { label: 'Like Song', value: isLiked() ? 'Yes' : '', action: () => clickLegacy(legacy.heartBtn) },
       { label: 'Audio', value: isAudioReady() ? 'On' : '', action: () => clickLegacy(legacy.setupAudioBtn) },
-      { label: 'This Browser', value: isUsingThisDevice() ? 'On' : '', action: () => clickLegacy(legacy.setupDeviceBtn) },
-      { label: 'Remote Select', value: isRemoteSelected() ? 'On' : '', action: refreshDevices },
-      { label: 'Full Screen', value: isFullscreen() ? 'On' : '', action: toggleFullscreen },
-      { label: isAuthed() ? 'Sign Out' : 'Connect Spotify', value: '', action: () => isAuthed() ? clickLegacy(legacy.signOutBtn) : clickLegacy(legacy.loginBtn) }
+      { label: 'Full Screen', value: isFullscreen() ? 'On' : '', action: toggleFullscreen }
     ];
+    if (!isAuthed()) items.push({ label: 'Connect Spotify', value: '', action: () => clickLegacy(legacy.loginBtn) });
+    return items;
   }
 
   function buildDeviceItems(){
@@ -3284,6 +3365,198 @@
     }));
     items.unshift({ label: 'Refresh', value: '', action: refreshDevices });
     return items;
+  }
+
+
+  function buildPlaylistItems(){
+    if (!isAuthed()) {
+      return [{ label: 'Connect Spotify', value: '', action: () => clickLegacy(legacy.loginBtn) }];
+    }
+    if (state.playlistsLoading && !state.playlistsLoaded) {
+      return [{ label: 'Loading playlists…', value: '', disabled: true }];
+    }
+    if (!state.playlists.length) {
+      return [{ label: 'No playlists', value: '', disabled: true }];
+    }
+    return state.playlists.map((playlist, index) => ({
+      label: playlist.name || 'Playlist',
+      value: playlist.tracks?.total ? String(playlist.tracks.total) : '',
+      next: 'playlistTracks',
+      action: () => openPlaylistTracks(index)
+    }));
+  }
+
+  function buildPlaylistTrackItems(){
+    const playlist = state.activePlaylist;
+    const tracks = playlist?.tracks || [];
+    if (!playlist) return [{ label: 'No playlist', value: '', disabled: true }];
+    if (playlist.loading && !tracks.length) return [{ label: 'Loading tracks…', value: '', disabled: true }];
+    if (!tracks.length) return [{ label: 'No tracks', value: '', disabled: true }];
+    return tracks.map((item, index) => ({
+      label: item.track.name || 'Track',
+      value: ((item.track.artists || []).map((artist) => artist.name).join(', ')).slice(0, 24),
+      action: () => playPlaylistSong(index)
+    }));
+  }
+
+  async function openPlaylists(force = false){
+    state.view = 'playlists';
+    render();
+    if (force || !state.playlistsLoaded) {
+      await fetchPlaylists(force);
+    }
+    state.selected = 0;
+    render();
+  }
+
+  async function openPlaylistTracks(index){
+    const playlist = state.playlists[index];
+    if (!playlist) return;
+    state.activePlaylistIndex = index;
+    state.activePlaylist = { id: playlist.id, uri: playlist.uri, name: playlist.name || 'Playlist', tracks: state.playlistTracksById[playlist.id] || [], loading: true };
+    state.view = 'playlistTracks';
+    state.selected = 0;
+    render();
+    try {
+      const tracks = await fetchPlaylistTracks(playlist.id);
+      state.activePlaylist = { id: playlist.id, uri: playlist.uri, name: playlist.name || 'Playlist', tracks, loading: false };
+    } catch (error) {
+      state.activePlaylist = { id: playlist.id, uri: playlist.uri, name: playlist.name || 'Playlist', tracks: [], loading: false };
+      console.warn('Playlist tracks failed', error);
+    }
+    render();
+  }
+
+  async function playPlaylistSong(index){
+    const playlist = state.activePlaylist;
+    if (!playlist?.uri) return;
+    try {
+      await apiPlayerCommand('/v1/me/player/play', {
+        method: 'PUT',
+        body: { context_uri: playlist.uri, offset: { position: Math.max(0, index) } }
+      });
+      state.view = 'nowplaying';
+      if (typeof refreshPlaybackSoon === 'function') refreshPlaybackSoon().catch(() => {});
+      render();
+    } catch (error) {
+      console.warn('Playlist playback failed', error);
+    }
+  }
+
+  async function fetchPagedItems(basePath, limit = 50){
+    const items = [];
+    let offset = 0;
+    while (true) {
+      const joiner = basePath.includes('?') ? '&' : '?';
+      const data = await spotifyFetch(`${basePath}${joiner}limit=${limit}&offset=${offset}`);
+      const pageItems = Array.isArray(data?.items) ? data.items : [];
+      items.push(...pageItems);
+      if (!data?.next || !pageItems.length) break;
+      offset += pageItems.length;
+    }
+    return items;
+  }
+
+  async function fetchLikedSongs(force = false){
+    if (!isAuthed()) {
+      state.likedTracks = [];
+      state.likedLoaded = false;
+      return [];
+    }
+    if (state.likedLoading) return state.likedTracks;
+    if (state.likedLoaded && !force) return state.likedTracks;
+    state.likedLoading = true;
+    try {
+      const items = await fetchPagedItems('/v1/me/tracks', 50);
+      state.likedTracks = items.filter((item) => item && item.track && item.track.uri);
+      state.likedLoaded = true;
+      return state.likedTracks;
+    } catch (error) {
+      state.likedTracks = [];
+      state.likedLoaded = false;
+      console.warn('Liked songs failed', error);
+      return [];
+    } finally {
+      state.likedLoading = false;
+    }
+  }
+
+  async function fetchPlaylists(force = false){
+    if (!isAuthed()) {
+      state.playlists = [];
+      state.playlistsLoaded = false;
+      return [];
+    }
+    if (state.playlistsLoading) return state.playlists;
+    if (state.playlistsLoaded && !force) return state.playlists;
+    state.playlistsLoading = true;
+    try {
+      const items = await fetchPagedItems('/v1/me/playlists', 50);
+      state.playlists = items.filter((item) => item && item.id && item.uri);
+      state.playlistsLoaded = true;
+      return state.playlists;
+    } catch (error) {
+      state.playlists = [];
+      state.playlistsLoaded = false;
+      console.warn('Playlist fetch failed', error);
+      return [];
+    } finally {
+      state.playlistsLoading = false;
+    }
+  }
+
+  async function fetchPlaylistTracks(playlistId, force = false){
+    if (!playlistId || !isAuthed()) return [];
+    if (state.playlistTracksById[playlistId] && !force) return state.playlistTracksById[playlistId];
+    const items = await fetchPagedItems(`/v1/playlists/${playlistId}/tracks`, 100);
+    const clean = items.filter((item) => item && item.track && item.track.uri);
+    state.playlistTracksById[playlistId] = clean;
+    return clean;
+  }
+
+  function buildLikedItems(){
+    if (!isAuthed()) {
+      return [{ label: 'Connect Spotify', value: '', action: () => clickLegacy(legacy.loginBtn) }];
+    }
+    if (state.likedLoading && !state.likedLoaded) {
+      return [{ label: 'Loading liked songs…', value: '', disabled: true }];
+    }
+    if (!state.likedTracks.length) {
+      return [{ label: 'No liked songs', value: '', disabled: true }];
+    }
+    return state.likedTracks.map((item, index) => ({
+      label: item.track.name || 'Track',
+      value: ((item.track.artists || []).map((artist) => artist.name).join(', ')).slice(0, 24),
+      action: () => playLikedSong(index)
+    }));
+  }
+
+  async function openLikedSongs(force = false){
+    state.view = 'liked';
+    render();
+    if (force || !state.likedLoaded) {
+      await fetchLikedSongs(force);
+    }
+    state.selected = 0;
+    render();
+  }
+
+  async function playLikedSong(index){
+    const items = state.likedTracks || [];
+    const picked = items[index]?.track;
+    if (!picked?.uri) return;
+    try {
+      const uris = items.map((item) => item?.track?.uri).filter(Boolean);
+      await apiPlayerCommand('/v1/me/player/play', {
+        method: 'PUT',
+        body: { uris, offset: { position: Math.max(0, index) } }
+      });
+      state.view = 'nowplaying';
+      if (typeof refreshPlaybackSoon === 'function') refreshPlaybackSoon().catch(() => {});
+      render();
+    } catch (error) {
+      console.warn('Liked playback failed', error);
+    }
   }
 
   function escapeHtml(str){
@@ -3316,13 +3589,20 @@
   function renderNowPlaying(){
     ui.topTitle.textContent = 'Now Playing';
     ui.topLeft.style.opacity = isAuthed() ? '1' : '.5';
+    syncPlaybackClock();
     const art = currentArt();
-    const progress = Math.max(0, Math.min(100, progressValue() / 10));
-    const volume = Math.max(0, Math.min(100, volumeValue()));
     const meta = currentContext();
+    const durationMs = displayDurationMs();
+    const positionMs = displayPositionMs();
+    const progress = durationMs > 0 ? Math.max(0, Math.min(100, (positionMs / durationMs) * 100)) : 0;
     ui.nowView.innerHTML = `
       <div class="np-wrap">
-        <div class="np-meta"><span>${escapeHtml(currentTime())}</span><span>${escapeHtml(totalTime())}</span></div>
+        <div class="np-header">
+          <span class="np-context">${escapeHtml(meta)}</span>
+          <button id="npLikeBtn" class="np-like" type="button" aria-label="${isLiked() ? 'Remove from liked songs' : 'Save to liked songs'}" title="${isLiked() ? 'Remove from liked songs' : 'Save to liked songs'}">
+            <svg viewBox="0 0 24 24" fill="${isLiked() ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.9-4.35-9.43-8.83C.7 8.87 2.02 4.5 6.12 4.5c2.49 0 4.24 1.39 5.88 3.67 1.64-2.28 3.39-3.67 5.88-3.67 4.1 0 5.42 4.37 3.55 7.67C18.9 16.65 12 21 12 21z"></path></svg>
+          </button>
+        </div>
         <div class="np-main">
           <div class="np-art">${art ? `<img src="${escapeHtml(art)}" alt="Album art">` : ''}</div>
           <div class="np-text">
@@ -3331,13 +3611,21 @@
             <div class="np-album">${escapeHtml(meta)}</div>
           </div>
         </div>
-        <div class="np-progress">
+        <div class="np-bottom">
           <div class="np-bar"><span style="width:${progress}%"></span></div>
-          <div class="np-times"><span>${isShuffleOn() ? 'Shuffle On' : 'Shuffle Off'}</span><span>${isLiked() ? 'Liked' : 'Not Liked'}</span></div>
-          <div class="np-volbar"><span style="width:${volume}%"></span></div>
-          <div class="np-times"><span>Vol</span><span>${volume}%</span></div>
+          <div class="np-times"><span>${escapeHtml(formatTimeMs(positionMs))}</span><span>${escapeHtml(formatTimeMs(durationMs))}</span></div>
         </div>
       </div>`;
+    const likeBtn = ui.nowView.querySelector('#npLikeBtn');
+    if (likeBtn) {
+      likeBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        clickLegacy(legacy.heartBtn);
+        setTimeout(sync, 120);
+        setTimeout(renderNowPlaying, 280);
+      });
+    }
     ui.nowView.classList.add('active');
     ui.menuView.classList.remove('active');
     updateVisualizer();
@@ -3351,6 +3639,18 @@
     }
     if (state.view === 'devices') {
       renderMenuView('Devices', buildDeviceItems());
+      return;
+    }
+    if (state.view === 'liked') {
+      renderMenuView('Liked Songs', buildLikedItems());
+      return;
+    }
+    if (state.view === 'playlists') {
+      renderMenuView('Playlists', buildPlaylistItems());
+      return;
+    }
+    if (state.view === 'playlistTracks') {
+      renderMenuView(state.activePlaylist?.name || 'Playlist', buildPlaylistTrackItems());
       return;
     }
     renderMenuView('sp0tify', buildHomeItems());
@@ -3391,6 +3691,18 @@
       render();
       return;
     }
+    if (item.next === 'liked') {
+      openLikedSongs();
+      return;
+    }
+    if (item.next === 'playlists') {
+      openPlaylists();
+      return;
+    }
+    if (item.next === 'playlistTracks') {
+      if (typeof item.action === 'function') item.action();
+      return;
+    }
     if (typeof item.action === 'function') {
       item.action();
       setTimeout(render, 180);
@@ -3399,6 +3711,12 @@
   }
 
   function goMenu(){
+    if (state.view === 'playlistTracks') {
+      state.view = 'playlists';
+      state.selected = state.activePlaylistIndex || 0;
+      render();
+      return;
+    }
     if (state.view === 'home') {
       state.selected = 0;
       render();
@@ -3471,7 +3789,7 @@
 
   function onWheelDown(event){
     const g = wheelGeometry(event);
-    if (g.dist > 1.05) return;
+    if (g.dist > 1.14) return;
     state.gestureActive = true;
     state.pointerId = event.pointerId;
     state.startAngle = g.angle;
@@ -3493,7 +3811,7 @@
     state.lastAngle = g.angle;
     const travel = Math.hypot(event.clientX - state.startX, event.clientY - state.startY);
     if (travel > 10) state.moved = true;
-    if (g.dist > 0.18) {
+    if (g.dist > 0.04) {
       state.accum += delta;
       const threshold = 0.12;
       while (Math.abs(state.accum) >= threshold) {
@@ -3512,7 +3830,7 @@
     const travel = Math.hypot(event.clientX - state.startX, event.clientY - state.startY);
     const tapish = travel < 12 && duration < 320;
     if (tapish) {
-      if (g.dist <= 0.34) activateSelection();
+      if (g.dist <= 0.26) activateSelection();
       else handleSectorTap(sectorFromAngle(g.angle));
     }
     state.gestureActive = false;
@@ -3521,47 +3839,7 @@
     event.preventDefault();
   }
 
-  function setShine(x, y){
-    ui.app.style.setProperty('--shine-x', `${x}px`);
-    ui.app.style.setProperty('--shine-y', `${y}px`);
-  }
-
-  function installParallax(){
-    if (state.shineReady) return;
-    state.shineReady = true;
-
-    window.addEventListener('pointermove', (event) => {
-      if (event.pointerType === 'touch') return;
-      const x = ((event.clientX / window.innerWidth) - 0.5) * 10;
-      const y = ((event.clientY / window.innerHeight) - 0.5) * 8;
-      setShine(x, y);
-    }, { passive: true });
-
-    const enableOrientation = () => {
-      if (!window.DeviceOrientationEvent) return;
-      const handler = (event) => {
-        const gamma = Math.max(-20, Math.min(20, Number(event.gamma || 0)));
-        const beta = Math.max(-20, Math.min(20, Number(event.beta || 0)));
-        setShine(gamma * 0.55, beta * 0.28);
-      };
-      window.addEventListener('deviceorientation', handler, { passive: true });
-    };
-
-    if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') {
-      const once = async () => {
-        try {
-          const res = await DeviceOrientationEvent.requestPermission();
-          if (res === 'granted') enableOrientation();
-        } catch (_) {}
-        ui.app.removeEventListener('click', once);
-        ui.app.removeEventListener('touchstart', once);
-      };
-      ui.app.addEventListener('click', once, { once: true, passive: true });
-      ui.app.addEventListener('touchstart', once, { once: true, passive: true });
-    } else {
-      enableOrientation();
-    }
-  }
+  function installParallax(){ return; }
 
   ui.center.addEventListener('click', (event) => { event.preventDefault(); activateSelection(); });
   ui.wheel.addEventListener('pointerdown', onWheelDown, { passive: false });
@@ -3587,6 +3865,7 @@
   }
 
   function sync(){
+    syncPlaybackClock();
     const token = computeRenderToken();
     if (token !== state.renderToken) {
       state.renderToken = token;
@@ -3594,10 +3873,14 @@
     }
   }
 
-  installParallax();
   render();
   setTimeout(refreshDevices, 400);
   setInterval(sync, 300);
+  setInterval(() => {
+    if (state.view === 'nowplaying' && ui.nowView.classList.contains('active')) {
+      renderNowPlaying();
+    }
+  }, 250);
   setTimeout(sync, 900);
   document.addEventListener('fullscreenchange', render);
   document.addEventListener('webkitfullscreenchange', render);
