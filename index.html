@@ -3332,21 +3332,36 @@
   function syncPlaybackClock(){
     const trackKey = `${currentTrackTitle()}|${currentArtist()}`;
     const durationMs = parseTimeMs(totalTime());
-    const positionMs = parseTimeMs(currentTime());
+    const reportedPositionMs = parseTimeMs(currentTime());
     const now = Date.now();
+    const wasPlaying = !!state.playbackClock.playing;
+    const isNowPlaying = isPlaying();
+
     if (trackKey !== state.playbackClock.trackKey) {
       state.playbackClock.trackKey = trackKey;
-      state.playbackClock.positionMs = positionMs;
+      state.playbackClock.positionMs = reportedPositionMs;
       state.playbackClock.durationMs = durationMs;
       state.playbackClock.stamp = now;
-      state.playbackClock.playing = isPlaying();
+      state.playbackClock.playing = isNowPlaying;
       return;
     }
-    if (durationMs > 0) state.playbackClock.durationMs = durationMs;
-    if (Math.abs(positionMs - state.playbackClock.positionMs) > 1400 || !state.playbackClock.playing || !isPlaying()) {
-      state.playbackClock.positionMs = positionMs;
+
+    if (wasPlaying) {
+      state.playbackClock.positionMs += Math.max(0, now - (state.playbackClock.stamp || now));
     }
-    state.playbackClock.playing = isPlaying();
+
+    if (durationMs > 0) state.playbackClock.durationMs = durationMs;
+
+    const drift = Math.abs(reportedPositionMs - state.playbackClock.positionMs);
+    if (drift > 1700 || !wasPlaying || !isNowPlaying) {
+      state.playbackClock.positionMs = reportedPositionMs;
+    }
+
+    if (state.playbackClock.durationMs > 0) {
+      state.playbackClock.positionMs = Math.min(state.playbackClock.durationMs, state.playbackClock.positionMs);
+    }
+    state.playbackClock.positionMs = Math.max(0, state.playbackClock.positionMs);
+    state.playbackClock.playing = isNowPlaying;
     state.playbackClock.stamp = now;
   }
   function displayDurationMs(){
@@ -3422,16 +3437,39 @@
     return out;
   }
 
+  async function activateAudioAndUseDevice(){
+    try {
+      if (typeof activateAudio === 'function') {
+        await activateAudio();
+      } else {
+        clickLegacy(legacy.setupAudioBtn);
+      }
+      await new Promise((resolve) => setTimeout(resolve, 120));
+      if (typeof transferPlayback === 'function') {
+        await transferPlayback();
+      } else {
+        clickLegacy(legacy.setupDeviceBtn);
+      }
+      if (typeof refreshPlaybackSoon === 'function') {
+        await refreshPlaybackSoon(180);
+      }
+    } catch (error) {
+      console.warn('Audio/device handoff failed', error);
+    } finally {
+      setTimeout(render, 80);
+      setTimeout(sync, 240);
+    }
+  }
+
   function buildHomeItems(){
     const items = [
       { label: 'Now Playing', value: '', type: 'nav', next: 'nowplaying' },
       { label: 'Liked Songs', value: state.likedLoaded ? String(state.likedTracks.length || '') : '', type: 'nav', next: 'liked' },
-      { label: 'Playlists', value: state.playlistsLoaded ? String(state.playlists.length || '') : '', type: 'nav', next: 'playlists' },
       { label: 'Devices', value: state.devices.find((d) => d.active)?.label || '', type: 'nav', next: 'devices' },
       { label: 'Shuffle', value: isShuffleOn() ? 'On' : 'Off', action: () => clickLegacy(legacy.shuffleBtn) },
       { label: 'Recommend', value: legacy.recommendBtn && legacy.recommendBtn.classList.contains('active') ? 'Queued' : '', action: () => clickLegacy(legacy.recommendBtn) },
       { label: 'Like Song', value: isLiked() ? 'Yes' : '', action: () => clickLegacy(legacy.heartBtn) },
-      { label: 'Audio', value: isAudioReady() ? 'On' : '', action: () => clickLegacy(legacy.setupAudioBtn) },
+      { label: 'Audio', value: isAudioReady() ? 'On' : '', action: () => { activateAudioAndUseDevice(); } },
       { label: 'Full Screen', value: isFullscreen() ? 'On' : '', action: toggleFullscreen }
     ];
     if (!isAuthed()) items.push({ label: 'Connect Spotify', value: '', action: () => clickLegacy(legacy.loginBtn) });
@@ -3630,12 +3668,18 @@
     if (!picked?.uri) return;
     try {
       const uris = items.map((item) => item?.track?.uri).filter(Boolean);
+      const safeIndex = Math.max(0, Math.min(index, uris.length - 1));
+      const orderedUris = uris.slice(safeIndex).concat(uris.slice(0, safeIndex));
       await apiPlayerCommand('/v1/me/player/play', {
         method: 'PUT',
-        body: { uris, offset: { position: Math.max(0, index) } }
+        body: { uris: orderedUris, position_ms: 0 }
       });
       state.view = 'nowplaying';
-      if (typeof refreshPlaybackSoon === 'function') refreshPlaybackSoon().catch(() => {});
+      syncPlaybackClock();
+      render();
+      if (typeof refreshPlaybackSoon === 'function') {
+        await refreshPlaybackSoon(220);
+      }
       render();
     } catch (error) {
       console.warn('Liked playback failed', error);
@@ -3767,14 +3811,6 @@
       renderMenuView('Liked Songs', buildLikedItems());
       return;
     }
-    if (state.view === 'playlists') {
-      renderMenuView('Playlists', buildPlaylistItems());
-      return;
-    }
-    if (state.view === 'playlistTracks') {
-      renderMenuView(state.activePlaylist?.name || 'Playlist', buildPlaylistTrackItems());
-      return;
-    }
     renderMenuView('sp0tify', buildHomeItems());
   }
 
@@ -3798,8 +3834,6 @@
   function activateSelection(){
     haptic();
     if (state.view === 'nowplaying') {
-      clickLegacy(legacy.playPauseBtn);
-      setTimeout(render, 120);
       return;
     }
     const item = state.menuItems[state.selected];
@@ -3819,18 +3853,11 @@
       openLikedSongs();
       return;
     }
-    if (item.next === 'playlists') {
-      openPlaylists();
-      return;
-    }
-    if (item.next === 'playlistTracks') {
-      if (typeof item.action === 'function') item.action();
-      return;
-    }
     if (typeof item.action === 'function') {
       item.action();
-      setTimeout(render, 180);
-      setTimeout(render, 700);
+      setTimeout(render, 80);
+      setTimeout(sync, 220);
+      setTimeout(render, 360);
     }
   }
 
@@ -3838,12 +3865,6 @@
     if (state.view === 'nowplaying') {
       clearNowPlayingCache();
       stopNowPlayingLoop();
-    }
-    if (state.view === 'playlistTracks') {
-      state.view = 'playlists';
-      state.selected = state.activePlaylistIndex || 0;
-      render();
-      return;
     }
     if (state.view === 'home') {
       state.selected = 0;
@@ -3911,12 +3932,34 @@
   function handleSectorTap(sector){
     haptic();
     if (sector === 'menu') { goMenu(); return; }
-    if (sector === 'prev') { clickLegacy(legacy.prevBtn); return; }
-    if (sector === 'next') { clickLegacy(legacy.nextBtn); return; }
-    if (sector === 'play') { clickLegacy(legacy.playPauseBtn); return; }
+    if (sector === 'prev') {
+      if (typeof commandPrevious === 'function') {
+        commandPrevious().then(() => { if (typeof refreshPlaybackSoon === 'function') return refreshPlaybackSoon(120); }).then(() => { render(); }).catch(() => clickLegacy(legacy.prevBtn));
+      } else {
+        clickLegacy(legacy.prevBtn);
+      }
+      return;
+    }
+    if (sector === 'next') {
+      if (typeof commandNext === 'function') {
+        commandNext().then(() => { if (typeof refreshPlaybackSoon === 'function') return refreshPlaybackSoon(120); }).then(() => { render(); }).catch(() => clickLegacy(legacy.nextBtn));
+      } else {
+        clickLegacy(legacy.nextBtn);
+      }
+      return;
+    }
+    if (sector === 'play') {
+      if (typeof commandTogglePlay === 'function') {
+        commandTogglePlay().then(() => { if (typeof refreshPlaybackSoon === 'function') return refreshPlaybackSoon(120); }).then(() => { render(); }).catch(() => clickLegacy(legacy.playPauseBtn));
+      } else {
+        clickLegacy(legacy.playPauseBtn);
+      }
+      return;
+    }
   }
 
   function onWheelDown(event){
+    if (event.target === ui.center) return;
     const g = wheelGeometry(event);
     if (g.dist > 1.14) return;
     ui.wheel.classList.add('active');
@@ -3935,6 +3978,7 @@
   }
 
   function onWheelMove(event){
+    if (event.target === ui.center) return;
     if (!state.gestureActive || event.pointerId !== state.pointerId) return;
     const g = wheelGeometry(event);
     const delta = normalizeDelta(g.angle - state.lastAngle);
@@ -3944,7 +3988,7 @@
     if (g.dist > 0.04) {
       ui.wheel.classList.add('turning');
       state.accum += delta;
-      const threshold = 0.12;
+      const threshold = 0.095;
       while (Math.abs(state.accum) >= threshold) {
         const dir = state.accum > 0 ? 1 : -1;
         selectStep(dir);
@@ -3955,13 +3999,14 @@
   }
 
   function onWheelUp(event){
+    if (event.target === ui.center) return;
     if (!state.gestureActive || event.pointerId !== state.pointerId) return;
     ui.wheel.classList.remove('active');
     ui.wheel.classList.remove('turning');
     const g = wheelGeometry(event);
     const duration = Date.now() - state.startT;
     const travel = Math.hypot(event.clientX - state.startX, event.clientY - state.startY);
-    const tapish = travel < 12 && duration < 320;
+    const tapish = travel < 14 && duration < 280;
     if (tapish) {
       if (g.dist <= 0.26) activateSelection();
       else handleSectorTap(sectorFromAngle(g.angle));
@@ -3974,7 +4019,19 @@
 
   function installParallax(){ return; }
 
-  ui.center.addEventListener('click', (event) => { event.preventDefault(); activateSelection(); });
+  ui.center.addEventListener('pointerdown', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+  }, { passive: false });
+  ui.center.addEventListener('pointerup', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    activateSelection();
+  }, { passive: false });
+  ui.center.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+  });
   ui.wheel.addEventListener('pointerdown', onWheelDown, { passive: false });
   ui.wheel.addEventListener('pointermove', onWheelMove, { passive: false });
   ui.wheel.addEventListener('pointerup', onWheelUp, { passive: false });
@@ -4010,7 +4067,6 @@
       state.selected,
       state.menuOffset,
       state.likedTracks.length,
-      state.playlists.length,
       devices.length,
       activeDevice ? activeDevice.id : ''
     ].join('|');
