@@ -1028,19 +1028,22 @@
   .pod-scroll-indicator {
     position: absolute;
     top: 4px;
-    right: 3px;
+    right: 2px;
     bottom: 4px;
-    width: 3px;
+    width: 12px;
     border-radius: 999px;
     background: rgba(0,0,0,.08);
     overflow: hidden;
+    touch-action: none;
+    cursor: pointer;
   }
   .pod-scroll-indicator span {
     position: absolute;
-    left: 0;
-    width: 100%;
+    left: 2px;
+    width: calc(100% - 4px);
     border-radius: inherit;
     background: rgba(0,0,0,.38);
+    pointer-events: none;
   }
   .np-wrap {
     height: 100%;
@@ -1054,18 +1057,18 @@
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: start;
     gap: 8px;
-    min-height: 16px;
+    min-height: 18px;
     font-size: 12px;
     color: var(--screen-soft);
   }
   .np-context {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    display: block;
+    min-width: 0;
+    min-height: 1px;
   }
   .np-like {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     margin: 0;
     padding: 0;
     border: 0;
@@ -1076,20 +1079,20 @@
     cursor: pointer;
   }
   .np-like svg {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     display: block;
   }
   .np-main {
     display: grid;
-    grid-template-columns: 88px 1fr;
-    gap: 12px;
+    grid-template-columns: 100px 1fr;
+    gap: 14px;
     align-items: center;
     align-self: center;
     min-height: 0;
   }
   .np-art {
-    width: 88px;
+    width: 100px;
     aspect-ratio: 1 / 1;
     overflow: hidden;
     border: 1px solid rgba(0,0,0,.48);
@@ -1106,7 +1109,7 @@
     align-self: start;
   }
   .np-title {
-    font-size: clamp(16px, 4vw, 21px);
+    font-size: clamp(18px, 4.4vw, 23px);
     line-height: 1.04;
     font-weight: 700;
     min-height: calc(1.08em * 2);
@@ -1117,13 +1120,13 @@
   }
   .np-artist, .np-album {
     margin-top: 6px;
-    font-size: clamp(13px, 3.2vw, 17px);
+    font-size: clamp(14px, 3.45vw, 18px);
     line-height: 1.12;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .np-album { opacity: .74; }
+  .np-album { display: none; }
   .np-bottom {
     align-self: end;
     display: grid;
@@ -1131,12 +1134,14 @@
     padding-top: 4px;
   }
   .np-bar {
-    height: 8px;
+    height: 10px;
     position: relative;
     overflow: hidden;
     border: 1px solid rgba(0,0,0,.56);
     background: rgba(255,255,255,.14);
     box-shadow: inset 0 1px 0 rgba(255,255,255,.15);
+    touch-action: none;
+    cursor: pointer;
   }
   .np-bar > span {
     position: absolute;
@@ -3266,7 +3271,11 @@
     activePlaylistIndex: 0,
     playbackClock: { positionMs: 0, durationMs: 0, stamp: Date.now(), playing: false, trackKey: '' },
     npLikedTrackKey: '',
-    npLikedState: false
+    npLikedState: false,
+    listScrollPointerId: null,
+    npSeekPointerId: null,
+    npScrubbing: false,
+    npScrubMs: 0
   };
 
   if (legacy.signOutBtn) {
@@ -3274,7 +3283,6 @@
     legacy.signOutBtn.style.display = 'none';
   }
 
-  function haptic() {}
 
   function clearNowPlayingCache() {
     state.npElements = { bar: null, currentTimeEl: null, totalTimeEl: null };
@@ -3489,7 +3497,7 @@
       { label: 'Shuffle', value: isShuffleOn() ? 'On' : 'Off', action: () => clickLegacy(legacy.shuffleBtn) },
       { label: 'Recommend', value: legacy.recommendBtn && legacy.recommendBtn.classList.contains('active') ? 'Queued' : '', action: () => clickLegacy(legacy.recommendBtn) },
       { label: 'Like Song', value: isLiked() ? 'Yes' : '', action: () => clickLegacy(legacy.heartBtn) },
-      { label: 'Audio', value: isAudioReady() ? 'On' : '', action: () => { activateAudioAndUseDevice(); } },
+      { label: 'Use this device', value: isUsingThisDevice() ? 'Yes' : '', action: () => { activateAudioAndUseDevice(); } },
       { label: 'Full Screen', value: isFullscreen() ? 'On' : '', action: toggleFullscreen }
     ];
     if (!isAuthed()) items.push({ label: 'Connect Spotify', value: '', action: () => clickLegacy(legacy.loginBtn) });
@@ -3687,19 +3695,20 @@
     const picked = items[index]?.track;
     if (!picked?.uri) return;
     try {
-      const uris = items.map((item) => item?.track?.uri).filter(Boolean);
-      const safeIndex = Math.max(0, Math.min(index, uris.length - 1));
-      const orderedUris = uris.slice(safeIndex).concat(uris.slice(0, safeIndex));
+      if (typeof activateAudioAndUseDevice === 'function' && isAudioReady() && !getCommandDeviceId()) {
+        await activateAudioAndUseDevice();
+      }
       await apiPlayerCommand('/v1/me/player/play', {
         method: 'PUT',
-        body: { uris: orderedUris, position_ms: 0 }
+        body: { uris: [picked.uri], position_ms: 0 }
       });
       state.view = 'nowplaying';
-      syncPlaybackClock();
-      render();
+      state.selected = index;
       if (typeof refreshPlaybackSoon === 'function') {
-        await refreshPlaybackSoon(220);
+        await refreshPlaybackSoon(160);
+        await refreshPlaybackSoon(320);
       }
+      syncPlaybackClock();
       render();
     } catch (error) {
       console.warn('Liked playback failed', error);
@@ -3731,7 +3740,7 @@
       if (index === state.selected) classes.push('selected');
       const value = item.value ? `<span class="value">${escapeHtml(item.value)}</span>` : '<span class="value"></span>';
       const chev = item.next ? '<span class="chev">›</span>' : '<span class="chev"></span>';
-      return `<li class="${classes.join(' ')}"><span class="label">${escapeHtml(item.label)}</span>${value}${chev}</li>`;
+      return `<li class="${classes.join(' ')}" data-menu-index="${index}"><span class="label">${escapeHtml(item.label)}</span>${value}${chev}</li>`;
     }).join('');
     const klass = state.view === 'devices' ? 'pod-device-list' : 'pod-menu';
     let indicator = '';
@@ -3739,18 +3748,105 @@
       const maxOffset = Math.max(1, items.length - visible);
       const thumbHeight = Math.max(14, ((visible / items.length) * 100));
       const top = (start / maxOffset) * (100 - thumbHeight);
-      indicator = `<div class="pod-scroll-indicator"><span style="height:${thumbHeight}%;top:${top}%"></span></div>`;
+      indicator = `<div class="pod-scroll-indicator" data-scroll-indicator="true" aria-label="Scroll list"><span style="height:${thumbHeight}%;top:${top}%"></span></div>`;
     }
     ui.menuView.innerHTML = rows ? `<div class="pod-list-wrap"><ul class="${klass}">${rows}</ul>${indicator}</div>` : '<div class="pod-empty">No devices found.</div>';
     ui.menuView.classList.add('active');
     ui.nowView.classList.remove('active');
+    const indicatorEl = ui.menuView.querySelector('[data-scroll-indicator="true"]');
+    if (indicatorEl) attachListScrollIndicator(indicatorEl);
     updateVisualizer();
+  }
+
+
+  function attachListScrollIndicator(indicatorEl){
+    if (!indicatorEl) return;
+    const setFromClientY = (clientY) => {
+      const total = state.menuItems.length || 0;
+      const visible = Math.max(1, Math.min(state.menuVisibleCount || 6, total || 1));
+      if (!total || total <= visible) return;
+      const rect = indicatorEl.getBoundingClientRect();
+      const ratio = Math.max(0, Math.min(1, (clientY - rect.top) / Math.max(1, rect.height)));
+      const targetIndex = Math.max(0, Math.min(total - 1, Math.round(ratio * (total - 1))));
+      state.selected = targetIndex;
+      syncMenuWindow();
+      render();
+    };
+    indicatorEl.addEventListener('pointerdown', (event) => {
+      state.listScrollPointerId = event.pointerId;
+      if (indicatorEl.setPointerCapture) indicatorEl.setPointerCapture(event.pointerId);
+      setFromClientY(event.clientY);
+      event.preventDefault();
+      event.stopPropagation();
+    }, { passive: false });
+    indicatorEl.addEventListener('pointermove', (event) => {
+      if (state.listScrollPointerId !== event.pointerId) return;
+      setFromClientY(event.clientY);
+      event.preventDefault();
+      event.stopPropagation();
+    }, { passive: false });
+    const release = (event) => {
+      if (state.listScrollPointerId !== event.pointerId) return;
+      state.listScrollPointerId = null;
+      event.preventDefault();
+      event.stopPropagation();
+    };
+    indicatorEl.addEventListener('pointerup', release, { passive: false });
+    indicatorEl.addEventListener('pointercancel', release, { passive: false });
+  }
+
+  function bindNowPlayingSeek(barEl){
+    if (!barEl) return;
+    const setPreviewFromClientX = (clientX) => {
+      const rect = barEl.getBoundingClientRect();
+      const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / Math.max(1, rect.width)));
+      const durationMs = displayDurationMs();
+      state.npScrubMs = Math.round(durationMs * ratio);
+      state.npScrubbing = true;
+      updateNowPlayingDynamic();
+    };
+    const finishSeek = async () => {
+      if (!state.npScrubbing) return;
+      const targetMs = state.npScrubMs || 0;
+      state.npScrubbing = false;
+      state.playbackClock.positionMs = targetMs;
+      state.playbackClock.stamp = Date.now();
+      updateNowPlayingDynamic();
+      try {
+        await commandSeek(targetMs);
+        if (typeof refreshPlaybackSoon === 'function') refreshPlaybackSoon(120).catch(() => {});
+      } catch (error) {
+        console.warn('Now playing seek failed', error);
+      }
+    };
+    barEl.addEventListener('pointerdown', (event) => {
+      state.npSeekPointerId = event.pointerId;
+      if (barEl.setPointerCapture) barEl.setPointerCapture(event.pointerId);
+      setPreviewFromClientX(event.clientX);
+      event.preventDefault();
+      event.stopPropagation();
+    }, { passive: false });
+    barEl.addEventListener('pointermove', (event) => {
+      if (state.npSeekPointerId !== event.pointerId) return;
+      setPreviewFromClientX(event.clientX);
+      event.preventDefault();
+      event.stopPropagation();
+    }, { passive: false });
+    const release = async (event) => {
+      if (state.npSeekPointerId !== event.pointerId) return;
+      state.npSeekPointerId = null;
+      event.preventDefault();
+      event.stopPropagation();
+      await finishSeek();
+    };
+    barEl.addEventListener('pointerup', release, { passive: false });
+    barEl.addEventListener('pointercancel', release, { passive: false });
   }
 
   function updateNowPlayingDynamic(){
     if (state.view !== 'nowplaying' || !ui.nowView.classList.contains('active') || !state.npElements.bar) return;
     const durationMs = displayDurationMs();
-    const positionMs = displayPositionMs();
+    const positionMs = state.npScrubbing ? state.npScrubMs : displayPositionMs();
     const progress = durationMs > 0 ? Math.max(0, Math.min(100, (positionMs / durationMs) * 100)) : 0;
     state.npElements.bar.style.width = `${progress}%`;
     if (state.npElements.currentTimeEl) state.npElements.currentTimeEl.textContent = formatTimeMs(positionMs);
@@ -3771,15 +3867,14 @@
     ui.topLeft.style.opacity = isAuthed() ? '1' : '.5';
     syncPlaybackClock();
     const art = currentArt();
-    const meta = currentContext();
     const liked = syncNowPlayingLikedState();
     const durationMs = displayDurationMs();
-    const positionMs = displayPositionMs();
+    const positionMs = state.npScrubbing ? state.npScrubMs : displayPositionMs();
     const progress = durationMs > 0 ? Math.max(0, Math.min(100, (positionMs / durationMs) * 100)) : 0;
     ui.nowView.innerHTML = `
       <div class="np-wrap">
         <div class="np-header">
-          <span class="np-context">${escapeHtml(meta)}</span>
+          <span class="np-context" aria-hidden="true"></span>
           <button id="npLikeBtn" class="np-like" type="button" aria-label="${liked ? 'Remove from liked songs' : 'Save to liked songs'}" title="${liked ? 'Remove from liked songs' : 'Save to liked songs'}">
             <svg viewBox="0 0 24 24" fill="${liked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.9-4.35-9.43-8.83C.7 8.87 2.02 4.5 6.12 4.5c2.49 0 4.24 1.39 5.88 3.67 1.64-2.28 3.39-3.67 5.88-3.67 4.1 0 5.42 4.37 3.55 7.67C18.9 16.65 12 21 12 21z"></path></svg>
           </button>
@@ -3789,7 +3884,6 @@
           <div class="np-text">
             <div class="np-title">${escapeHtml(currentTrackTitle())}</div>
             <div class="np-artist">${escapeHtml(currentArtist())}</div>
-            <div class="np-album">${escapeHtml(meta)}</div>
           </div>
         </div>
         <div class="np-bottom">
@@ -3797,9 +3891,11 @@
           <div class="np-times"><span class="np-current-time">${escapeHtml(formatTimeMs(positionMs))}</span><span class="np-total-time">${escapeHtml(formatTimeMs(durationMs))}</span></div>
         </div>
       </div>`;
+    const barWrap = ui.nowView.querySelector('.np-bar');
     state.npElements.bar = ui.nowView.querySelector('.np-bar > span');
     state.npElements.currentTimeEl = ui.nowView.querySelector('.np-current-time');
     state.npElements.totalTimeEl = ui.nowView.querySelector('.np-total-time');
+    bindNowPlayingSeek(barWrap);
     const likeBtn = ui.nowView.querySelector('#npLikeBtn');
     if (likeBtn) {
       likeBtn.addEventListener('click', (event) => {
@@ -3837,7 +3933,6 @@
   }
 
   function selectStep(direction){
-    haptic(6);
     if (state.view === 'nowplaying') {
       const target = volumeValue() + (direction > 0 ? 4 : -4);
       if (legacy.volumeSlider) {
@@ -3854,7 +3949,6 @@
   }
 
   function activateSelection(){
-    haptic();
     if (state.view === 'nowplaying') {
       return;
     }
@@ -3876,10 +3970,14 @@
       return;
     }
     if (typeof item.action === 'function') {
-      item.action();
-      setTimeout(render, 80);
-      setTimeout(sync, 220);
-      setTimeout(render, 360);
+      Promise.resolve(item.action()).then(() => {
+        setTimeout(render, 80);
+        setTimeout(sync, 220);
+        setTimeout(render, 360);
+      }).catch((error) => {
+        console.warn('Selection action failed', error);
+        setTimeout(render, 120);
+      });
     }
   }
 
@@ -3952,7 +4050,6 @@
   }
 
   function handleSectorTap(sector){
-    haptic();
     if (sector === 'menu') { goMenu(); return; }
     if (sector === 'prev') {
       if (typeof commandPrevious === 'function') {
@@ -3984,7 +4081,7 @@
     if (event.target === ui.center) return;
     const g = wheelGeometry(event);
     if (g.dist > 1.14) return;
-        state.gestureActive = true;
+    state.gestureActive = true;
     state.pointerId = event.pointerId;
     state.startAngle = g.angle;
     state.lastAngle = g.angle;
