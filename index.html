@@ -1,4 +1,1251 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><title>sp0tify</title><style>html,body{margin:0;min-height:100%;background:#050505}#controller,[hidden],#screen,#overlay,#deviceSheet{display:none!important}.hidden{display:none!important}button,input,svg,canvas,img{box-sizing:border-box}</style><style id="ipod-overlay-style">body{background:radial-gradient(circle at 50% 0%,#252525 0%,#111 44%,#050505 100%) !important;overflow:hidden !important}#screen{position:fixed !important;left:-200vw !important;top:-200vh !important;width:1px !important;height:1px !important;overflow:hidden !important;opacity:0 !important;pointer-events:none !important}#ipodApp{--face-w:min(92vw,372px);--wheel-size:min(92vw,372px);--screen-h:clamp(240px,41vh,332px);--screen-bg:#d7ded2;--screen-bg-2:#c9d0c4;--screen-ink:#111;--screen-accent:#2e2e2e;--screen-strong:#101010;--screen-soft:rgba(16,16,16,.58);--screen-faint:rgba(16,16,16,.34);--black-1:#111111;--black-2:#1b1b1b;--black-3:#202020;--black-4:#2b2b2b;--ring-line:rgba(255,255,255,.05);--ring-line-2:rgba(0,0,0,.6);--wheel-label:rgba(255,255,255,.62);--wheel-symbol:rgba(255,255,255,.66);--screen-shadow:0 1px 0 rgba(255,255,255,.06),inset 0 10px 16px rgba(255,255,255,.04),inset 0 -6px 14px rgba(0,0,0,.09),inset 0 0 0 1px rgba(255,255,255,.07);--wheel-shadow:0 18px 40px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.06),inset 0 -2px 8px rgba(0,0,0,.22),inset 0 0 0 1px rgba(255,255,255,.04);--center-shadow:inset 0 1px 0 rgba(255,255,255,.08),inset 0 -2px 7px rgba(0,0,0,.28),0 2px 10px rgba(0,0,0,.14);position:fixed;inset:0;display:grid;place-items:center;padding:max(12px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));background:radial-gradient(circle at 50% -8%,rgba(255,255,255,.06),transparent 28%),linear-gradient(180deg,#151515 0%,#050505 100%);-webkit-user-select:none;user-select:none;overflow:hidden;touch-action:manipulation}.ipod-face{width:var(--face-w);min-height:min(100dvh - 24px,820px);display:grid;grid-template-rows:auto 1fr;align-content:start;justify-items:center;gap:clamp(22px,3vh,32px);padding:clamp(8px,1.2vh,16px) 0 clamp(10px,1.4vh,18px)}.ipod-screen-frame{width:var(--wheel-size);border-radius:14px;padding:8px;background:linear-gradient(180deg,#0a0a0a 0%,#1a1a1a 100%);border:1px solid rgba(255,255,255,.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),inset 0 -1px 0 rgba(0,0,0,.55),0 10px 32px rgba(0,0,0,.28)}.ipod-screen{width:100%;height:var(--screen-h);position:relative;overflow:hidden;border-radius:10px;border:1.2px solid rgba(0,0,0,.76);background:linear-gradient(180deg,var(--screen-bg) 0%,var(--screen-bg-2) 100%);color:var(--screen-ink);font-family:'Arial Narrow','Helvetica Neue',Arial,sans-serif;display:grid;grid-template-rows:auto 1fr;box-shadow:var(--screen-shadow)}.ipod-screen::before{content:'';position:absolute;inset:-18% -8%;background:linear-gradient(130deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,.03) 26%,transparent 42%,rgba(255,255,255,.08) 82%,rgba(255,255,255,.12) 100%);opacity:.34;pointer-events:none;mix-blend-mode:screen}.ipod-screen::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(180deg,rgba(255,255,255,.024) 0 1px,rgba(0,0,0,.018) 1px 2px);opacity:.22;pointer-events:none;mix-blend-mode:multiply}.ipod-topbar{position:relative;z-index:1;display:grid;grid-template-columns:18px 1fr 18px;align-items:center;gap:8px;min-height:26px;padding:4px 8px 5px;border-bottom:1px solid rgba(0,0,0,.58);font-size:12px;font-weight:700;letter-spacing:-.02em}.ipod-topbar .title{text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.top-icon-left{width:0;height:0;border-left:8px solid var(--screen-accent);border-top:5px solid transparent;border-bottom:5px solid transparent;justify-self:start}.top-icon-right.visualizer{display:inline-grid;grid-template-columns:repeat(4,2px);gap:2px;align-items:end;justify-content:end;height:12px;width:16px;justify-self:end}.top-icon-right.visualizer span{display:block;width:2px;border-radius:2px;background:var(--screen-accent);opacity:.92;animation:vizBounce 1s ease-in-out infinite;transform-origin:bottom}.top-icon-right.visualizer span:nth-child(1){height:4px;animation-delay:-.15s}.top-icon-right.visualizer span:nth-child(2){height:8px;animation-delay:-.4s}.top-icon-right.visualizer span:nth-child(3){height:6px;animation-delay:-.25s}.top-icon-right.visualizer span:nth-child(4){height:10px;animation-delay:-.55s}.top-icon-right.visualizer.paused span,.top-icon-right.visualizer.idle span{animation:none}.top-icon-right.visualizer.paused span{opacity:.55}.top-icon-right.visualizer.idle span{opacity:.26}@keyframes vizBounce{0%,100%{transform:scaleY(.45)}50%{transform:scaleY(1)}}.ipod-body{position:relative;z-index:1;overflow:hidden;padding:4px 0 0}.pod-view{position:absolute;inset:0;display:none}.pod-view.active{display:block}.pod-menu,.pod-device-list{list-style:none;margin:0;padding:0}.pod-menu,.pod-device-list{position:relative}.pod-row{height:25px;display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:6px;padding:0 8px;font-size:clamp(14px,3.45vw,17px);line-height:1;font-weight:700;letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pod-row .label,.pod-row .value{overflow:hidden;text-overflow:ellipsis}.pod-row .value{font-size:.82em;opacity:.8;max-width:110px}.pod-row.selected{background:#1f1f1f;color:#e7e7df}.pod-scroll-indicator{position:absolute;top:4px;right:2px;bottom:4px;width:12px;border-radius:999px;background:rgba(0,0,0,.08);overflow:hidden;touch-action:none;cursor:pointer}.pod-scroll-indicator span{position:absolute;left:2px;width:calc(100% - 4px);border-radius:inherit;background:rgba(0,0,0,.38);pointer-events:none}.np-wrap{height:100%;display:grid;grid-template-rows:auto 1fr auto;gap:6px;padding:9px 8px 14px}.np-header{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:8px;min-height:16px;font-size:11px;color:var(--screen-soft)}.np-context{display:block;min-width:0;min-height:1px}.np-like{width:18px;height:18px;margin:0;padding:0;border:0;background:transparent;color:var(--screen-strong);display:inline-grid;place-items:center;cursor:pointer}.np-like svg{width:14px;height:14px;display:block}.np-main{display:grid;grid-template-columns:minmax(0,1fr);gap:7px;align-items:start;align-self:center;justify-items:start;min-height:0;padding:2px 10px 0}.np-art{display:grid;place-items:center;width:48px;height:48px;overflow:hidden;border:1px solid rgba(0,0,0,.4);border-radius:3px;background:rgba(0,0,0,.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.1)}.np-art img{display:block;width:100%;height:100%;object-fit:cover;image-rendering:auto}.np-text{min-width:0;align-self:start;justify-self:stretch;text-align:left;width:100%}.np-title{font-size:clamp(20px,4.7vw,24px);line-height:1.08;font-weight:700;min-height:calc(1.08em * 2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;letter-spacing:-.035em}.np-artist,.np-album{margin-top:4px;font-size:clamp(16px,3.8vw,19px);line-height:1.08;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.025em}.np-album{display:block;opacity:.92}.np-bottom{align-self:end;display:grid;gap:5px;padding:0 12px 18px}.np-bar{height:8px;position:relative;overflow:hidden;border:1px solid rgba(0,0,0,.56);border-radius:2px;background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.15);touch-action:none;cursor:pointer}.np-bar>span{position:absolute;inset:0 auto 0 0;width:0%;background:rgba(0,0,0,.88);will-change:width}.np-times{display:flex;justify-content:space-between;gap:12px;font-size:11px;line-height:1.1;color:var(--screen-soft);padding-inline:0;letter-spacing:-.01em}.pod-empty{padding:10px 8px;font-size:13px;color:var(--screen-soft)}.wheel-zone{width:100%;display:grid;place-items:center;flex:1 1 auto}.wheel{position:relative;width:var(--wheel-size);aspect-ratio:1 / 1;border-radius:50%;background:linear-gradient(180deg,#202020 0%,#161616 100%);box-shadow:var(--wheel-shadow);border:1px solid rgba(255,255,255,.05);touch-action:none;-webkit-tap-highlight-color:transparent;overflow:hidden}.wheel::after{content:'';position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 2px 10px rgba(255,255,255,.02),inset 0 -16px 26px rgba(0,0,0,.26);pointer-events:none}.wheel-ring{position:absolute;inset:0;border-radius:50%}.wheel-label{position:absolute;color:var(--wheel-label);font-family:'Arial Narrow','Helvetica Neue',Arial,sans-serif;font-weight:700;letter-spacing:.05em;pointer-events:none;text-transform:uppercase;user-select:none}.wheel-label.menu{top:10.5%;left:50%;transform:translateX(-50%);font-size:clamp(20px,5.2vw,26px)}.wheel-label.prev,.wheel-label.next,.wheel-label.play{display:grid;place-items:center;width:19%;height:19%;font-size:clamp(24px,5.6vw,30px);line-height:1}.wheel-label.prev{left:8%;top:50%;transform:translateY(-50%)}.wheel-label.next{right:8%;top:50%;transform:translateY(-50%)}.wheel-label.play{left:50%;bottom:7.5%;transform:translateX(-50%)}.wheel-center{position:absolute;inset:34%;border-radius:50%;background:linear-gradient(180deg,#1b1b1b 0%,#0f0f0f 100%);border:1px solid rgba(255,255,255,.06);box-shadow:var(--center-shadow);cursor:pointer;-webkit-tap-highlight-color:transparent}.wheel-center::after{content:'';position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(0,0,0,.3);pointer-events:none}@media (max-width:420px){#ipodApp{--face-w:min(94vw,360px);--wheel-size:min(94vw,360px)}}@media (max-height:760px){.ipod-face{gap:18px}#ipodApp{--screen-h:clamp(220px,39vh,296px)}}</style></head><body><div id="controller" hidden><main id="screen"><img id="bgArt" alt=""><canvas id="paletteCanvas" width="32" height="32"></canvas><div id="gestureZone"><img id="albumArt" alt=""><div id="metaTop"></div><h1 id="trackName"></h1><p id="artistName"></p></div><input id="timeline" type="range" min="0" max="1000" value="0" step="1"><span id="currentTime"></span><span id="totalTime"></span><button id="shuffleBtn" type="button"></button><button id="recommendBtn" type="button"></button><button id="prevBtn" type="button"></button><button id="playPauseBtn" type="button"><svg id="playPauseIcon" viewBox="0 0 64 64"></svg></button><button id="nextBtn" type="button"></button><button id="heartBtn" type="button"><svg viewBox="0 0 24 24"></svg></button><button id="muteBtn" type="button"><svg id="volumeIcon" viewBox="0 0 24 24"></svg></button><input id="volumeSlider" type="range" min="0" max="100" value="100" step="1"><button id="useDeviceBtn" type="button"></button><button id="audioBtn" type="button"></button><button id="connectRemoteBtn" type="button"></button><button id="fullscreenBtn" type="button"><svg id="fullscreenIcon" viewBox="0 0 24 24"></svg></button><div id="statusLive" aria-live="polite"></div><div id="overlay"><h2 id="overlayTitle"></h2><p id="overlayCopy"></p><button id="loginBtn" type="button"></button><button id="setupAudioBtn" type="button"></button><button id="setupDeviceBtn" type="button"></button><button id="closeOverlayBtn" type="button"></button></div><div id="deviceSheet"><button id="refreshDevicesBtn" type="button"></button><button id="closeDevicesBtn" type="button"></button><div id="deviceList"></div></div></main><button id="signOutMiniBtn" type="button"></button></div><script src="https://sdk.scdn.co/spotify-player.js"></script><script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>sp0tify</title>
+  <style>
+    :root {
+      --bg: #080809;
+      --line: rgba(255,255,255,0.1);
+      --line-soft: rgba(255,255,255,0.08);
+      --text: #ffffff;
+      --muted: rgba(255,255,255,0.72);
+      --muted-2: rgba(255,255,255,0.5);
+      --green: #1ed760;
+      --warn: #f0c14b;
+      --danger: #ff6a6a;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --pad-x: clamp(16px, 3.2vw, 40px);
+      --pad-y: clamp(16px, 3.2vh, 34px);
+      --art-size: clamp(142px, 28vw, 340px);
+      --title-size: clamp(38px, 6.4vw, 98px);
+      --artist-size: clamp(21px, 2.9vw, 44px);
+      --title-line-height: 1.1;
+      --artist-line-height: 1.24;
+      --hero-gap: clamp(24px, 4vw, 52px);
+      --hero-art-margin: clamp(10px, 1.2vw, 16px);
+      --meta-size: clamp(15px, 1.6vw, 24px);
+      --control-size: clamp(60px, 8.5vw, 96px);
+      --icon-size: clamp(28px, 3.8vw, 48px);
+      --play-icon-size: clamp(34px, 4.6vw, 56px);
+      --pill-height: clamp(40px, 5.4vw, 50px);
+      --radius: clamp(18px, 2.4vw, 28px);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      min-height: 100%;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top, rgba(255,255,255,0.07), transparent 28%),
+        linear-gradient(180deg, #111216 0%, #070708 100%);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
+    button, input {
+      font: inherit;
+    }
+
+    .screen {
+      position: relative;
+      width: 100vw;
+      min-height: 100vh;
+      min-height: 100dvh;
+      background:
+        radial-gradient(circle at 18% 16%, rgba(116, 74, 156, 0.26), transparent 42%),
+        linear-gradient(180deg, #111216 0%, #070708 100%);
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .bg-art {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .bg-vignette {
+      position: absolute;
+      inset: 0;
+      display: block;
+      z-index: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(4,4,7,0.08) 0%, rgba(4,4,7,0.24) 58%, rgba(3,3,5,0.68) 100%);
+    }
+
+    .frame {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      min-height: 100dvh;
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: minmax(0, 1fr) auto auto;
+      grid-template-areas:
+        "hero"
+        "timeline"
+        "transport";
+      row-gap: clamp(12px, 1.8vh, 22px);
+      align-items: stretch;
+      padding:
+        calc(var(--pad-y) + var(--safe-top))
+        calc(max(10px, var(--pad-x) * 0.72) + var(--safe-right))
+        calc(var(--pad-y) + var(--safe-bottom))
+        calc(max(10px, var(--pad-x) * 0.72) + var(--safe-left));
+    }
+
+    .topbar {
+      display: none;
+    }
+
+    .icon-mini-btn {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(18,18,20,0.34);
+      border: 1px solid rgba(255,255,255,0.09);
+      color: rgba(255,255,255,0.82);
+      place-items: center;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+    }
+
+    .icon-mini-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .hero {
+      grid-area: hero;
+      display: grid;
+      align-items: center;
+      min-height: 0;
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: minmax(142px, var(--art-size)) minmax(0, 1fr);
+      gap: clamp(32px, 5vw, 72px);
+      align-items: center;
+      min-height: 0;
+      height: 100%;
+      width: 100%;
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .art-wrap {
+      width: 100%;
+      max-width: var(--art-size);
+      min-width: var(--art-size);
+      justify-self: start;
+      margin-inline-end: clamp(14px, 2vw, 22px);
+    }
+
+    .album-art {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: clamp(10px, 1.4vw, 16px);
+      box-shadow: 0 18px 42px rgba(0,0,0,0.28);
+      border: 1px solid rgba(255,255,255,0.09);
+      background: rgba(0,0,0,0.2);
+      -webkit-user-drag: none;
+      user-select: none;
+      touch-action: none;
+    }
+
+    .meta {
+      min-width: 0;
+      display: grid;
+      gap: clamp(12px, 1.5vh, 20px);
+      align-content: center;
+      align-self: stretch;
+      padding-inline-start: clamp(8px, 1vw, 16px);
+    }
+
+    .meta-top {
+      font-size: var(--meta-size);
+      color: rgba(255,255,255,0.74);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.2;
+    }
+
+    .track-name {
+      margin: 0;
+      font-size: var(--title-size);
+      line-height: var(--title-line-height);
+      min-height: calc(var(--title-size) * var(--title-line-height) * 2);
+      font-weight: 900;
+      letter-spacing: -0.055em;
+      max-width: 100%;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-wrap: pretty;
+      padding-bottom: 0.08em;
+    }
+
+    .artist-name {
+      margin: 0;
+      font-size: var(--artist-size);
+      font-weight: 600;
+      line-height: var(--artist-line-height);
+      min-height: calc(var(--artist-size) * var(--artist-line-height));
+      color: rgba(255,255,255,0.92);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .timeline-section {
+      grid-area: timeline;
+      display: grid;
+      gap: clamp(8px, 1.05vh, 14px);
+      min-height: 0;
+      width: 100%;
+      padding-top: clamp(2px, 0.5vh, 10px);
+    }
+
+    .time-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: center;
+      gap: 12px;
+      color: rgba(255,255,255,0.62);
+      font-size: clamp(13px, 1.4vw, 18px);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      margin-top: -2px;
+    }
+
+    .time-row span:first-child {
+      justify-self: start;
+    }
+
+    .time-row span:last-child {
+      justify-self: end;
+      text-align: right;
+    }
+
+    input[type="range"] {
+      --progress: 0%;
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 30px;
+      background: transparent;
+      margin: 0;
+      padding: 0;
+      touch-action: pan-y;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.96) var(--progress, 0%), rgba(255,255,255,0.22) var(--progress, 0%), rgba(255,255,255,0.22) 100%);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      margin-top: -8px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 0;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+    }
+
+    input[type="range"]::-moz-range-track {
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.22);
+    }
+
+    input[type="range"]::-moz-range-progress {
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.96);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 0;
+      background: #ffffff;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+    }
+
+    .transport-row {
+      grid-area: transport;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(220px, 28vw) auto;
+      grid-template-areas: "controls volume utility";
+      gap: clamp(14px, 2vw, 22px);
+      align-items: center;
+      min-height: 0;
+      width: 100%;
+      margin-top: clamp(2px, 0.6vh, 8px);
+    }
+
+    .controls {
+      grid-area: controls;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: clamp(10px, 1.8vw, 20px);
+      align-items: center;
+      min-height: 0;
+      width: min(100%, 920px);
+    }
+
+    .ctrl {
+      height: clamp(64px, 9vw, 94px);
+      border: 0;
+      border-radius: 18px;
+      background: transparent;
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: transform 0.08s ease, opacity 0.18s ease, background 0.18s ease;
+      padding: 0;
+    }
+
+    .ctrl:hover { background: rgba(255,255,255,0.06); }
+    .ctrl:active { transform: scale(0.97); }
+    .ctrl:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .ctrl svg {
+      width: var(--icon-size);
+      height: var(--icon-size);
+      display: block;
+    }
+
+    .ctrl.play svg {
+      width: var(--play-icon-size);
+      height: var(--play-icon-size);
+    }
+
+    .ctrl.shuffle svg {
+      transform: translateY(4px);
+      transform-origin: center;
+    }
+
+    .ctrl.active { color: var(--green); }
+    .ctrl.heart.active { color: var(--green); }
+
+    .ctrl.recommend.loading svg {
+      animation: spinPulse 0.9s linear infinite;
+      transform-origin: center;
+    }
+
+    @keyframes spinPulse {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .volume-wrap {
+      grid-area: volume;
+      min-width: 0;
+      width: 100%;
+      max-width: none;
+      justify-self: stretch;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      min-height: clamp(48px, 5vw, 58px);
+      padding: 10px 18px 10px 14px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(18,18,20,0.32);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+    }
+
+    .volume-wrap input[type="range"] {
+      height: 26px;
+      width: calc(100% - 10px);
+      justify-self: start;
+    }
+
+    .volume-wrap .volume-btn {
+      width: 42px;
+      height: 42px;
+      border: 0;
+      background: transparent;
+      color: rgba(255,255,255,0.92);
+      display: grid;
+      place-items: center;
+      padding: 0;
+      cursor: pointer;
+      border-radius: 999px;
+    }
+
+    .volume-wrap .volume-btn:hover {
+      background: rgba(255,255,255,0.06);
+    }
+
+    .volume-wrap svg {
+      width: 24px;
+      height: 24px;
+      display: block;
+    }
+
+    .utility-row {
+      grid-area: utility;
+      display: grid;
+      grid-template-columns: repeat(4, auto);
+      justify-content: end;
+      align-items: center;
+      gap: 10px;
+      min-height: 0;
+      align-self: stretch;
+    }
+
+    .secondary-btn {
+      position: relative;
+      width: clamp(50px, 5vw, 60px);
+      height: clamp(50px, 5vw, 60px);
+      min-height: 0;
+      border-radius: 999px;
+      padding: 0;
+      border: 1px solid rgba(255,255,255,0.09);
+      backdrop-filter: blur(12px);
+      background: rgba(18,18,20,0.34);
+      color: rgba(255,255,255,0.92);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 26px rgba(0,0,0,0.16);
+    }
+
+    .secondary-btn svg {
+      width: 24px;
+      height: 24px;
+      display: block;
+    }
+
+    .secondary-btn.audio-btn svg {
+      width: 34px;
+      height: 34px;
+      display: block;
+      margin: auto;
+      flex: 0 0 auto;
+    }
+
+    .secondary-btn.remote-btn svg {
+      width: 25px;
+      height: 25px;
+      display: block;
+      margin: auto;
+      flex: 0 0 auto;
+    }
+
+    .ctrl.recommend.active {
+      color: var(--green);
+    }
+
+    .secondary-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .secondary-btn.active {
+      color: #ffffff;
+      border-color: rgba(46, 214, 100, 0.72);
+      background: rgba(13, 27, 17, 0.7);
+      box-shadow: 0 0 0 1.5px rgba(30, 215, 96, 0.3), inset 0 0 0 1px rgba(30, 215, 96, 0.12);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      z-index: 5;
+      background: rgba(3,3,4,0.52);
+      backdrop-filter: blur(12px);
+    }
+
+    .overlay.show { display: flex; }
+
+    .overlay-card {
+      width: min(100%, 560px);
+      padding: 20px;
+      border-radius: 24px;
+      background: rgba(19,19,22,0.9);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.42);
+      display: grid;
+      gap: 14px;
+    }
+
+    .overlay-title {
+      font-size: clamp(22px, 2.8vw, 34px);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin: 0;
+    }
+
+    .overlay-copy {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(14px, 1.5vw, 17px);
+      line-height: 1.42;
+    }
+
+    .overlay-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .overlay-btn {
+      min-height: 52px;
+      border: 0;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      color: var(--text);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.09);
+    }
+
+    .overlay-btn.primary {
+      background: linear-gradient(180deg, #2ae06c, #19b856);
+      color: #041008;
+      border: 0;
+    }
+
+    .overlay-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .device-sheet {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      z-index: 6;
+      background: rgba(3,3,4,0.58);
+      backdrop-filter: blur(12px);
+    }
+
+    .device-sheet.show { display: flex; }
+
+    .device-card {
+      width: min(100%, 432px);
+      max-height: min(74dvh, 620px);
+      overflow: hidden;
+      padding: 12px;
+      border-radius: 22px;
+      background: rgba(19,19,22,0.96);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.42);
+      display: grid;
+      gap: 8px;
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .device-toolbar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .device-tool-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.09);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .device-tool-btn svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+      margin: auto;
+      flex: 0 0 auto;
+    }
+
+    .device-tool-btn.refresh-btn svg {
+      width: 30px;
+      height: 30px;
+      display: block;
+      margin: auto;
+      flex: 0 0 auto;
+      transform: translateY(0.5px);
+    }
+
+    .device-list {
+      display: grid;
+      gap: 6px;
+      overflow: auto;
+      padding-right: 2px;
+      min-height: 120px;
+    }
+
+    .device-item {
+      width: 100%;
+      text-align: left;
+      display: grid;
+      gap: 4px;
+      padding: 10px 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.09);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .device-item:hover { background: rgba(255,255,255,0.08); }
+
+    .device-item.active {
+      border-color: rgba(46,214,100,0.4);
+      background: rgba(13,27,17,0.55);
+    }
+
+    .device-item:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .device-item-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .device-item-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.3;
+    }
+
+    .device-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .device-chip.good {
+      color: #d7ffe5;
+      background: rgba(13,27,17,0.7);
+      border-color: rgba(46,214,100,0.34);
+    }
+
+    .device-actions { display: none; }
+    .device-btn { display: none; }
+    .device-btn.primary { display: none; }
+
+    .hidden { display: none !important; }
+
+    .utility-row {
+      grid-template-columns: repeat(6, auto);
+    }
+
+    .sensor-panel {
+      position: absolute;
+      left: calc(max(10px, var(--pad-x) * 0.72) + var(--safe-left));
+      bottom: calc(var(--pad-y) + var(--safe-bottom) + clamp(112px, 13vh, 156px));
+      z-index: 4;
+      width: min(360px, calc(100vw - 24px - var(--safe-left) - var(--safe-right)));
+      padding: 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.09);
+      background: rgba(10,10,12,0.56);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 18px 48px rgba(0,0,0,0.28);
+      display: grid;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .sensor-panel-head {
+      display: grid;
+      gap: 5px;
+    }
+
+    .sensor-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 18px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: rgba(255,255,255,0.92);
+    }
+
+    .camera-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.3);
+      flex: 0 0 auto;
+    }
+
+    .camera-dot.live {
+      background: var(--green);
+      box-shadow: 0 0 0 6px rgba(30,215,96,0.14);
+    }
+
+    .camera-dot.warn {
+      background: var(--warn);
+      box-shadow: 0 0 0 6px rgba(240,193,75,0.14);
+    }
+
+    .camera-dot.error {
+      background: var(--danger);
+      box-shadow: 0 0 0 6px rgba(255,106,106,0.14);
+    }
+
+    .gesture-status {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+      min-height: calc(12px * 1.4 * 2);
+    }
+
+    .sensor-preview-wrap {
+      display: grid;
+      grid-template-columns: 88px minmax(0, 1fr);
+      align-items: center;
+      gap: 12px;
+      min-height: 0;
+    }
+
+    .camera-preview {
+      display: block;
+      width: 88px;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      border-radius: 14px;
+      transform: scaleX(-1);
+      background: rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    .sensor-meta {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+      align-content: center;
+    }
+
+    .sensor-meta-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: rgba(255,255,255,0.9);
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sensor-meta-copy {
+      font-size: 11px;
+      line-height: 1.4;
+      color: rgba(255,255,255,0.58);
+    }
+
+    .sensor-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .sensor-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 0 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.68);
+      font-size: 11px;
+      line-height: 1;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+    }
+
+    .secondary-btn.camera-btn.active {
+      color: #ffffff;
+      border-color: rgba(46, 214, 100, 0.72);
+      background: rgba(13, 27, 17, 0.7);
+      box-shadow: 0 0 0 1.5px rgba(30, 215, 96, 0.3), inset 0 0 0 1px rgba(30, 215, 96, 0.12);
+    }
+
+    .secondary-btn.dim-btn.active {
+      color: #ffffff;
+      border-color: rgba(240, 193, 75, 0.72);
+      background: rgba(31, 24, 7, 0.78);
+      box-shadow: 0 0 0 1.5px rgba(240, 193, 75, 0.22), inset 0 0 0 1px rgba(240, 193, 75, 0.14);
+    }
+
+    .ghost-video,
+    .ghost-canvas {
+      position: fixed;
+      left: -200vw;
+      top: -200vh;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .screen.dim-ui .frame {
+      opacity: 0.055;
+      filter: brightness(0.3);
+      transition: opacity 180ms ease, filter 180ms ease;
+    }
+
+    .screen.dim-ui .bg-vignette {
+      background: linear-gradient(180deg, rgba(0,0,0,0.76) 0%, rgba(0,0,0,0.9) 100%);
+    }
+
+    .screen.dim-ui .sensor-panel {
+      background: rgba(0,0,0,0.84);
+      border-color: rgba(255,255,255,0.12);
+    }
+
+    @media (max-width: 900px), (orientation: portrait) {
+      .sensor-panel {
+        bottom: calc(var(--pad-y) + var(--safe-bottom) + 154px);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .sensor-panel {
+        left: calc(12px + var(--safe-left));
+        right: calc(12px + var(--safe-right));
+        width: auto;
+        bottom: calc(var(--pad-y) + var(--safe-bottom) + 142px);
+      }
+
+      .sensor-preview-wrap {
+        grid-template-columns: 72px minmax(0, 1fr);
+      }
+
+      .camera-preview {
+        width: 72px;
+      }
+    }
+
+    @media (max-height: 520px) and (orientation: landscape) {
+      .sensor-panel {
+        width: min(320px, calc(100vw - 24px));
+        bottom: calc(var(--pad-y) + var(--safe-bottom) + 78px);
+      }
+
+      .camera-preview {
+        width: 72px;
+      }
+    }
+
+
+    @media (max-width: 900px), (orientation: portrait) {
+      .frame {
+        grid-template-rows: auto auto auto;
+        row-gap: 14px;
+      }
+
+      .hero-inner {
+        grid-template-columns: minmax(0, 1fr);
+        justify-items: center;
+        text-align: center;
+      }
+
+      .art-wrap {
+        justify-self: center;
+        margin-inline-end: 0;
+      }
+
+      .meta {
+        justify-items: center;
+        align-content: start;
+        padding-inline-start: 0;
+      }
+
+
+      .transport-row {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+          "controls controls"
+          "volume utility";
+        column-gap: 12px;
+        row-gap: 14px;
+        align-items: center;
+      }
+
+      .controls {
+        width: 100%;
+      }
+
+      .volume-wrap {
+        width: 100%;
+        max-width: none;
+        justify-self: stretch;
+      }
+
+      .utility-row {
+        justify-content: end;
+        align-self: center;
+      }
+    }
+
+    @media (max-width: 640px) {
+      :root {
+        --art-size: min(48vw, 248px);
+        --title-size: clamp(32px, 8.8vw, 60px);
+        --artist-size: clamp(20px, 5.6vw, 30px);
+      }
+
+      .frame {
+        gap: 12px;
+      }
+
+      .track-name {
+        -webkit-line-clamp: 2;
+      }
+
+      .controls {
+        gap: 6px;
+      }
+
+      .ctrl {
+        height: 64px;
+      }
+
+      .transport-row {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+          "controls controls"
+          "volume utility";
+      }
+
+      .utility-row {
+        gap: 8px;
+      }
+
+      .secondary-btn {
+        width: 48px;
+        height: 48px;
+      }
+
+      .overlay-actions {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-height: 520px) and (orientation: landscape) {
+      :root {
+        --pad-y: 10px;
+        --art-size: min(30vh, 212px);
+        --title-size: clamp(31px, 7.6vh, 58px);
+        --artist-size: clamp(18px, 4.9vh, 27px);
+      }
+
+      .frame {
+        gap: 10px;
+      }
+
+      .hero-inner {
+        grid-template-columns: minmax(100px, 24vh) minmax(0, 1fr);
+        gap: clamp(32px, 5vw, 56px);
+      }
+
+      .art-wrap {
+        margin-inline-end: clamp(14px, 2vw, 20px);
+      }
+
+      .meta {
+        padding-inline-start: clamp(12px, 1.8vw, 20px);
+      }
+
+      .transport-row {
+        grid-template-columns: minmax(0, 1fr) minmax(180px, 26vw) auto;
+        gap: 10px;
+      }
+
+      .ctrl {
+        height: 56px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main id="screen" class="screen" aria-label="Spotify remote dashboard">
+    <img id="bgArt" class="bg-art" alt="" aria-hidden="true" />
+    <div class="bg-vignette"></div>
+    <canvas id="paletteCanvas" class="sr-only" width="32" height="32" aria-hidden="true"></canvas>
+
+    <div class="frame">
+      <section class="hero" aria-live="polite">
+        <div id="gestureZone" class="hero-inner">
+          <div class="art-wrap">
+            <img id="albumArt" class="album-art" alt="Album art" />
+          </div>
+
+          <div class="meta">
+            <div id="metaTop" class="meta-top">sp0tify</div>
+            <h1 id="trackName" class="track-name">Nothing playing</h1>
+            <p id="artistName" class="artist-name">Sign in and start playback</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="timeline-section" aria-label="Track timeline and progress">
+        <input id="timeline" type="range" min="0" max="1000" value="0" step="1" aria-label="Track timeline" />
+        <div class="time-row">
+          <span id="currentTime">0:00</span>
+          <span id="totalTime">0:00</span>
+        </div>
+      </section>
+
+      <section class="transport-row" aria-label="Playback controls and volume">
+        <div class="controls" role="group" aria-label="Playback controls">
+          <button id="shuffleBtn" class="ctrl shuffle" type="button" aria-label="Shuffle" title="Shuffle" disabled>
+            <svg viewBox="0 0 100 125" fill="currentColor" aria-hidden="true">
+              <path d="M6.4,31.8h14.7c2.7,0,5.3,1.2,7.1,3.3l9.4,11,5.1-6-8.6-10.1c-3.3-3.8-8-6-13-6H6.4c-2.1,0-3.9,1.7-3.9,3.9s1.8,3.9,3.9,3.9Z"></path>
+              <path d="M71.2,31.8h13l-4.5,4.5c-1.5,1.5-1.5,4,0,5.5.8.8,1.8,1.1,2.7,1.1s2-.4,2.7-1.1l11.1-11.1c1.5-1.5,1.5-4,0-5.5l-10.9-11.1c-1.5-1.5-4-1.5-5.5,0s-1.5,4,0,5.5l4.5,4.5h-13c-5,0-9.7,2.2-13,6l-30,34.9c-1.8,2.1-4.4,3.3-7.1,3.3H6.4c-2.1,0-3.9,1.7-3.9,3.9s1.7,3.9,3.9,3.9h14.7c5,0,9.7-2.2,13-6l30-34.9c1.8-2.2,4.4-3.4,7.1-3.4Z"></path>
+              <path d="M85.3,58.2c-1.5-1.5-4-1.5-5.5,0s-1.5,4,0,5.5l4.5,4.5h-13c-2.7,0-5.3-1.2-7.1-3.3l-9.5-10.9-5.1,6,8.7,10c3.2,3.8,8,6,13,6h13l-4.5,4.5c-1.5,1.5-1.5,4,0,5.5.8.8,1.8,1.1,2.7,1.1s2-.4,2.7-1.1l11.1-11.1c.7-.7,1.1-1.7,1.1-2.7s-.4-2-1.1-2.7l-11-11.3Z"></path>
+            </svg>
+          </button>
+
+          <button id="recommendBtn" class="ctrl recommend" type="button" aria-label="Queue a recommended track" title="Queue a recommended track" disabled>
+            <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M32 8v14"></path>
+              <path d="M32 42v14"></path>
+              <path d="M8 32h14"></path>
+              <path d="M42 32h14"></path>
+              <path d="M15.5 15.5l10 10"></path>
+              <path d="M38.5 38.5l10 10"></path>
+              <path d="M48.5 15.5l-10 10"></path>
+              <path d="M25.5 38.5l-10 10"></path>
+              <circle cx="32" cy="32" r="9"></circle>
+            </svg>
+          </button>
+
+          <button id="prevBtn" class="ctrl prev" type="button" aria-label="Previous track" disabled>
+            <svg viewBox="0 0 64 64" fill="currentColor" aria-hidden="true">
+              <rect x="10" y="14" width="6" height="36" rx="2"></rect>
+              <path d="M46 16.5v31L22 32z"></path>
+            </svg>
+          </button>
+
+          <button id="playPauseBtn" class="ctrl play" type="button" aria-label="Play or pause" disabled>
+            <svg id="playPauseIcon" viewBox="0 0 64 64" fill="currentColor" aria-hidden="true">
+              <rect x="18" y="14" width="9" height="36" rx="2"></rect>
+              <rect x="37" y="14" width="9" height="36" rx="2"></rect>
+            </svg>
+          </button>
+
+          <button id="nextBtn" class="ctrl next" type="button" aria-label="Next track" disabled>
+            <svg viewBox="0 0 64 64" fill="currentColor" aria-hidden="true">
+              <rect x="48" y="14" width="6" height="36" rx="2"></rect>
+              <path d="M18 16.5v31L42 32z"></path>
+            </svg>
+          </button>
+
+          <button id="heartBtn" class="ctrl heart" type="button" aria-label="Save to library" disabled>
+            <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M32 50s-15-9.4-20.5-19.1C7.4 23.8 10.3 15 19.2 15c5.4 0 9.2 3 12.8 8 3.6-5 7.4-8 12.8-8 8.9 0 11.8 8.8 7.7 15.9C47 40.6 32 50 32 50z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="volume-wrap" aria-label="Volume controls">
+          <button id="muteBtn" class="volume-btn" type="button" aria-label="Mute or restore volume">
+            <svg id="volumeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
+              <path d="M18.5 5.5a9 9 0 0 1 0 13"></path>
+            </svg>
+          </button>
+          <input id="volumeSlider" type="range" min="0" max="100" value="80" step="1" aria-label="Volume" />
+        </div>
+
+        <div class="utility-row" aria-label="Playback actions">
+          <button id="useDeviceBtn" class="secondary-btn" type="button" aria-label="Use this device" title="Use this device" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 2.75v8.5"></path>
+              <path d="M7.05 5.55A8.25 8.25 0 1 0 16.95 5.55"></path>
+            </svg>
+          </button>
+          <button id="audioBtn" class="secondary-btn audio-btn" type="button" aria-label="Audio" title="Audio" disabled>
+            <svg viewBox="0 0 110 135" fill="currentColor" aria-hidden="true">
+              <path d="M10.88,25.67c-1.71,0-3.1,1.39-3.1,3.1v62.46c0,1.71,1.39,3.1,3.1,3.1h88.25c1.71,0,3.09-1.39,3.09-3.1V28.77c0-1.71-1.38-3.1-3.09-3.1H10.88ZM13.98,31.87h11.76l6.84,14.75c.51,1.09,1.61,1.79,2.81,1.79h39.23c1.21,0,2.3-.7,2.81-1.79l6.84-14.75h11.76v56.26H13.98V31.87ZM32.56,31.87h44.87l-4.8,10.34h-35.28l-4.8-10.34ZM37.82,54.29c-6.27,0-11.43,5.14-11.43,11.41s5.16,11.43,11.43,11.43h34.36c6.27,0,11.43-5.16,11.43-11.43s-5.16-11.41-11.43-11.41-11.41,5.14-11.41,11.41c0,1.88.46,3.66,1.28,5.23h-14.1c.82-1.57,1.28-3.35,1.28-5.23,0-6.27-5.14-11.41-11.41-11.41h0ZM37.82,60.48c2.92,0,5.21,2.3,5.21,5.21s-2.3,5.23-5.21,5.23-5.21-2.31-5.21-5.23,2.3-5.21,5.21-5.21ZM72.18,60.48c2.92,0,5.23,2.3,5.23,5.21s-2.31,5.23-5.23,5.23-5.21-2.31-5.21-5.23,2.3-5.21,5.21-5.21Z"></path>
+            </svg>
+          </button>
+          <button id="connectRemoteBtn" class="secondary-btn remote-btn" type="button" aria-label="Choose Spotify Connect device" title="Choose Spotify Connect device" disabled>
+            <svg viewBox="10 15 90 90" fill="currentColor" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
+              <path d="M55,105.19c24.92,0,45.19-20.27,45.19-45.19S79.92,14.81,55,14.81,9.81,35.08,9.81,60s20.27,45.19,45.19,45.19ZM55,21.06c21.47,0,38.94,17.47,38.94,38.94s-17.47,38.94-38.94,38.94-38.94-17.47-38.94-38.94S33.53,21.06,55,21.06Z"></path>
+              <path d="M55,75.19c8.38,0,15.19-6.82,15.19-15.19s-6.82-15.19-15.19-15.19-15.19,6.82-15.19,15.19,6.82,15.19,15.19,15.19ZM55,51.06c4.93,0,8.94,4.01,8.94,8.94s-4.01,8.94-8.94,8.94-8.94-4.01-8.94-8.94,4.01-8.94,8.94-8.94Z"></path>
+              <path d="M51.93,37.4h6.15c1.15,0,2.21-.63,2.76-1.65.54-1.02.48-2.25-.16-3.21l-3.07-4.62c-1.16-1.74-4.04-1.74-5.2,0l-3.07,4.62c-.64.96-.7,2.19-.16,3.21s1.6,1.65,2.76,1.65h0Z"></path>
+              <path d="M58.07,82.6h-6.15c-1.15,0-2.21.63-2.76,1.65-.54,1.02-.48,2.25.16,3.21l3.07,4.62c.58.87,1.55,1.39,2.6,1.39s2.02-.52,2.6-1.39l3.07-4.62c.64-.96.7-2.19.16-3.21s-1.6-1.65-2.76-1.65h0Z"></path>
+              <path d="M79.26,65.83c.46.25.97.37,1.48.37.61,0,1.21-.18,1.73-.52l4.62-3.07c.87-.58,1.39-1.55,1.39-2.6s-.52-2.02-1.39-2.6l-4.62-3.07c-.96-.64-2.2-.7-3.21-.16-1.02.54-1.65,1.6-1.65,2.76v6.15c0,1.15.63,2.21,1.65,2.76h0Z"></path>
+              <path d="M29.27,66.2c.51,0,1.01-.12,1.48-.37,1.02-.54,1.65-1.6,1.65-2.76v-6.15c0-1.15-.63-2.21-1.65-2.76-1.01-.54-2.25-.48-3.21.16l-4.62,3.07c-.87.58-1.39,1.55-1.39,2.6s.52,2.02,1.39,2.6l4.62,3.07c.52.35,1.12.52,1.73.52h0Z"></path>
+            </svg>
+          </button>
+          <button id="fullscreenBtn" class="secondary-btn" type="button" aria-label="Toggle full screen" title="Toggle full screen">
+            <svg id="fullscreenIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M15 3h6v6"></path>
+              <path d="M9 21H3v-6"></path>
+              <path d="M21 15v6h-6"></path>
+              <path d="M3 9V3h6"></path>
+            </svg>
+          </button>
+          <button id="cameraBtn" class="secondary-btn camera-btn" type="button" aria-label="Start hand gesture camera" title="Start hand gesture camera">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 7.5h4l1.5-2h5L16 7.5h4A1.5 1.5 0 0 1 21.5 9v8A1.5 1.5 0 0 1 20 18.5H4A1.5 1.5 0 0 1 2.5 17V9A1.5 1.5 0 0 1 4 7.5Z"></path>
+              <circle cx="12" cy="13" r="3.25"></circle>
+            </svg>
+          </button>
+          <button id="dimBtn" class="secondary-btn dim-btn" type="button" aria-label="Toggle ghost dim mode" title="Toggle ghost dim mode">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 15.5A7.5 7.5 0 1 1 8.5 4 6.2 6.2 0 0 0 20 15.5Z"></path>
+            </svg>
+          </button>
+          <div id="statusLive" class="sr-only" aria-live="polite">Waiting for Spotify</div>
+        </div>
+      </section>
+    </div>
+
+    <div id="overlay" class="overlay show" aria-live="polite">
+      <div class="overlay-card">
+        <h2 id="overlayTitle" class="overlay-title">Open sp0tify</h2>
+        <p id="overlayCopy" class="overlay-copy">Sign in once. This browser stays ready until you sign out, clear site data, or revoke the app.</p>
+        <div class="overlay-actions">
+          <button id="loginBtn" class="overlay-btn primary" type="button">Sign in</button>
+          <button id="setupAudioBtn" class="overlay-btn hidden" type="button">Activate audio</button>
+          <button id="setupDeviceBtn" class="overlay-btn hidden" type="button">Use this device</button>
+          <button id="closeOverlayBtn" class="overlay-btn hidden" type="button">Close</button>
+        </div>
+      </div>
+    </div>
+
+
+    <div id="sensorPanel" class="sensor-panel" aria-live="polite">
+      <div class="sensor-panel-head">
+        <div class="sensor-badge"><span id="cameraDot" class="camera-dot"></span><span id="cameraStatus">Hand camera off</span></div>
+        <div id="gestureStatus" class="gesture-status">Swipe your hand right for next, left for previous, or cover the lens to play or pause.</div>
+      </div>
+
+      <div class="sensor-preview-wrap">
+        <video id="cameraPreview" class="camera-preview" autoplay muted playsinline></video>
+        <div class="sensor-meta">
+          <div class="sensor-meta-title">Ghost gesture control</div>
+          <div class="sensor-meta-copy">Front camera only. Works best in a bright room with a steady phone. Ghost mode makes the screen nearly black but keeps the page awake.</div>
+        </div>
+      </div>
+
+      <div class="sensor-legend">
+        <span class="sensor-chip">Right swipe = next</span>
+        <span class="sensor-chip">Left swipe = previous</span>
+        <span class="sensor-chip">Cover lens = play/pause</span>
+        <span id="proximityStatus" class="sensor-chip">Proximity: checking</span>
+      </div>
+    </div>
+
+    <video id="cameraGhostVideo" class="ghost-video" autoplay muted playsinline></video>
+    <canvas id="gestureCanvas" class="ghost-canvas" width="96" height="72" aria-hidden="true"></canvas>
+
+    <div id="deviceSheet" class="device-sheet" aria-hidden="true">
+      <div class="device-card" role="dialog" aria-modal="true" aria-label="Spotify Connect devices">
+        <div class="device-toolbar">
+          <button id="refreshDevicesBtn" class="device-tool-btn refresh-btn" type="button" aria-label="Refresh devices" title="Refresh devices">
+            <svg viewBox="0 0 110 135" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M86.38,49.4c2.94,8.71,2.26,18.58-2.7,27.16-8.98,15.56-28.69,21.07-44.4,12.6-.23-.12-.39-.32-.46-.58-.07-.25-.04-.5.09-.73l1.97-3.42s.01-.02.02-.04c.8-1.52.45-2.27-1.05-2.23-.02,0-.04,0-.05,0l-14.88,1.22s-.04,0-.05,0c-1.5.21-1.97,1.02-1.4,2.42,0,.02.01.03.02.05,1.07,2.25,2.13,4.5,3.2,6.75l3.2,6.75s.02.03.02.05c.71,1.31,1.54,1.24,2.46-.21,0-.01.02-.02.02-.04l1.98-3.44c.26-.45.82-.61,1.28-.36,19.16,10.49,43.29,3.8,54.27-15.21,6.04-10.46,6.88-22.46,3.28-33.06-.63-1.91-2.7-2.93-4.59-2.27-1.88.64-2.87,2.7-2.22,4.57h0ZM16.82,72.95c-3.61-10.62-2.78-22.63,3.27-33.11,10.98-19.02,35.11-25.7,54.27-15.21.45.25,1.02.09,1.28-.36l1.98-3.44s.01-.02.02-.04c.92-1.45,1.74-1.52,2.46-.21,0,.02.02.03.02.05l3.2,6.75c1.07,2.25,2.13,4.5,3.2,6.75,0,.02.02.03.02.05.57,1.41.1,2.21-1.4,2.42-.02,0-.04,0-.05,0l-7.44.61-7.44.61s-.04,0-.05,0c-1.49.04-1.84-.71-1.05-2.23,0-.01.01-.02.02-.04l1.97-3.42c.13-.23.16-.48.09-.73-.07-.25-.24-.45-.46-.58-15.7-8.47-35.42-2.96-44.4,12.6-4.97,8.61-5.64,18.5-2.68,27.23.63,1.88,2.68,2.9,4.57,2.24,1.89-.64,2.9-2.69,2.24-4.57h0Z"></path>
+            </svg>
+          </button>
+          <button id="closeDevicesBtn" class="device-tool-btn" type="button" aria-label="Close device list" title="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M18 6 6 18"></path>
+              <path d="M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <div id="deviceList" class="device-list" aria-live="polite"></div>
+      </div>
+    </div>
+  </main>
+
+  <button id="signOutMiniBtn" class="icon-mini-btn hidden" type="button" aria-label="Sign out" hidden></button>
+  <script src="https://sdk.scdn.co/spotify-player.js"></script>
+  <script>
     const APP_CONFIG = Object.freeze({
       CLIENT_ID: 'bfade0ed83a54868834c9c7a6cdb690f',
       DEVICE_NAME: 'Sp0tify',
@@ -14,9 +1261,7 @@
       overlayDismissed: 'spotify_car_ui_overlay_dismissed',
       volume: 'spotify_car_ui_volume',
       previousVolume: 'spotify_car_ui_previous_volume',
-      selectedDeviceId: 'spotify_car_ui_selected_device_id',
-      likedSongsCache: 'spotify_car_ui_liked_songs_cache_v1',
-      likedSongsCacheAt: 'spotify_car_ui_liked_songs_cache_at_v1'
+      selectedDeviceId: 'spotify_car_ui_selected_device_id'
     };
 
     const SCOPES = [
@@ -82,7 +1327,17 @@
       deviceSheet: document.getElementById('deviceSheet'),
       deviceList: document.getElementById('deviceList'),
       refreshDevicesBtn: document.getElementById('refreshDevicesBtn'),
-      closeDevicesBtn: document.getElementById('closeDevicesBtn')
+      closeDevicesBtn: document.getElementById('closeDevicesBtn'),
+      cameraBtn: document.getElementById('cameraBtn'),
+      dimBtn: document.getElementById('dimBtn'),
+      sensorPanel: document.getElementById('sensorPanel'),
+      cameraPreview: document.getElementById('cameraPreview'),
+      cameraGhostVideo: document.getElementById('cameraGhostVideo'),
+      gestureCanvas: document.getElementById('gestureCanvas'),
+      cameraStatus: document.getElementById('cameraStatus'),
+      cameraDot: document.getElementById('cameraDot'),
+      gestureStatus: document.getElementById('gestureStatus'),
+      proximityStatus: document.getElementById('proximityStatus')
     };
 
     const state = {
@@ -116,7 +1371,9 @@
       playbackDeviceSupportsVolume: true,
       devices: [],
       playbackPollTimer: null,
-      gradientArtSrc: ''
+      gradientArtSrc: '',
+      dimmed: false,
+      wakeLockSentinel: null
     };
 
     const gesture = {
@@ -140,6 +1397,36 @@
       lastY: 0,
       startTime: 0,
       tracking: false
+    };
+
+    const CAMERA_GESTURE = Object.freeze({
+      width: 96,
+      height: 72,
+      frameIntervalMs: 90,
+      sequenceWindowMs: 820,
+      commandCooldownMs: 1250,
+      regionGapMs: 95,
+      motionThreshold: 16,
+      dominanceRatio: 1.16,
+      darkHoldMs: 700
+    });
+
+    const cameraState = {
+      stream: null,
+      loopTimer: null,
+      running: false,
+      busy: false,
+      prevGray: null,
+      trail: [],
+      lastCommandAt: 0,
+      baselineLuma: 0,
+      motionFloor: 5,
+      holdStartedAt: 0,
+      holdLatched: false,
+      proximityKind: 'none',
+      proximitySensor: null,
+      lastNearAt: 0,
+      nearTimer: null
     };
 
     function setSaved(key, value) { localStorage.setItem(key, value); }
@@ -460,6 +1747,7 @@
       updateRemoteButton();
       syncFullscreenButton();
       updateSetupOverlayButtons();
+      updateCameraButtons();
     }
 
     function getFullscreenElement() {
@@ -633,7 +1921,6 @@
       }).join('');
       els.deviceList.querySelectorAll('[data-device-id]').forEach(button => {
         button.addEventListener('click', async () => {
-          playUiClick();
           const deviceId = button.getAttribute('data-device-id') || '';
           const device = state.devices.find(entry => entry.id === deviceId);
           if (!device || device.is_restricted) return;
@@ -739,94 +2026,29 @@
     }
 
     async function commandPrevious() {
-      const localTarget = isLocalCommandTarget();
-      if (localTarget && state.player) {
-        try {
-          await state.player.previousTrack();
-          resetPlaybackProgressUI(0);
-          return;
-        } catch (_) {}
-      }
-      try {
-        await apiPlayerCommand('/v1/me/player/previous');
-        resetPlaybackProgressUI(0);
-      } catch (error) {
-        if (localTarget && state.player) {
-          try {
-            await state.player.previousTrack();
-            return;
-          } catch (_) {}
-        }
-        throw error;
-      }
+      if (isLocalCommandTarget() && state.player) return state.player.previousTrack();
+      return apiPlayerCommand('/v1/me/player/previous');
     }
 
     async function commandNext() {
-      const localTarget = isLocalCommandTarget();
-      if (localTarget && state.player) {
-        try {
-          await state.player.nextTrack();
-          resetPlaybackProgressUI(0);
-          return;
-        } catch (_) {}
-      }
-      try {
-        await apiPlayerCommand('/v1/me/player/next');
-        resetPlaybackProgressUI(0);
-      } catch (error) {
-        if (localTarget && state.player) {
-          try {
-            await state.player.nextTrack();
-            return;
-          } catch (_) {}
-        }
-        throw error;
-      }
+      if (isLocalCommandTarget() && state.player) return state.player.nextTrack();
+      return apiPlayerCommand('/v1/me/player/next');
     }
 
     async function commandTogglePlay() {
-      const localTarget = isLocalCommandTarget();
-      if (localTarget && state.player) {
-        try {
-          if (!state.activated && typeof activateAudio === 'function') {
-            await activateAudio();
-          }
-          if (state.playbackState?.paused) await state.player.resume();
-          else await state.player.pause();
-          return;
-        } catch (_) {}
-      }
-      try {
-        if (state.playbackState?.paused) await apiPlayerCommand('/v1/me/player/play', { method: 'PUT' });
-        else await apiPlayerCommand('/v1/me/player/pause', { method: 'PUT' });
-      } catch (error) {
-        if (localTarget && state.player) {
-          try {
-            await state.player.togglePlay();
-            return;
-          } catch (_) {}
-        }
-        clickLegacy(legacy.playPauseBtn);
-        throw error;
-      }
+      if (isLocalCommandTarget() && state.player && !state.selectedDeviceId) return state.player.togglePlay();
+      if (state.playbackState?.paused) return apiPlayerCommand('/v1/me/player/play', { method: 'PUT' });
+      return apiPlayerCommand('/v1/me/player/pause', { method: 'PUT' });
     }
 
     async function commandSeek(positionMs) {
-      const target = Math.max(0, Math.round(positionMs || 0));
-      if (isLocalCommandTarget() && state.player) {
-        try {
-          await state.player.seek(target);
-          return;
-        } catch (_) {}
-      }
-      return apiPlayerCommand('/v1/me/player/seek', { method: 'PUT', query: { position_ms: String(target) } });
+      if (isLocalCommandTarget() && state.player) return state.player.seek(positionMs);
+      return apiPlayerCommand('/v1/me/player/seek', { method: 'PUT', query: { position_ms: String(Math.max(0, Math.round(positionMs || 0))) } });
     }
 
     async function commandSetVolume(volume) {
       const bounded = Math.max(0, Math.min(1, Number.isFinite(volume) ? volume : 0));
-      if (isLocalCommandTarget() && state.player) {
-        return syncPlayerVolume(bounded);
-      }
+      if (isLocalCommandTarget() && state.player && !state.selectedDeviceId) return syncPlayerVolume(bounded);
       if (!canControlVolume()) throw new Error('Volume is not available for this device');
       return apiPlayerCommand('/v1/me/player/volume', { method: 'PUT', query: { volume_percent: String(Math.round(bounded * 100)) } });
     }
@@ -1100,6 +2322,434 @@
       }
     }
 
+    function setCameraStatus(message, tone = 'idle') {
+      if (els.cameraStatus) els.cameraStatus.textContent = message;
+      if (els.cameraDot) {
+        els.cameraDot.classList.remove('live', 'warn', 'error');
+        if (tone === 'live') els.cameraDot.classList.add('live');
+        else if (tone === 'warn') els.cameraDot.classList.add('warn');
+        else if (tone === 'error') els.cameraDot.classList.add('error');
+      }
+    }
+
+    function setGestureStatus(message) {
+      if (els.gestureStatus) els.gestureStatus.textContent = message;
+    }
+
+    function setProximityStatus(message) {
+      if (els.proximityStatus) els.proximityStatus.textContent = message;
+    }
+
+    function updateCameraButtons() {
+      if (els.cameraBtn) {
+        els.cameraBtn.classList.toggle('active', !!cameraState.running);
+        els.cameraBtn.setAttribute('aria-pressed', cameraState.running ? 'true' : 'false');
+        els.cameraBtn.setAttribute('title', cameraState.running ? 'Stop hand gesture camera' : 'Start hand gesture camera');
+        els.cameraBtn.setAttribute('aria-label', cameraState.running ? 'Stop hand gesture camera' : 'Start hand gesture camera');
+      }
+      if (els.dimBtn) {
+        els.dimBtn.classList.toggle('active', !!state.dimmed);
+        els.dimBtn.setAttribute('aria-pressed', state.dimmed ? 'true' : 'false');
+        els.dimBtn.setAttribute('title', state.dimmed ? 'Disable ghost dim mode' : 'Enable ghost dim mode');
+        els.dimBtn.setAttribute('aria-label', state.dimmed ? 'Disable ghost dim mode' : 'Enable ghost dim mode');
+      }
+    }
+
+    async function syncWakeLock() {
+      const needsWakeLock = (cameraState.running || state.dimmed) && document.visibilityState === 'visible' && 'wakeLock' in navigator;
+      if (!needsWakeLock) {
+        if (state.wakeLockSentinel) {
+          try { await state.wakeLockSentinel.release(); } catch (_) {}
+          state.wakeLockSentinel = null;
+        }
+        return;
+      }
+
+      if (state.wakeLockSentinel) return;
+
+      try {
+        state.wakeLockSentinel = await navigator.wakeLock.request('screen');
+        state.wakeLockSentinel.addEventListener('release', () => {
+          state.wakeLockSentinel = null;
+        }, { once: true });
+      } catch (error) {
+        console.warn('Wake lock failed', error);
+      }
+    }
+
+    async function setDimMode(nextValue) {
+      state.dimmed = !!nextValue;
+      els.screen.classList.toggle('dim-ui', state.dimmed);
+      updateCameraButtons();
+      await syncWakeLock();
+      setGestureStatus(state.dimmed
+        ? 'Ghost mode is on. The page stays visible but almost black so the camera loop can keep running.'
+        : 'Swipe your hand right for next, left for previous, or cover the lens to play or pause.');
+    }
+
+    function resetCameraVision() {
+      cameraState.prevGray = null;
+      cameraState.trail = [];
+      cameraState.baselineLuma = 0;
+      cameraState.motionFloor = 5;
+      cameraState.holdStartedAt = 0;
+      cameraState.holdLatched = false;
+    }
+
+    function teardownProximitySupport() {
+      if (cameraState.proximitySensor) {
+        try { cameraState.proximitySensor.stop(); } catch (_) {}
+        cameraState.proximitySensor = null;
+      }
+      if (cameraState.nearTimer) {
+        clearTimeout(cameraState.nearTimer);
+        cameraState.nearTimer = null;
+      }
+      window.removeEventListener('deviceproximity', handleLegacyProximityEvent);
+      window.removeEventListener('userproximity', handleLegacyProximityEvent);
+      cameraState.proximityKind = 'none';
+      cameraState.lastNearAt = 0;
+    }
+
+    async function runNearAction() {
+      const now = Date.now();
+      if (now - cameraState.lastCommandAt < CAMERA_GESTURE.commandCooldownMs) return;
+      cameraState.lastCommandAt = now;
+      try {
+        if (isLocalCommandTarget() && state.player && !state.activated) {
+          await activateAudio();
+        }
+        await commandTogglePlay();
+        setStatus('Play or pause', 'good');
+        setCameraStatus('Proximity trigger', 'live');
+        setGestureStatus('Proximity sensor toggled playback.');
+        refreshPlaybackSoon().catch(() => {});
+      } catch (error) {
+        setStatus(`Proximity failed: ${error.message}`, 'error');
+        setCameraStatus('Proximity failed', 'error');
+      }
+    }
+
+    function armNearHold() {
+      if (cameraState.nearTimer) return;
+      cameraState.nearTimer = setTimeout(() => {
+        cameraState.nearTimer = null;
+        runNearAction().catch(() => {});
+      }, CAMERA_GESTURE.darkHoldMs);
+    }
+
+    function disarmNearHold() {
+      if (!cameraState.nearTimer) return;
+      clearTimeout(cameraState.nearTimer);
+      cameraState.nearTimer = null;
+    }
+
+    function handleLegacyProximityEvent(event) {
+      const near = typeof event.near === 'boolean'
+        ? event.near
+        : Number.isFinite(event.value) && Number.isFinite(event.max) ? event.value < Math.max(2, event.max * 0.15) : false;
+
+      if (near) {
+        cameraState.lastNearAt = Date.now();
+        armNearHold();
+      } else {
+        disarmNearHold();
+      }
+    }
+
+    async function setupProximitySupport() {
+      teardownProximitySupport();
+
+      try {
+        if ('ProximitySensor' in window) {
+          const sensor = new ProximitySensor({ frequency: 6 });
+          sensor.addEventListener('reading', () => {
+            if (sensor.near || (Number.isFinite(sensor.distance) && Number.isFinite(sensor.max) && sensor.distance < Math.max(2, sensor.max * 0.15))) {
+              cameraState.lastNearAt = Date.now();
+              armNearHold();
+            } else {
+              disarmNearHold();
+            }
+          });
+          sensor.addEventListener('error', (event) => {
+            console.warn('Proximity sensor error', event.error);
+            setProximityStatus('Proximity: unavailable');
+          });
+          sensor.start();
+          cameraState.proximitySensor = sensor;
+          cameraState.proximityKind = 'generic';
+          setProximityStatus('Proximity: ready');
+          return;
+        }
+
+        if ('ondeviceproximity' in window || 'onuserproximity' in window) {
+          window.addEventListener('deviceproximity', handleLegacyProximityEvent);
+          window.addEventListener('userproximity', handleLegacyProximityEvent);
+          cameraState.proximityKind = 'legacy';
+          setProximityStatus('Proximity: listening');
+          return;
+        }
+
+        setProximityStatus('Proximity: not supported');
+      } catch (error) {
+        console.warn('Proximity setup failed', error);
+        setProximityStatus('Proximity: blocked');
+      }
+    }
+
+    async function fireCameraCommand(kind) {
+      const now = Date.now();
+      if (now - cameraState.lastCommandAt < CAMERA_GESTURE.commandCooldownMs) return;
+      cameraState.lastCommandAt = now;
+
+      try {
+        if (kind === 'right') {
+          await commandNext();
+          setStatus('Next track', 'good');
+          setCameraStatus('Swipe right', 'live');
+          setGestureStatus('Detected right swipe. Next track.');
+        } else if (kind === 'left') {
+          await commandPrevious();
+          setStatus('Previous track', 'good');
+          setCameraStatus('Swipe left', 'live');
+          setGestureStatus('Detected left swipe. Previous track.');
+        } else if (kind === 'hold') {
+          if (isLocalCommandTarget() && state.player && !state.activated) {
+            await activateAudio();
+          }
+          await commandTogglePlay();
+          setStatus('Play or pause', 'good');
+          setCameraStatus('Lens cover', 'live');
+          setGestureStatus('Lens cover detected. Toggled play or pause.');
+        }
+        refreshPlaybackSoon(110).catch(() => {});
+      } catch (error) {
+        setStatus(`Gesture failed: ${error.message}`, 'error');
+        setCameraStatus('Gesture failed', 'error');
+      }
+    }
+
+    function registerMotionRegion(region, now) {
+      cameraState.trail = cameraState.trail.filter((entry) => now - entry.ts <= CAMERA_GESTURE.sequenceWindowMs);
+      const last = cameraState.trail[cameraState.trail.length - 1];
+
+      if (!last || (last.region !== region && now - last.ts >= CAMERA_GESTURE.regionGapMs)) {
+        cameraState.trail.push({ region, ts: now });
+      }
+
+      if (cameraState.trail.length < 3) return;
+
+      const sequence = cameraState.trail.slice(-3).map((entry) => entry.region).join('');
+      if (sequence === '012') {
+        cameraState.trail = [];
+        fireCameraCommand('right').catch(() => {});
+      } else if (sequence === '210') {
+        cameraState.trail = [];
+        fireCameraCommand('left').catch(() => {});
+      }
+    }
+
+    async function processCameraFrame() {
+      if (!cameraState.running || cameraState.busy || !els.cameraGhostVideo || !els.gestureCanvas) return;
+      if (els.cameraGhostVideo.readyState < 2) return;
+
+      cameraState.busy = true;
+
+      try {
+        const canvas = els.gestureCanvas;
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        const width = CAMERA_GESTURE.width;
+        const height = CAMERA_GESTURE.height;
+        if (canvas.width !== width) canvas.width = width;
+        if (canvas.height !== height) canvas.height = height;
+
+        ctx.save();
+        ctx.scale(-1, 1);
+        ctx.drawImage(els.cameraGhostVideo, -width, 0, width, height);
+        ctx.restore();
+
+        const { data } = ctx.getImageData(0, 0, width, height);
+        const gray = new Uint8Array(width * height);
+        const regionSum = [0, 0, 0];
+        const regionCount = [0, 0, 0];
+        let lumaSum = 0;
+        const prev = cameraState.prevGray;
+        const regionWidth = width / 3;
+
+        for (let i = 0, px = 0; i < data.length; i += 4, px += 1) {
+          const luma = (data[i] * 38 + data[i + 1] * 75 + data[i + 2] * 15) >> 7;
+          gray[px] = luma;
+          lumaSum += luma;
+
+          if (prev) {
+            const x = px % width;
+            const region = Math.min(2, Math.floor(x / regionWidth));
+            regionSum[region] += Math.abs(luma - prev[px]);
+            regionCount[region] += 1;
+          }
+        }
+
+        cameraState.prevGray = gray;
+        const avgLuma = lumaSum / gray.length;
+
+        if (cameraState.baselineLuma === 0) cameraState.baselineLuma = avgLuma;
+        if (!cameraState.holdLatched || avgLuma > 34) {
+          cameraState.baselineLuma = (cameraState.baselineLuma * 0.965) + (avgLuma * 0.035);
+        }
+
+        const darkThreshold = clamp(cameraState.baselineLuma * 0.34, 11, 24);
+        const coverEligible = cameraState.baselineLuma > 26;
+
+        if (coverEligible && avgLuma < darkThreshold) {
+          if (!cameraState.holdStartedAt) cameraState.holdStartedAt = Date.now();
+          if (!cameraState.holdLatched && Date.now() - cameraState.holdStartedAt >= CAMERA_GESTURE.darkHoldMs) {
+            cameraState.holdLatched = true;
+            fireCameraCommand('hold').catch(() => {});
+          }
+        } else {
+          cameraState.holdStartedAt = 0;
+          if (avgLuma > Math.max(34, darkThreshold * 1.45)) {
+            cameraState.holdLatched = false;
+          }
+        }
+
+        if (!prev) return;
+
+        const regionMotion = regionSum.map((sum, index) => regionCount[index] ? sum / regionCount[index] : 0);
+        const floorSample = Math.min(...regionMotion);
+        cameraState.motionFloor = (cameraState.motionFloor * 0.9) + (floorSample * 0.1);
+        const threshold = Math.max(CAMERA_GESTURE.motionThreshold, cameraState.motionFloor * 2.3);
+
+        const ranked = regionMotion
+          .map((value, region) => ({ value, region }))
+          .sort((a, b) => b.value - a.value);
+
+        const strongest = ranked[0];
+        const second = ranked[1] || { value: 0 };
+
+        if (
+          strongest.value > threshold &&
+          strongest.value > second.value * CAMERA_GESTURE.dominanceRatio &&
+          Date.now() - cameraState.lastCommandAt > 280
+        ) {
+          registerMotionRegion(strongest.region, Date.now());
+        }
+
+        if (cameraState.running) {
+          const motionLabel = strongest.value > threshold
+            ? strongest.region === 0 ? 'Watching left side movement…'
+            : strongest.region === 1 ? 'Watching center movement…'
+            : 'Watching right side movement…'
+            : state.dimmed
+              ? 'Ghost mode on. Keep the screen barely awake.'
+              : 'Camera is live. Swipe or cover the lens.';
+          if (!cameraState.holdLatched && Date.now() - cameraState.lastCommandAt > 420) {
+            setCameraStatus('Hand camera live', 'live');
+            setGestureStatus(motionLabel);
+          }
+        }
+      } catch (error) {
+        console.warn('Camera frame processing failed', error);
+      } finally {
+        cameraState.busy = false;
+      }
+    }
+
+    async function startGestureCamera() {
+      if (cameraState.running) return;
+
+      if (!window.isSecureContext) {
+        setCameraStatus('HTTPS required', 'error');
+        setGestureStatus('Camera access only works in a secure context, so host this over HTTPS.');
+        return;
+      }
+
+      if (!navigator.mediaDevices?.getUserMedia) {
+        setCameraStatus('Camera API unavailable', 'error');
+        setGestureStatus('This browser does not expose getUserMedia for camera input.');
+        return;
+      }
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: {
+            facingMode: { ideal: 'user' },
+            width: { ideal: 320 },
+            height: { ideal: 240 },
+            frameRate: { ideal: 15, max: 20 }
+          }
+        });
+
+        cameraState.stream = stream;
+        els.cameraPreview.srcObject = stream;
+        els.cameraGhostVideo.srcObject = stream;
+        await Promise.allSettled([
+          els.cameraPreview.play(),
+          els.cameraGhostVideo.play()
+        ]);
+
+        cameraState.running = true;
+        resetCameraVision();
+        updateCameraButtons();
+        setCameraStatus('Hand camera live', 'live');
+        setGestureStatus('Camera is live. Swipe right for next, left for previous, or cover the lens to play or pause.');
+        setStatus('Hand gesture camera ready', 'good');
+        cameraState.loopTimer = setInterval(() => {
+          processCameraFrame().catch(() => {});
+        }, CAMERA_GESTURE.frameIntervalMs);
+        setupProximitySupport().catch(() => {});
+        await syncWakeLock();
+      } catch (error) {
+        console.warn('Camera start failed', error);
+        setCameraStatus('Camera blocked', 'error');
+        setGestureStatus('Camera permission was denied or unavailable. Swipes need the front camera. Proximity support, if any, can still handle play or pause only.');
+        setProximityStatus('Proximity: checking');
+        setupProximitySupport().catch(() => {});
+      }
+    }
+
+    async function stopGestureCamera() {
+      if (cameraState.loopTimer) {
+        clearInterval(cameraState.loopTimer);
+        cameraState.loopTimer = null;
+      }
+
+      teardownProximitySupport();
+
+      if (cameraState.stream) {
+        for (const track of cameraState.stream.getTracks()) {
+          try { track.stop(); } catch (_) {}
+        }
+        cameraState.stream = null;
+      }
+
+      if (els.cameraPreview) {
+        els.cameraPreview.pause();
+        els.cameraPreview.srcObject = null;
+      }
+      if (els.cameraGhostVideo) {
+        els.cameraGhostVideo.pause();
+        els.cameraGhostVideo.srcObject = null;
+      }
+
+      cameraState.running = false;
+      resetCameraVision();
+      updateCameraButtons();
+      setCameraStatus('Hand camera off');
+      setGestureStatus('Swipe your hand right for next, left for previous, or cover the lens to play or pause.');
+      setProximityStatus('Proximity: off');
+      await syncWakeLock();
+    }
+
+    async function toggleGestureCamera() {
+      if (cameraState.running) {
+        await stopGestureCamera();
+      } else {
+        await startGestureCamera();
+      }
+    }
+
     function clearTrack() {
       els.albumArt.src = DEFAULT_ART;
       els.bgArt.src = DEFAULT_ART;
@@ -1119,30 +2769,6 @@
       updateTransportButtons(false);
     }
 
-    function resetPlaybackProgressUI(position = 0, duration = null) {
-      const safePos = Math.max(0, Math.round(position || 0));
-      const derivedDuration = duration == null
-        ? (state.playbackState?.duration || state.playbackState?.track_window?.current_track?.duration_ms || 0)
-        : Math.max(0, Math.round(duration || 0));
-
-      if (state.playbackState) {
-        state.playbackState.position = safePos;
-        if (derivedDuration > 0) state.playbackState.duration = derivedDuration;
-      }
-
-      state.lastPlayerSnapshotAt = Date.now();
-
-      if (!state.seeking) {
-        const max = derivedDuration > 0 ? String(derivedDuration) : (els.timeline.max || '1000');
-        const val = String(Math.min(safePos, derivedDuration || Number(max) || 1000));
-        els.currentTime.textContent = formatTime(safePos);
-        if (derivedDuration > 0) els.totalTime.textContent = formatTime(derivedDuration);
-        if (els.timeline.max !== max) els.timeline.max = max;
-        els.timeline.value = val;
-        updateRangeVisual(els.timeline);
-      }
-    }
-
     function deriveNowPosition() {
       if (!state.playbackState) return 0;
       const duration = state.playbackState.duration || state.playbackState.track_window?.current_track?.duration_ms || 0;
@@ -1159,15 +2785,9 @@
       els.currentTime.textContent = formatTime(position);
       els.totalTime.textContent = formatTime(duration);
       if (!state.seeking) {
-        const newMax = duration > 0 ? String(duration) : '1000';
-        const newVal = String(Math.min(position, duration || 1000));
-        if (els.timeline.max !== newMax) {
-          els.timeline.max = newMax;
-        }
-        if (els.timeline.value !== newVal) {
-          els.timeline.value = newVal;
-          updateRangeVisual(els.timeline);
-        }
+        els.timeline.max = duration > 0 ? String(duration) : '1000';
+        els.timeline.value = String(Math.min(position, duration || 1000));
+        updateRangeVisual(els.timeline);
       }
     }
 
@@ -1479,7 +3099,6 @@
         setRecommendVisual(false);
         state.currentUri = newUri;
         syncLikedState(newUri);
-        resetPlaybackProgressUI(playbackState.position || 0, playbackState.duration || current.duration_ms || 0);
       }
 
       updateTransportButtons(true);
@@ -1733,6 +3352,8 @@
         if (event.target === els.deviceSheet) closeDeviceSheet();
       });
       els.fullscreenBtn.addEventListener('click', toggleFullscreen);
+      els.cameraBtn.addEventListener('click', () => { toggleGestureCamera().catch(() => {}); });
+      els.dimBtn.addEventListener('click', () => { setDimMode(!state.dimmed).catch(() => {}); });
       els.closeOverlayBtn.addEventListener('click', () => {
         setSaved(STORAGE_KEYS.overlayDismissed, '1');
         setOverlay('hidden');
@@ -1742,23 +3363,15 @@
       els.prevBtn.addEventListener('click', async () => {
         try {
           await commandPrevious();
-          await refreshPlaybackSoon(90).catch(() => {});
-          syncPlaybackClock();
-        } catch (error) {
-          clickLegacy(legacy.prevBtn);
-          setStatus(`Previous failed: ${error.message}`, 'error');
-        }
+          refreshPlaybackSoon().catch(() => {});
+        } catch (error) { setStatus(`Previous failed: ${error.message}`, 'error'); }
       });
 
       els.playPauseBtn.addEventListener('click', async () => {
         try {
           await commandTogglePlay();
-          await refreshPlaybackSoon(90).catch(() => {});
-          syncPlaybackClock();
-        } catch (error) {
-          clickLegacy(legacy.playPauseBtn);
-          setStatus(`Play or pause failed: ${error.message}`, 'error');
-        }
+          refreshPlaybackSoon().catch(() => {});
+        } catch (error) { setStatus(`Play or pause failed: ${error.message}`, 'error'); }
       });
 
       els.shuffleBtn.addEventListener('click', toggleShuffle);
@@ -1766,12 +3379,8 @@
       els.nextBtn.addEventListener('click', async () => {
         try {
           await commandNext();
-          await refreshPlaybackSoon(90).catch(() => {});
-          syncPlaybackClock();
-        } catch (error) {
-          clickLegacy(legacy.nextBtn);
-          setStatus(`Next failed: ${error.message}`, 'error');
-        }
+          refreshPlaybackSoon().catch(() => {});
+        } catch (error) { setStatus(`Next failed: ${error.message}`, 'error'); }
       });
 
       els.heartBtn.addEventListener('click', toggleLike);
@@ -1824,6 +3433,15 @@
       document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape' && els.deviceSheet.classList.contains('show')) closeDeviceSheet();
       });
+      document.addEventListener('visibilitychange', () => {
+        syncWakeLock().catch(() => {});
+        if (document.visibilityState !== 'visible' && cameraState.running) {
+          setGestureStatus('Keep this page visible. Locking the screen or hiding the tab will usually stop gesture reading.');
+        }
+      });
+      window.addEventListener('beforeunload', () => {
+        stopGestureCamera().catch(() => {});
+      });
     }
 
     window.onSpotifyWebPlaybackSDKReady = () => {
@@ -1841,6 +3459,9 @@
       attachGestureEvents();
       updateAuxButtons();
       updateAudioButton();
+      updateCameraButtons();
+      setCameraStatus('Hand camera off');
+      setProximityStatus('Proximity: checking');
       syncFullscreenButton();
       startProgressLoop();
       startPlaybackPolling();
@@ -1859,1202 +3480,6 @@
 
       if (window.Spotify) installPlayer();
     })();
-  </script><div aria-label="sp0tify iPod interface" id="ipodApp"><div class="ipod-face"><div class="ipod-screen-frame"><div aria-live="polite" class="ipod-screen"><div class="ipod-topbar"><div aria-hidden="true" class="top-icon-left" id="podTopLeft"></div><div class="title" id="podTopTitle">sp0tify</div><div aria-hidden="true" class="top-icon-right visualizer idle" id="podViz"><span></span><span></span><span></span><span></span></div></div><div class="ipod-body"><div class="pod-view active" id="podMenuView"></div><div class="pod-view" id="podNowView"></div></div></div></div><div class="wheel-zone"><div aria-label="Click wheel" class="wheel" id="podWheel" role="application"><div aria-hidden="true" class="wheel-ring" id="podWheelRing"></div><div aria-hidden="true" class="wheel-label menu">Menu</div><div aria-hidden="true" class="wheel-label prev">⏮</div><div aria-hidden="true" class="wheel-label next">⏭</div><div aria-hidden="true" class="wheel-label play">⏯</div><button aria-label="Select" class="wheel-center" id="podCenterBtn" type="button"></button></div></div></div></div><script id="ipod-overlay-script">
-(() => {
-  const legacy = {
-    loginBtn: document.getElementById('loginBtn'),
-    signOutBtn: document.getElementById('signOutMiniBtn'),
-    trackName: document.getElementById('trackName'),
-    artistName: document.getElementById('artistName'),
-    metaTop: document.getElementById('metaTop'),
-    currentTime: document.getElementById('currentTime'),
-    totalTime: document.getElementById('totalTime'),
-    timeline: document.getElementById('timeline'),
-    albumArt: document.getElementById('albumArt'),
-    shuffleBtn: document.getElementById('shuffleBtn'),
-    recommendBtn: document.getElementById('recommendBtn'),
-    heartBtn: document.getElementById('heartBtn'),
-    prevBtn: document.getElementById('prevBtn'),
-    playPauseBtn: document.getElementById('playPauseBtn'),
-    playPauseIcon: document.getElementById('playPauseIcon'),
-    nextBtn: document.getElementById('nextBtn'),
-    volumeSlider: document.getElementById('volumeSlider'),
-    audioBtn: document.getElementById('audioBtn'),
-    useDeviceBtn: document.getElementById('useDeviceBtn'),
-    connectBtn: document.getElementById('connectRemoteBtn'),
-    fullscreenBtn: document.getElementById('fullscreenBtn'),
-    deviceList: document.getElementById('deviceList'),
-    refreshDevicesBtn: document.getElementById('refreshDevicesBtn'),
-    closeDevicesBtn: document.getElementById('closeDevicesBtn'),
-    setupAudioBtn: document.getElementById('setupAudioBtn'),
-    setupDeviceBtn: document.getElementById('setupDeviceBtn')
-  };
-
-  const ui = {
-    menuView: document.getElementById('podMenuView'),
-    nowView: document.getElementById('podNowView'),
-    topTitle: document.getElementById('podTopTitle'),
-    topLeft: document.getElementById('podTopLeft'),
-    viz: document.getElementById('podViz'),
-    wheel: document.getElementById('podWheel'),
-    center: document.getElementById('podCenterBtn'),
-    app: document.getElementById('ipodApp')
-  };
-
-  const state = {
-    view: 'home',
-    selected: 0,
-    devices: [],
-    menuItems: [],
-    menuOffset: 0,
-    menuVisibleCount: 6,
-    renderToken: '',
-    nowPlayingRaf: 0,
-    npElements: { bar: null, currentTimeEl: null, totalTimeEl: null },
-    lastRenderHash: '',
-    wakeLock: null,
-    wakeLockRequested: false,
-    gestureActive: false,
-    pointerId: null,
-    startAngle: 0,
-    lastAngle: 0,
-    accum: 0,
-    startX: 0,
-    startY: 0,
-    startT: 0,
-    moved: false,
-    startDist: 0,
-    likedTracks: [],
-    likedLoading: false,
-    likedLoaded: false,
-    likedFullyLoaded: false,
-    likedBackgroundLoading: false,
-    playlists: [],
-    playlistsLoading: false,
-    playlistsLoaded: false,
-    playlistTracksById: {},
-    activePlaylist: null,
-    activePlaylistIndex: 0,
-    playbackClock: { positionMs: 0, durationMs: 0, stamp: Date.now(), playing: false, trackKey: '' },
-    npLikedTrackKey: '',
-    npLikedState: false,
-    listScrollPointerId: null,
-    npSeekPointerId: null,
-    npScrubbing: false,
-    npScrubMs: 0
-  };
-
-  if (legacy.signOutBtn) {
-    legacy.signOutBtn.hidden = true;
-    legacy.signOutBtn.style.display = 'none';
-  }
-
-  let clickAudioContext = null;
-  let lastClickSoundAt = 0;
-  function playUiClick() {
-    const now = Date.now();
-    if (now - lastClickSoundAt < 42) return;
-    lastClickSoundAt = now;
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) return;
-    try {
-      if (!clickAudioContext) clickAudioContext = new AudioCtx();
-      if (clickAudioContext.state === 'suspended') clickAudioContext.resume().catch(() => {});
-      const ctx = clickAudioContext;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(920, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(720, ctx.currentTime + 0.028);
-      gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.009, ctx.currentTime + 0.004);
-      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.04);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.042);
-    } catch (_) {}
-  }
-
-  function clearNowPlayingCache() {
-    state.npElements = { bar: null, currentTimeEl: null, totalTimeEl: null };
-  }
-
-  function stopNowPlayingLoop() {
-    if (state.nowPlayingRaf) {
-      cancelAnimationFrame(state.nowPlayingRaf);
-      state.nowPlayingRaf = 0;
-    }
-  }
-
-  function isAuthed() {
-    return typeof hasTokens === 'function' ? hasTokens() : false;
-  }
-  function isDisabled(el) { return !el || !!el.disabled; }
-  function clickLegacy(el) { if (!el || el.disabled) return; el.click(); }
-  function text(el, fallback='') { return (el && (el.textContent || '').trim()) || fallback; }
-  function currentTrackTitle(){ return text(legacy.trackName, 'Nothing playing'); }
-  function currentArtist(){ return text(legacy.artistName, isAuthed() ? 'Open Spotify on a device' : 'Sign in first'); }
-  function currentContext(){ return text(legacy.metaTop, 'sp0tify'); }
-  function currentArt(){ return legacy.albumArt && legacy.albumArt.getAttribute('src') || ''; }
-  function currentArtSmall(){
-    const images = state.playbackState?.track_window?.current_track?.album?.images;
-    if (Array.isArray(images) && images.length) {
-      const smallest = images[images.length - 1] || images[0];
-      if (smallest && smallest.url) return smallest.url;
-    }
-    return currentArt();
-  }
-  function currentTime(){ return text(legacy.currentTime, '0:00'); }
-  function totalTime(){ return text(legacy.totalTime, '0:00'); }
-  function progressValue(){ return legacy.timeline ? Number(legacy.timeline.value || 0) : 0; }
-  function volumeValue(){ return legacy.volumeSlider ? Number(legacy.volumeSlider.value || 0) : 0; }
-  function parseTimeMs(value){
-    const raw = String(value || '').trim();
-    if (!raw) return 0;
-    const cleaned = raw.replace(/^-/, '');
-    const parts = cleaned.split(':').map((part) => Number(part));
-    if (parts.some((n) => Number.isNaN(n))) return 0;
-    if (parts.length === 3) return ((parts[0] * 60 + parts[1]) * 60 + parts[2]) * 1000;
-    if (parts.length === 2) return (parts[0] * 60 + parts[1]) * 1000;
-    return parts[0] * 1000;
-  }
-  function formatTimeMs(ms){
-    const totalSeconds = Math.max(0, Math.floor((ms || 0) / 1000));
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    if (hours > 0) return `${hours}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
-    return `${minutes}:${String(seconds).padStart(2,'0')}`;
-  }
-  function syncPlaybackClock(){
-    const trackKey = `${currentTrackTitle()}|${currentArtist()}`;
-    const durationMs = parseTimeMs(totalTime());
-    const reportedPositionMs = parseTimeMs(currentTime());
-    const now = Date.now();
-    const wasPlaying = !!state.playbackClock.playing;
-    const isNowPlaying = isPlaying();
-
-    if (trackKey !== state.playbackClock.trackKey) {
-      state.playbackClock.trackKey = trackKey;
-      state.playbackClock.positionMs = reportedPositionMs;
-      state.playbackClock.durationMs = durationMs;
-      state.playbackClock.stamp = now;
-      state.playbackClock.playing = isNowPlaying;
-      return;
-    }
-
-    if (wasPlaying) {
-      state.playbackClock.positionMs += Math.max(0, now - (state.playbackClock.stamp || now));
-    }
-
-    if (durationMs > 0) state.playbackClock.durationMs = durationMs;
-
-    const drift = Math.abs(reportedPositionMs - state.playbackClock.positionMs);
-    if (drift > 1700 || !wasPlaying || !isNowPlaying) {
-      state.playbackClock.positionMs = reportedPositionMs;
-    }
-
-    if (state.playbackClock.durationMs > 0) {
-      state.playbackClock.positionMs = Math.min(state.playbackClock.durationMs, state.playbackClock.positionMs);
-    }
-    state.playbackClock.positionMs = Math.max(0, state.playbackClock.positionMs);
-    state.playbackClock.playing = isNowPlaying;
-    state.playbackClock.stamp = now;
-  }
-  function displayDurationMs(){
-    return Math.max(0, state.playbackClock.durationMs || parseTimeMs(totalTime()));
-  }
-  function displayPositionMs(){
-    const duration = displayDurationMs();
-    let position = Math.max(0, state.playbackClock.positionMs || parseTimeMs(currentTime()));
-    if (state.playbackClock.playing) {
-      position += Date.now() - (state.playbackClock.stamp || Date.now());
-    }
-    if (duration > 0) position = Math.min(duration, position);
-    return Math.max(0, position);
-  }
-  function isShuffleOn(){ return !!legacy.shuffleBtn && legacy.shuffleBtn.classList.contains('active'); }
-  function isLiked(){ return !!legacy.heartBtn && legacy.heartBtn.classList.contains('active'); }
-  function currentLikeTrackKey(){ return `${currentTrackTitle()}|${currentArtist()}|${currentContext()}`; }
-  function syncNowPlayingLikedState(force = false){
-    const trackKey = currentLikeTrackKey();
-    if (force || state.npLikedTrackKey !== trackKey) {
-      state.npLikedTrackKey = trackKey;
-      state.npLikedState = isLiked();
-    }
-    return state.npLikedState;
-  }
-  function updateNowPlayingLikeButton(){
-    const likeBtn = ui.nowView.querySelector('#npLikeBtn');
-    if (!likeBtn) return;
-    likeBtn.setAttribute('aria-label', state.npLikedState ? 'Remove from liked songs' : 'Save to liked songs');
-    likeBtn.setAttribute('title', state.npLikedState ? 'Remove from liked songs' : 'Save to liked songs');
-    const svg = likeBtn.querySelector('svg');
-    if (svg) {
-      svg.setAttribute('fill', state.npLikedState ? 'currentColor' : 'none');
-      svg.setAttribute('stroke', 'currentColor');
-    }
-  }
-  function attachLikedObserver(){
-    if (!legacy.heartBtn || !window.MutationObserver) return;
-    const observer = new MutationObserver(() => {
-      const trackKey = currentLikeTrackKey();
-      if (trackKey !== state.npLikedTrackKey) return;
-      state.npLikedState = isLiked();
-      updateNowPlayingLikeButton();
-    });
-    observer.observe(legacy.heartBtn, { attributes: true, attributeFilter: ['class'] });
-  }
-  function isAudioReady(){ return !!legacy.audioBtn && legacy.audioBtn.classList.contains('active'); }
-  function isUsingThisDevice(){ return !!legacy.useDeviceBtn && legacy.useDeviceBtn.classList.contains('active'); }
-  function isRemoteSelected(){ return !!legacy.connectBtn && legacy.connectBtn.classList.contains('active'); }
-  function isFullscreen(){ return !!(document.fullscreenElement || document.webkitFullscreenElement); }
-  function isPaused(){ return !!legacy.playPauseIcon && legacy.playPauseIcon.querySelector('path'); }
-  function isPlaying(){ return isAuthed() && !!currentTrackTitle() && !isPaused(); }
-
-  function getMenuVisibleCount(){
-    const height = ui.menuView ? ui.menuView.clientHeight || 180 : 180;
-    const rowHeight = 25;
-    return Math.max(5, Math.floor(height / rowHeight));
-  }
-
-  function syncMenuWindow(){
-    state.menuVisibleCount = getMenuVisibleCount();
-    const total = state.menuItems.length || 0;
-    const visible = Math.max(1, Math.min(state.menuVisibleCount, total || state.menuVisibleCount));
-    if (!total || total <= visible) {
-      state.menuOffset = 0;
-      return;
-    }
-    if (state.selected < state.menuOffset) state.menuOffset = state.selected;
-    if (state.selected >= state.menuOffset + visible) state.menuOffset = state.selected - visible + 1;
-    if (state.menuOffset < 0) state.menuOffset = 0;
-    const maxOffset = Math.max(0, total - visible);
-    if (state.menuOffset > maxOffset) state.menuOffset = maxOffset;
-  }
-
-  function clampIndex(){
-    if (!state.menuItems.length) {
-      state.selected = 0;
-      state.menuOffset = 0;
-      return;
-    }
-    if (state.selected < 0) state.selected = state.menuItems.length - 1;
-    if (state.selected >= state.menuItems.length) state.selected = 0;
-    syncMenuWindow();
-  }
-
-  function parseDevices(){
-    const out = [];
-    if (!legacy.deviceList) return out;
-    legacy.deviceList.querySelectorAll('[data-device-id]').forEach((btn) => {
-      const id = btn.getAttribute('data-device-id') || '';
-      const head = btn.querySelector('.device-item-head span');
-      const meta = btn.querySelector('.device-item-meta');
-      out.push({
-        id,
-        label: head ? head.textContent.trim() : (btn.textContent || 'Device').trim(),
-        meta: meta ? meta.textContent.replace(/\s+/g, ' ').trim() : '',
-        active: btn.classList.contains('active'),
-        disabled: btn.disabled,
-        click(){ btn.click(); }
-      });
-    });
-    state.devices = out;
-    return out;
-  }
-
-  async function activateAudioAndUseDevice(){
-    try {
-      if (typeof activateAudio === 'function') {
-        await activateAudio();
-      } else {
-        clickLegacy(legacy.setupAudioBtn);
-      }
-      await new Promise((resolve) => setTimeout(resolve, 120));
-      if (typeof transferPlayback === 'function') {
-        await transferPlayback();
-      } else {
-        clickLegacy(legacy.setupDeviceBtn);
-      }
-      if (state.deviceId) {
-        setSelectedDevice({ id: state.deviceId, name: APP_CONFIG.DEVICE_NAME, supports_volume: true });
-      }
-      if (typeof refreshPlaybackSoon === 'function') {
-        await refreshPlaybackSoon(180);
-      }
-    } catch (error) {
-      console.warn('Audio/device handoff failed', error);
-    } finally {
-      setTimeout(render, 80);
-      setTimeout(sync, 240);
-    }
-  }
-
-  function buildHomeItems(){
-    const items = [
-      { label: 'Now Playing', value: '', type: 'nav', next: 'nowplaying' },
-      { label: 'Liked Songs', value: state.likedTracks.length ? String(state.likedTracks.length) : '', type: 'nav', next: 'liked' },
-      { label: 'Devices', value: state.devices.find((d) => d.active)?.label || '', type: 'nav', next: 'devices' },
-      { label: 'Shuffle', value: isShuffleOn() ? 'On' : 'Off', action: () => clickLegacy(legacy.shuffleBtn) },
-      { label: 'Recommend', value: legacy.recommendBtn && legacy.recommendBtn.classList.contains('active') ? 'Queued' : '', action: () => clickLegacy(legacy.recommendBtn) },
-      { label: 'Activate audio', value: state.activated ? 'Yes' : '', action: () => {
-        if (typeof activateAudio === 'function') activateAudio();
-        else clickLegacy(legacy.setupAudioBtn);
-      } },
-      { label: 'Use this device', value: isUsingThisDevice() ? 'Yes' : '', action: () => { activateAudioAndUseDevice(); } },
-      { label: 'Full Screen', value: isFullscreen() ? 'On' : '', action: toggleFullscreen }
-    ];
-    if (!isAuthed()) items.push({ label: 'Connect Spotify', value: '', action: () => clickLegacy(legacy.loginBtn) });
-    return items;
-  }
-
-  function buildDeviceItems(){
-    const devices = parseDevices();
-    const items = devices.map((device) => ({
-      label: device.label,
-      value: device.active ? 'Active' : '',
-      disabled: device.disabled,
-      action: () => device.click()
-    }));
-    items.unshift({ label: 'Refresh', value: '', action: refreshDevices });
-    return items;
-  }
-
-
-  function buildPlaylistItems(){
-    if (!isAuthed()) {
-      return [{ label: 'Connect Spotify', value: '', action: () => clickLegacy(legacy.loginBtn) }];
-    }
-    if (state.playlistsLoading && !state.playlistsLoaded) {
-      return [{ label: 'Loading playlists…', value: '', disabled: true }];
-    }
-    if (!state.playlists.length) {
-      return [{ label: 'No playlists', value: '', disabled: true }];
-    }
-    return state.playlists.map((playlist, index) => ({
-      label: playlist.name || 'Playlist',
-      value: playlist.tracks?.total ? String(playlist.tracks.total) : '',
-      next: 'playlistTracks',
-      action: () => openPlaylistTracks(index)
-    }));
-  }
-
-  function buildPlaylistTrackItems(){
-    const playlist = state.activePlaylist;
-    const tracks = playlist?.tracks || [];
-    if (!playlist) return [{ label: 'No playlist', value: '', disabled: true }];
-    if (playlist.loading && !tracks.length) return [{ label: 'Loading tracks…', value: '', disabled: true }];
-    if (!tracks.length) return [{ label: 'No tracks', value: '', disabled: true }];
-    return tracks.map((item, index) => ({
-      label: item.track.name || 'Track',
-      value: ((item.track.artists || []).map((artist) => artist.name).join(', ')).slice(0, 24),
-      action: () => playPlaylistSong(index)
-    }));
-  }
-
-  async function openPlaylists(force = false){
-    state.view = 'playlists';
-    render();
-    if (force || !state.playlistsLoaded) {
-      await fetchPlaylists(force);
-    }
-    state.selected = 0;
-    render();
-  }
-
-  async function openPlaylistTracks(index){
-    const playlist = state.playlists[index];
-    if (!playlist) return;
-    state.activePlaylistIndex = index;
-    state.activePlaylist = { id: playlist.id, uri: playlist.uri, name: playlist.name || 'Playlist', tracks: state.playlistTracksById[playlist.id] || [], loading: true };
-    state.view = 'playlistTracks';
-    state.selected = 0;
-    render();
-    try {
-      const tracks = await fetchPlaylistTracks(playlist.id);
-      state.activePlaylist = { id: playlist.id, uri: playlist.uri, name: playlist.name || 'Playlist', tracks, loading: false };
-    } catch (error) {
-      state.activePlaylist = { id: playlist.id, uri: playlist.uri, name: playlist.name || 'Playlist', tracks: [], loading: false };
-      console.warn('Playlist tracks failed', error);
-    }
-    render();
-  }
-
-  async function playPlaylistSong(index){
-    const playlist = state.activePlaylist;
-    if (!playlist?.uri) return;
-    try {
-      await apiPlayerCommand('/v1/me/player/play', {
-        method: 'PUT',
-        body: { context_uri: playlist.uri, offset: { position: Math.max(0, index) } }
-      });
-      state.view = 'nowplaying';
-      if (typeof refreshPlaybackSoon === 'function') refreshPlaybackSoon().catch(() => {});
-      render();
-    } catch (error) {
-      console.warn('Playlist playback failed', error);
-    }
-  }
-
-  function getLikedSongsCache(){
-    try {
-      const raw = getSaved(STORAGE_KEYS.likedSongsCache);
-      if (!raw) return [];
-      const parsed = JSON.parse(raw);
-      return Array.isArray(parsed) ? parsed : [];
-    } catch (error) {
-      return [];
-    }
-  }
-
-  function setLikedSongsCache(items){
-    try {
-      setSaved(STORAGE_KEYS.likedSongsCache, JSON.stringify(items || []));
-      setSaved(STORAGE_KEYS.likedSongsCacheAt, String(Date.now()));
-    } catch (error) {
-      // ignore storage write failures
-    }
-  }
-
-  async function fetchLikedSongsRemaining(offsetStart = 0, limit = 50){
-    if (state.likedBackgroundLoading || !isAuthed()) return state.likedTracks;
-    state.likedBackgroundLoading = true;
-    try {
-      let offset = offsetStart;
-      const items = Array.isArray(state.likedTracks) ? state.likedTracks.slice() : [];
-      while (true) {
-        const data = await spotifyFetch(`/v1/me/tracks?limit=${limit}&offset=${offset}`);
-        const pageItems = Array.isArray(data?.items) ? data.items.filter((item) => item && item.track && item.track.uri) : [];
-        if (!pageItems.length) break;
-        items.push(...pageItems);
-        state.likedTracks = items.slice();
-        state.likedLoaded = true;
-        if (state.view === 'liked') render();
-        if (!data?.next) break;
-        offset += pageItems.length;
-      }
-      state.likedTracks = items;
-      state.likedLoaded = true;
-      state.likedFullyLoaded = true;
-      setLikedSongsCache(items);
-      return items;
-    } catch (error) {
-      console.warn('Liked songs background fetch failed', error);
-      return state.likedTracks;
-    } finally {
-      state.likedBackgroundLoading = false;
-    }
-  }
-
-  async function fetchPagedItems(basePath, limit = 50){
-    const items = [];
-    let offset = 0;
-    while (true) {
-      const joiner = basePath.includes('?') ? '&' : '?';
-      const data = await spotifyFetch(`${basePath}${joiner}limit=${limit}&offset=${offset}`);
-      const pageItems = Array.isArray(data?.items) ? data.items : [];
-      items.push(...pageItems);
-      if (!data?.next || !pageItems.length) break;
-      offset += pageItems.length;
-    }
-    return items;
-  }
-
-  async function fetchLikedSongs(force = false){
-    if (!isAuthed()) {
-      state.likedTracks = [];
-      state.likedLoaded = false;
-      state.likedFullyLoaded = false;
-      return [];
-    }
-    if (state.likedLoading) return state.likedTracks;
-    if (state.likedLoaded && state.likedFullyLoaded && !force) return state.likedTracks;
-
-    const cached = !force ? getLikedSongsCache() : [];
-    if (cached.length && !state.likedLoaded) {
-      state.likedTracks = cached;
-      state.likedLoaded = true;
-      state.likedFullyLoaded = false;
-      if (state.view === 'liked') render();
-    }
-
-    state.likedLoading = true;
-    try {
-      const firstPage = await spotifyFetch('/v1/me/tracks?limit=50&offset=0');
-      const firstItems = Array.isArray(firstPage?.items) ? firstPage.items.filter((item) => item && item.track && item.track.uri) : [];
-      state.likedTracks = firstItems;
-      state.likedLoaded = true;
-      state.likedFullyLoaded = !firstPage?.next;
-      setLikedSongsCache(firstItems);
-      if (state.view === 'liked') render();
-      if (firstPage?.next) {
-        fetchLikedSongsRemaining(firstItems.length, 50).catch(() => {});
-      }
-      return state.likedTracks;
-    } catch (error) {
-      if (state.likedTracks.length) return state.likedTracks;
-      state.likedTracks = [];
-      state.likedLoaded = false;
-      state.likedFullyLoaded = false;
-      console.warn('Liked songs failed', error);
-      return [];
-    } finally {
-      state.likedLoading = false;
-    }
-  }
-
-  async function fetchPlaylists(force = false){
-    if (!isAuthed()) {
-      state.playlists = [];
-      state.playlistsLoaded = false;
-      return [];
-    }
-    if (state.playlistsLoading) return state.playlists;
-    if (state.playlistsLoaded && !force) return state.playlists;
-    state.playlistsLoading = true;
-    try {
-      const items = await fetchPagedItems('/v1/me/playlists', 50);
-      state.playlists = items.filter((item) => item && item.id && item.uri);
-      state.playlistsLoaded = true;
-      return state.playlists;
-    } catch (error) {
-      state.playlists = [];
-      state.playlistsLoaded = false;
-      console.warn('Playlist fetch failed', error);
-      return [];
-    } finally {
-      state.playlistsLoading = false;
-    }
-  }
-
-  async function fetchPlaylistTracks(playlistId, force = false){
-    if (!playlistId || !isAuthed()) return [];
-    if (state.playlistTracksById[playlistId] && !force) return state.playlistTracksById[playlistId];
-    const items = await fetchPagedItems(`/v1/playlists/${playlistId}/tracks`, 100);
-    const clean = items.filter((item) => item && item.track && item.track.uri);
-    state.playlistTracksById[playlistId] = clean;
-    return clean;
-  }
-
-  function buildLikedItems(){
-    if (!isAuthed()) {
-      return [{ label: 'Connect Spotify', value: '', action: () => clickLegacy(legacy.loginBtn) }];
-    }
-    if (state.likedLoading && !state.likedLoaded) {
-      return [{ label: 'Loading liked songs…', value: '', disabled: true }];
-    }
-    if (!state.likedTracks.length) {
-      return [{ label: 'No liked songs', value: '', disabled: true }];
-    }
-    return state.likedTracks.map((item, index) => ({
-      label: item.track.name || 'Track',
-      value: ((item.track.artists || []).map((artist) => artist.name).join(', ')).slice(0, 24),
-      action: () => playLikedSong(index)
-    }));
-  }
-
-  async function openLikedSongs(force = false){
-    state.view = 'liked';
-    render();
-    if (force || !state.likedLoaded) {
-      await fetchLikedSongs(force);
-    }
-    state.selected = 0;
-    render();
-  }
-
-  async function playLikedSong(index){
-    const items = state.likedTracks || [];
-    const picked = items[index]?.track;
-    if (!picked?.uri) return;
-    const restoreShuffle = isShuffleOn();
-    try {
-      if (isUsingThisDevice() || !getCommandDeviceId()) {
-        await activateAudioAndUseDevice();
-      }
-      resetPlaybackProgressUI(0, picked.duration_ms || 0);
-      const orderedUris = [picked.uri].concat(
-        items.slice(index + 1, index + 100).map((item) => item?.track?.uri).filter(Boolean),
-        items.slice(0, index).map((item) => item?.track?.uri).filter(Boolean)
-      );
-      if (restoreShuffle) {
-        try {
-          await spotifyFetch(`/v1/me/player/shuffle?state=false${getCommandDeviceId() ? `&device_id=${encodeURIComponent(getCommandDeviceId())}` : ''}`, { method: 'PUT' });
-          setShuffleVisual(false);
-        } catch (_) {}
-      }
-      await apiPlayerCommand('/v1/me/player/play', {
-        method: 'PUT',
-        body: { uris: orderedUris, position_ms: 0 }
-      });
-      if (restoreShuffle) {
-        setTimeout(() => {
-          spotifyFetch(`/v1/me/player/shuffle?state=true${getCommandDeviceId() ? `&device_id=${encodeURIComponent(getCommandDeviceId())}` : ''}`, { method: 'PUT' })
-            .then(() => { setShuffleVisual(true); sync(); })
-            .catch(() => {});
-        }, 900);
-      }
-      state.view = 'nowplaying';
-      state.selected = index;
-      state.playbackClock.trackKey = extractId(picked.uri) || picked.id || '';
-      state.playbackClock.positionMs = 0;
-      state.playbackClock.durationMs = picked.duration_ms || 0;
-      state.playbackClock.stamp = Date.now();
-      state.playbackClock.playing = true;
-      if (typeof refreshPlaybackSoon === 'function') {
-        await refreshPlaybackSoon(120);
-        await refreshPlaybackSoon(300);
-      }
-      syncPlaybackClock();
-      render();
-    } catch (error) {
-      console.warn('Liked playback failed', error);
-      try {
-        if (typeof commandTogglePlay === 'function') await commandTogglePlay();
-      } catch (_) {
-        clickLegacy(legacy.playPauseBtn);
-      }
-    }
-  }
-
-  function escapeHtml(str){
-    return String(str).replace(/[&<>\"]/g, (s) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[s]));
-  }
-
-  function updateVisualizer(){
-    ui.viz.classList.toggle('idle', !isAuthed() || !currentTrackTitle());
-    ui.viz.classList.toggle('paused', !!currentTrackTitle() && !isPlaying());
-  }
-
-  function renderMenuView(title, items){
-    clearNowPlayingCache();
-    stopNowPlayingLoop();
-    state.menuItems = items;
-    clampIndex();
-    ui.topTitle.textContent = title;
-    ui.topLeft.style.opacity = '1';
-    const visible = Math.max(1, Math.min(state.menuVisibleCount || 6, items.length || 1));
-    const start = Math.max(0, Math.min(state.menuOffset || 0, Math.max(0, items.length - visible)));
-    const end = start + visible;
-    const rows = items.slice(start, end).map((item, sliceIndex) => {
-      const index = start + sliceIndex;
-      const classes = ['pod-row'];
-      if (index === state.selected) classes.push('selected');
-      const value = item.value ? `<span class="value">${escapeHtml(item.value)}</span>` : '<span class="value"></span>';
-      const chev = item.next ? '<span class="chev">›</span>' : '<span class="chev"></span>';
-      return `<li class="${classes.join(' ')}" data-menu-index="${index}"><span class="label">${escapeHtml(item.label)}</span>${value}${chev}</li>`;
-    }).join('');
-    const klass = state.view === 'devices' ? 'pod-device-list' : 'pod-menu';
-    let indicator = '';
-    if (items.length > visible) {
-      const maxOffset = Math.max(1, items.length - visible);
-      const thumbHeight = Math.max(14, ((visible / items.length) * 100));
-      const top = (start / maxOffset) * (100 - thumbHeight);
-      indicator = `<div class="pod-scroll-indicator" data-scroll-indicator="true" aria-label="Scroll list"><span style="height:${thumbHeight}%;top:${top}%"></span></div>`;
-    }
-    ui.menuView.innerHTML = rows ? `<div class="pod-list-wrap"><ul class="${klass}">${rows}</ul>${indicator}</div>` : '<div class="pod-empty">No devices found.</div>';
-    void ui.menuView.offsetHeight;
-    ui.menuView.classList.add('active');
-    ui.nowView.classList.remove('active');
-    const indicatorEl = ui.menuView.querySelector('[data-scroll-indicator="true"]');
-    if (indicatorEl) attachListScrollIndicator(indicatorEl);
-    updateVisualizer();
-  }
-
-
-  function attachListScrollIndicator(indicatorEl){
-    if (!indicatorEl) return;
-    const setFromClientY = (clientY) => {
-      const total = state.menuItems.length || 0;
-      const visible = Math.max(1, Math.min(state.menuVisibleCount || 6, total || 1));
-      if (!total || total <= visible) return;
-      const rect = indicatorEl.getBoundingClientRect();
-      const ratio = Math.max(0, Math.min(1, (clientY - rect.top) / Math.max(1, rect.height)));
-      const targetIndex = Math.max(0, Math.min(total - 1, Math.round(ratio * (total - 1))));
-      state.selected = targetIndex;
-      syncMenuWindow();
-      render();
-    };
-    indicatorEl.addEventListener('pointerdown', (event) => {
-      state.listScrollPointerId = event.pointerId;
-      if (indicatorEl.setPointerCapture) indicatorEl.setPointerCapture(event.pointerId);
-      setFromClientY(event.clientY);
-      event.preventDefault();
-      event.stopPropagation();
-    }, { passive: false });
-    indicatorEl.addEventListener('pointermove', (event) => {
-      if (state.listScrollPointerId !== event.pointerId) return;
-      setFromClientY(event.clientY);
-      event.preventDefault();
-      event.stopPropagation();
-    }, { passive: false });
-    const release = (event) => {
-      if (state.listScrollPointerId !== event.pointerId) return;
-      state.listScrollPointerId = null;
-      event.preventDefault();
-      event.stopPropagation();
-    };
-    indicatorEl.addEventListener('pointerup', release, { passive: false });
-    indicatorEl.addEventListener('pointercancel', release, { passive: false });
-  }
-
-  function bindNowPlayingSeek(barEl){
-    if (!barEl) return;
-    const setPreviewFromClientX = (clientX) => {
-      const rect = barEl.getBoundingClientRect();
-      const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / Math.max(1, rect.width)));
-      const durationMs = displayDurationMs();
-      state.npScrubMs = Math.round(durationMs * ratio);
-      state.npScrubbing = true;
-      updateNowPlayingDynamic();
-    };
-    const finishSeek = async () => {
-      if (!state.npScrubbing) return;
-      const targetMs = state.npScrubMs || 0;
-      state.npScrubbing = false;
-      state.playbackClock.positionMs = targetMs;
-      state.playbackClock.stamp = Date.now();
-      updateNowPlayingDynamic();
-      try {
-        await commandSeek(targetMs);
-        if (typeof refreshPlaybackSoon === 'function') refreshPlaybackSoon(120).catch(() => {});
-      } catch (error) {
-        console.warn('Now playing seek failed', error);
-      }
-    };
-    barEl.addEventListener('pointerdown', (event) => {
-      state.npSeekPointerId = event.pointerId;
-      if (barEl.setPointerCapture) barEl.setPointerCapture(event.pointerId);
-      setPreviewFromClientX(event.clientX);
-      event.preventDefault();
-      event.stopPropagation();
-    }, { passive: false });
-    barEl.addEventListener('pointermove', (event) => {
-      if (state.npSeekPointerId !== event.pointerId) return;
-      setPreviewFromClientX(event.clientX);
-      event.preventDefault();
-      event.stopPropagation();
-    }, { passive: false });
-    const release = async (event) => {
-      if (state.npSeekPointerId !== event.pointerId) return;
-      state.npSeekPointerId = null;
-      event.preventDefault();
-      event.stopPropagation();
-      await finishSeek();
-    };
-    barEl.addEventListener('pointerup', release, { passive: false });
-    barEl.addEventListener('pointercancel', release, { passive: false });
-  }
-
-  function updateNowPlayingDynamic(){
-    if (state.view !== 'nowplaying' || !ui.nowView.classList.contains('active') || !state.npElements.bar) return;
-    const durationMs = displayDurationMs();
-    const positionMs = state.npScrubbing ? state.npScrubMs : displayPositionMs();
-    const progress = durationMs > 0 ? Math.max(0, Math.min(100, (positionMs / durationMs) * 100)) : 0;
-    state.npElements.bar.style.width = `${progress}%`;
-    if (state.npElements.currentTimeEl) state.npElements.currentTimeEl.textContent = formatTimeMs(positionMs);
-    if (state.npElements.totalTimeEl) state.npElements.totalTimeEl.textContent = formatTimeMs(durationMs);
-  }
-
-  function startNowPlayingLoop(){
-    if (state.nowPlayingRaf) return;
-    const tick = () => {
-      updateNowPlayingDynamic();
-      state.nowPlayingRaf = requestAnimationFrame(tick);
-    };
-    state.nowPlayingRaf = requestAnimationFrame(tick);
-  }
-
-  function renderNowPlaying(){
-    ui.topTitle.textContent = 'Now Playing';
-    ui.topLeft.style.opacity = isAuthed() ? '1' : '.5';
-    syncPlaybackClock();
-    const liked = syncNowPlayingLikedState();
-    const durationMs = displayDurationMs();
-    const positionMs = state.npScrubbing ? state.npScrubMs : displayPositionMs();
-    const progress = durationMs > 0 ? Math.max(0, Math.min(100, (positionMs / durationMs) * 100)) : 0;
-    ui.nowView.innerHTML = `
-      <div class="np-wrap">
-        <div class="np-header">
-          <span class="np-context" aria-hidden="true"></span>
-          <button id="npLikeBtn" class="np-like" type="button" aria-label="${liked ? 'Remove from liked songs' : 'Save to liked songs'}" title="${liked ? 'Remove from liked songs' : 'Save to liked songs'}">
-            <svg viewBox="0 0 24 24" fill="${liked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.9-4.35-9.43-8.83C.7 8.87 2.02 4.5 6.12 4.5c2.49 0 4.24 1.39 5.88 3.67 1.64-2.28 3.39-3.67 5.88-3.67 4.1 0 5.42 4.37 3.55 7.67C18.9 16.65 12 21 12 21z"></path></svg>
-          </button>
-        </div>
-        <div class="np-main">
-          <div class="np-art">${currentArtSmall() ? `<img src="${escapeHtml(currentArtSmall())}" alt="" loading="eager" decoding="async" fetchpriority="low" referrerpolicy="no-referrer">` : ''}</div>
-          <div class="np-text">
-            <div class="np-title">${escapeHtml(currentTrackTitle())}</div>
-            <div class="np-artist">${escapeHtml(currentArtist())}</div>
-            <div class="np-album">${escapeHtml(currentContext())}</div>
-          </div>
-        </div>
-        <div class="np-bottom">
-          <div class="np-bar"><span style="width:${progress}%"></span></div>
-          <div class="np-times"><span class="np-current-time">${escapeHtml(formatTimeMs(positionMs))}</span><span class="np-total-time">${escapeHtml(formatTimeMs(durationMs))}</span></div>
-        </div>
-      </div>`;
-    const barWrap = ui.nowView.querySelector('.np-bar');
-    state.npElements.bar = ui.nowView.querySelector('.np-bar > span');
-    state.npElements.currentTimeEl = ui.nowView.querySelector('.np-current-time');
-    state.npElements.totalTimeEl = ui.nowView.querySelector('.np-total-time');
-    bindNowPlayingSeek(barWrap);
-    const likeBtn = ui.nowView.querySelector('#npLikeBtn');
-    if (likeBtn) {
-      likeBtn.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        state.npLikedTrackKey = currentLikeTrackKey();
-        state.npLikedState = !state.npLikedState;
-        updateNowPlayingLikeButton();
-        clickLegacy(legacy.heartBtn);
-        setTimeout(sync, 120);
-      });
-    }
-    ui.nowView.classList.add('active');
-    ui.menuView.classList.remove('active');
-    updateVisualizer();
-    updateNowPlayingDynamic();
-    startNowPlayingLoop();
-  }
-
-  function render(){
-    parseDevices();
-    if (state.view === 'nowplaying') {
-      renderNowPlaying();
-      return;
-    }
-    if (state.view === 'devices') {
-      renderMenuView('Devices', buildDeviceItems());
-      return;
-    }
-    if (state.view === 'liked') {
-      renderMenuView('Liked Songs', buildLikedItems());
-      return;
-    }
-    renderMenuView('sp0tify', buildHomeItems());
-  }
-
-  function selectStep(direction){
-    playUiClick();
-    if (state.view === 'nowplaying') {
-      return;
-    }
-    state.selected += direction;
-    clampIndex();
-    render();
-  }
-
-  function activateSelection(){
-    playUiClick();
-    if (state.view === 'nowplaying') {
-      return;
-    }
-    const item = state.menuItems[state.selected];
-    if (!item || item.disabled) return;
-    if (item.next === 'nowplaying') {
-      state.view = 'nowplaying';
-      render();
-      return;
-    }
-    if (item.next === 'devices') {
-      state.view = 'devices';
-      refreshDevices();
-      render();
-      return;
-    }
-    if (item.next === 'liked') {
-      openLikedSongs();
-      return;
-    }
-    if (typeof item.action === 'function') {
-      Promise.resolve(item.action()).then(() => {
-        setTimeout(render, 80);
-        setTimeout(sync, 220);
-        setTimeout(render, 360);
-      }).catch((error) => {
-        console.warn('Selection action failed', error);
-        setTimeout(render, 120);
-      });
-    }
-  }
-
-  function goMenu(){
-    if (state.view === 'nowplaying') {
-      clearNowPlayingCache();
-      stopNowPlayingLoop();
-    }
-    state.view = 'home';
-    state.selected = 0;
-    state.menuOffset = 0;
-    state.lastRenderHash = '';
-    parseDevices();
-    render();
-    requestAnimationFrame(() => {
-      if (state.view !== 'home') return;
-      state.menuOffset = 0;
-      parseDevices();
-      render();
-    });
-    setTimeout(() => {
-      if (state.view !== 'home') return;
-      state.menuOffset = 0;
-      parseDevices();
-      render();
-    }, 80);
-  }
-
-  function refreshDevices(){
-    clickLegacy(legacy.connectBtn);
-    setTimeout(() => clickLegacy(legacy.refreshDevicesBtn), 40);
-    setTimeout(() => { parseDevices(); render(); clickLegacy(legacy.closeDevicesBtn); }, 500);
-    setTimeout(() => { parseDevices(); render(); clickLegacy(legacy.closeDevicesBtn); }, 1200);
-  }
-
-  async function toggleFullscreen(){
-    const root = document.documentElement;
-    const active = document.fullscreenElement || document.webkitFullscreenElement;
-    try {
-      if (active) {
-        if (document.exitFullscreen) await document.exitFullscreen();
-        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-      } else {
-        if (root.requestFullscreen) await root.requestFullscreen({ navigationUI: 'hide' }).catch(() => root.requestFullscreen());
-        else if (root.webkitRequestFullscreen) root.webkitRequestFullscreen();
-      }
-    } catch (_) {}
-    setTimeout(render, 120);
-  }
-
-  function wheelGeometry(event){
-    const rect = ui.wheel.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const dx = event.clientX - cx;
-    const dy = event.clientY - cy;
-    return {
-      rect,
-      cx,
-      cy,
-      dx,
-      dy,
-      dist: Math.sqrt(dx * dx + dy * dy) / (rect.width / 2),
-      angle: Math.atan2(dy, dx)
-    };
-  }
-
-  function normalizeDelta(delta){
-    while (delta > Math.PI) delta -= Math.PI * 2;
-    while (delta < -Math.PI) delta += Math.PI * 2;
-    return delta;
-  }
-
-  function sectorFromAngle(angle){
-    const deg = (angle * 180 / Math.PI + 360) % 360;
-    if (deg >= 315 || deg < 45) return 'next';
-    if (deg >= 45 && deg < 135) return 'play';
-    if (deg >= 135 && deg < 225) return 'prev';
-    return 'menu';
-  }
-
-  async function handleSectorTap(sector){
-    playUiClick();
-    if (sector === 'menu') { goMenu(); return; }
-    if (sector === 'prev') {
-      try {
-        if (typeof commandPrevious === 'function') await commandPrevious();
-        else clickLegacy(legacy.prevBtn);
-      } catch (_) {
-        clickLegacy(legacy.prevBtn);
-      }
-      if (typeof refreshPlaybackSoon === 'function') refreshPlaybackSoon(90).catch(() => {});
-      syncPlaybackClock();
-      render();
-      return;
-    }
-    if (sector === 'next') {
-      try {
-        if (typeof commandNext === 'function') await commandNext();
-        else clickLegacy(legacy.nextBtn);
-      } catch (_) {
-        clickLegacy(legacy.nextBtn);
-      }
-      if (typeof refreshPlaybackSoon === 'function') refreshPlaybackSoon(90).catch(() => {});
-      syncPlaybackClock();
-      render();
-      return;
-    }
-    if (sector === 'play') {
-      try {
-        if (typeof commandTogglePlay === 'function') await commandTogglePlay();
-        else clickLegacy(legacy.playPauseBtn);
-      } catch (_) {
-        clickLegacy(legacy.playPauseBtn);
-      }
-      if (typeof refreshPlaybackSoon === 'function') refreshPlaybackSoon(90).catch(() => {});
-      syncPlaybackClock();
-      render();
-      return;
-    }
-  }
-
-  function onWheelDown(event){
-    if (event.target === ui.center) return;
-    const g = wheelGeometry(event);
-    if (g.dist > 1.14) return;
-    state.gestureActive = true;
-    state.pointerId = event.pointerId;
-    state.startAngle = g.angle;
-    state.lastAngle = g.angle;
-    state.accum = 0;
-    state.startX = event.clientX;
-    state.startY = event.clientY;
-    state.startT = Date.now();
-    state.startDist = g.dist;
-    state.moved = false;
-    if (ui.wheel.setPointerCapture) ui.wheel.setPointerCapture(event.pointerId);
-    event.preventDefault();
-  }
-
-  function onWheelMove(event){
-    if (event.target === ui.center) return;
-    if (!state.gestureActive || event.pointerId !== state.pointerId) return;
-    const g = wheelGeometry(event);
-    const delta = normalizeDelta(g.angle - state.lastAngle);
-    state.lastAngle = g.angle;
-    const travel = Math.hypot(event.clientX - state.startX, event.clientY - state.startY);
-    if (travel > 10) state.moved = true;
-    if (g.dist > 0.04) {
-      state.accum += delta;
-      const threshold = 0.155;
-      while (Math.abs(state.accum) >= threshold) {
-        const dir = state.accum > 0 ? 1 : -1;
-        selectStep(dir);
-        state.accum -= threshold * dir;
-      }
-    }
-    event.preventDefault();
-  }
-
-  function onWheelUp(event){
-    if (event.target === ui.center) return;
-    if (!state.gestureActive || event.pointerId !== state.pointerId) return;
-    const g = wheelGeometry(event);
-    const duration = Date.now() - state.startT;
-    const travel = Math.hypot(event.clientX - state.startX, event.clientY - state.startY);
-    const tapish = travel < 14 && duration < 280;
-    if (tapish) {
-      if (g.dist <= 0.26) activateSelection();
-      else handleSectorTap(sectorFromAngle(g.angle));
-    }
-    state.gestureActive = false;
-    state.pointerId = null;
-    state.accum = 0;
-    event.preventDefault();
-  }
-
-  function installParallax(){ return; }
-
-  ui.center.addEventListener('pointerdown', (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-  }, { passive: false });
-  ui.center.addEventListener('pointerup', (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    playUiClick();
-    activateSelection();
-  }, { passive: false });
-  ui.center.addEventListener('click', (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-  });
-  ui.wheel.addEventListener('pointerdown', onWheelDown, { passive: false });
-  ui.wheel.addEventListener('pointermove', onWheelMove, { passive: false });
-  ui.wheel.addEventListener('pointerup', onWheelUp, { passive: false });
-  ui.wheel.addEventListener('pointercancel', onWheelUp, { passive: false });
-  ui.wheel.addEventListener('contextmenu', (event) => event.preventDefault());
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') { selectStep(-1); event.preventDefault(); }
-    else if (event.key === 'ArrowDown' || event.key === 'ArrowRight') { selectStep(1); event.preventDefault(); }
-    else if (event.key === 'Enter' || event.key === ' ') { activateSelection(); event.preventDefault(); }
-    else if (event.key === 'Escape' || event.key.toLowerCase() === 'm') { goMenu(); event.preventDefault(); }
-  });
-
-  function computeLightHash(){
-    const devices = state.devices || [];
-    const activeDevice = devices.find((device) => device.active);
-    return [
-      isAuthed(),
-      currentTrackTitle(),
-      currentArtist(),
-      currentContext(),
-      currentArt(),
-      volumeValue(),
-      isShuffleOn() ? 1 : 0,
-      isAudioReady() ? 1 : 0,
-      isUsingThisDevice() ? 1 : 0,
-      isRemoteSelected() ? 1 : 0,
-      isFullscreen() ? 1 : 0,
-      isPaused() ? 1 : 0,
-      legacy.recommendBtn && legacy.recommendBtn.classList.contains('active') ? 1 : 0,
-      state.view,
-      state.selected,
-      state.menuOffset,
-      state.likedTracks.length,
-      devices.length,
-      activeDevice ? activeDevice.id : ''
-    ].join('|');
-  }
-
-  function sync(){
-    syncPlaybackClock();
-    const hash = computeLightHash();
-    if (hash === state.lastRenderHash) return;
-    state.lastRenderHash = hash;
-    render();
-  }
-
-  async function requestScreenWakeLock(){
-    if (!('wakeLock' in navigator)) return;
-    if (document.visibilityState !== 'visible') return;
-    try {
-      if (state.wakeLock) return;
-      state.wakeLock = await navigator.wakeLock.request('screen');
-      state.wakeLockRequested = true;
-      state.wakeLock.addEventListener('release', () => {
-        state.wakeLock = null;
-      });
-    } catch (_) {
-      state.wakeLock = null;
-    }
-  }
-
-  async function releaseScreenWakeLock(){
-    if (!state.wakeLock) return;
-    try {
-      await state.wakeLock.release();
-    } catch (_) {}
-    state.wakeLock = null;
-  }
-
-  attachLikedObserver();
-  render();
-  startNowPlayingLoop();
-  setTimeout(refreshDevices, 400);
-  setInterval(sync, 900);
-  setTimeout(sync, 900);
-  requestScreenWakeLock();
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') requestScreenWakeLock();
-    else releaseScreenWakeLock();
-  });
-  window.addEventListener('pageshow', requestScreenWakeLock);
-  document.addEventListener('pointerdown', requestScreenWakeLock, { passive: true });
-  document.addEventListener('fullscreenchange', () => { render(); requestScreenWakeLock(); });
-  document.addEventListener('webkitfullscreenchange', () => { render(); requestScreenWakeLock(); });
-})();
-</script></body></html>
+  </script>
+</body>
+</html>
