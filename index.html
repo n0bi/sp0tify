@@ -310,8 +310,8 @@
     .transport-row {
       grid-area: transport;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(220px, 28vw) auto;
-      grid-template-areas: "controls volume utility";
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas: "controls utility";
       gap: clamp(14px, 2vw, 22px);
       align-items: center;
       min-height: 0;
@@ -710,6 +710,15 @@
 
     .hidden { display: none !important; }
 
+    .volume-wrap,
+    .sensor-panel,
+    .camera-preview,
+    .sensor-preview-wrap,
+    .sensor-meta,
+    .sensor-legend {
+      display: none !important;
+    }
+
     .utility-row {
       grid-template-columns: repeat(6, auto);
     }
@@ -867,8 +876,8 @@
     }
 
     .screen.dim-ui .frame {
-      opacity: 0.055;
-      filter: brightness(0.3);
+      opacity: 0.018;
+      filter: brightness(0.12);
       transition: opacity 180ms ease, filter 180ms ease;
     }
 
@@ -941,10 +950,10 @@
 
 
       .transport-row {
-        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-columns: minmax(0, 1fr);
         grid-template-areas:
-          "controls controls"
-          "volume utility";
+          "controls"
+          "utility";
         column-gap: 12px;
         row-gap: 14px;
         align-items: center;
@@ -990,10 +999,10 @@
       }
 
       .transport-row {
-        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-columns: minmax(0, 1fr);
         grid-template-areas:
-          "controls controls"
-          "volume utility";
+          "controls"
+          "utility";
       }
 
       .utility-row {
@@ -1036,7 +1045,7 @@
       }
 
       .transport-row {
-        grid-template-columns: minmax(0, 1fr) minmax(180px, 26vw) auto;
+        grid-template-columns: minmax(0, 1fr) auto;
         gap: 10px;
       }
 
@@ -1400,33 +1409,61 @@
     };
 
     const CAMERA_GESTURE = Object.freeze({
-      width: 96,
-      height: 72,
-      frameIntervalMs: 90,
-      sequenceWindowMs: 820,
-      commandCooldownMs: 1250,
-      regionGapMs: 95,
-      motionThreshold: 16,
-      dominanceRatio: 1.16,
-      darkHoldMs: 700
+      width: 128,
+      height: 96,
+      analyzeIntervalMs: 34,
+      mediapipeIntervalMs: 56,
+      trailWindowMs: 420,
+      handTimeoutMs: 430,
+      commandCooldownMs: 900,
+      swipeDistanceNorm: 0.18,
+      swipeVerticalToleranceNorm: 0.15,
+      minPalmArea: 0.012,
+      motionThreshold: 6.2,
+      darkHoldMs: 1000,
+      darkRatio: 0.62,
+      darkMin: 18,
+      darkMax: 72,
+      releaseRatio: 0.82,
+      releaseMin: 30,
+      coverRecentHandMs: 950
+    });
+
+    const MEDIAPIPE_URLS = Object.freeze({
+      bundle: 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/vision_bundle.mjs',
+      wasm: 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm',
+      model: 'https://storage.googleapis.com/mediapipe-tasks/gesture_recognizer/gesture_recognizer.task'
     });
 
     const cameraState = {
       stream: null,
-      loopTimer: null,
       running: false,
       busy: false,
+      rafId: null,
       prevGray: null,
-      trail: [],
+      motionTrail: [],
+      handTrail: [],
       lastCommandAt: 0,
       baselineLuma: 0,
-      motionFloor: 5,
+      motionFloor: 4,
       holdStartedAt: 0,
       holdLatched: false,
       proximityKind: 'none',
       proximitySensor: null,
       lastNearAt: 0,
-      nearTimer: null
+      nearTimer: null,
+      lastFrameAt: 0,
+      lastVideoTime: -1,
+      lastInferenceAt: 0,
+      handSeenAt: 0,
+      palmArea: 0,
+      smoothX: 0.5,
+      smoothY: 0.5,
+      gestureRecognizer: null,
+      mpLoadingPromise: null,
+      mpReady: false,
+      mpError: '',
+      lastStaticGesture: ''
     };
 
     function setSaved(key, value) { localStorage.setItem(key, value); }
@@ -2383,17 +2420,60 @@
       updateCameraButtons();
       await syncWakeLock();
       setGestureStatus(state.dimmed
-        ? 'Ghost mode is on. The page stays visible but almost black so the camera loop can keep running.'
-        : 'Swipe your hand right for next, left for previous, or cover the lens to play or pause.');
+        ? 'Ghost mode is on. The UI is almost black while the gesture loop stays active.'
+        : 'Camera gestures are ready.');
     }
 
     function resetCameraVision() {
       cameraState.prevGray = null;
-      cameraState.trail = [];
+      cameraState.motionTrail = [];
+      cameraState.handTrail = [];
       cameraState.baselineLuma = 0;
-      cameraState.motionFloor = 5;
+      cameraState.motionFloor = 4;
       cameraState.holdStartedAt = 0;
       cameraState.holdLatched = false;
+      cameraState.lastFrameAt = 0;
+      cameraState.lastVideoTime = -1;
+      cameraState.lastInferenceAt = 0;
+      cameraState.handSeenAt = 0;
+      cameraState.palmArea = 0;
+      cameraState.smoothX = 0.5;
+      cameraState.smoothY = 0.5;
+      cameraState.lastStaticGesture = '';
+    }
+
+    async function ensureGestureRecognizer() {
+      if (cameraState.gestureRecognizer) return cameraState.gestureRecognizer;
+      if (cameraState.mpLoadingPromise) return cameraState.mpLoadingPromise;
+
+      cameraState.mpLoadingPromise = (async () => {
+        try {
+          const mediaPipe = await import(MEDIAPIPE_URLS.bundle);
+          const vision = await mediaPipe.FilesetResolver.forVisionTasks(MEDIAPIPE_URLS.wasm);
+          cameraState.gestureRecognizer = await mediaPipe.GestureRecognizer.createFromOptions(vision, {
+            baseOptions: {
+              modelAssetPath: MEDIAPIPE_URLS.model
+            },
+            runningMode: 'VIDEO',
+            numHands: 1,
+            minHandDetectionConfidence: 0.35,
+            minHandPresenceConfidence: 0.25,
+            minTrackingConfidence: 0.25
+          });
+          cameraState.mpReady = true;
+          cameraState.mpError = '';
+          return cameraState.gestureRecognizer;
+        } catch (error) {
+          console.warn('MediaPipe gesture recognizer failed', error);
+          cameraState.mpReady = false;
+          cameraState.mpError = error?.message || 'MediaPipe unavailable';
+          throw error;
+        } finally {
+          cameraState.mpLoadingPromise = null;
+        }
+      })();
+
+      return cameraState.mpLoadingPromise;
     }
 
     function teardownProximitySupport() {
@@ -2422,7 +2502,7 @@
         await commandTogglePlay();
         setStatus('Play or pause', 'good');
         setCameraStatus('Proximity trigger', 'live');
-        setGestureStatus('Proximity sensor toggled playback.');
+        setGestureStatus('Playback toggled from proximity.');
         refreshPlaybackSoon().catch(() => {});
       } catch (error) {
         setStatus(`Proximity failed: ${error.message}`, 'error');
@@ -2507,12 +2587,12 @@
           await commandNext();
           setStatus('Next track', 'good');
           setCameraStatus('Swipe right', 'live');
-          setGestureStatus('Detected right swipe. Next track.');
+          setGestureStatus('Detected a right swipe.');
         } else if (kind === 'left') {
           await commandPrevious();
           setStatus('Previous track', 'good');
           setCameraStatus('Swipe left', 'live');
-          setGestureStatus('Detected left swipe. Previous track.');
+          setGestureStatus('Detected a left swipe.');
         } else if (kind === 'hold') {
           if (isLocalCommandTarget() && state.player && !state.activated) {
             await activateAudio();
@@ -2520,39 +2600,134 @@
           await commandTogglePlay();
           setStatus('Play or pause', 'good');
           setCameraStatus('Lens cover', 'live');
-          setGestureStatus('Lens cover detected. Toggled play or pause.');
+          setGestureStatus('Detected a lens cover hold.');
         }
-        refreshPlaybackSoon(110).catch(() => {});
+        refreshPlaybackSoon(90).catch(() => {});
       } catch (error) {
         setStatus(`Gesture failed: ${error.message}`, 'error');
         setCameraStatus('Gesture failed', 'error');
       }
     }
 
-    function registerMotionRegion(region, now) {
-      cameraState.trail = cameraState.trail.filter((entry) => now - entry.ts <= CAMERA_GESTURE.sequenceWindowMs);
-      const last = cameraState.trail[cameraState.trail.length - 1];
+    function trimTrail(trail, windowMs, now) {
+      return trail.filter((entry) => now - entry.ts <= windowMs);
+    }
 
-      if (!last || (last.region !== region && now - last.ts >= CAMERA_GESTURE.regionGapMs)) {
-        cameraState.trail.push({ region, ts: now });
+    function maybeFireSwipe(trail, minDistance, maxVerticalDrift) {
+      if (trail.length < 3) return false;
+      const first = trail[0];
+      const last = trail[trail.length - 1];
+      const dt = last.ts - first.ts;
+      const dx = last.x - first.x;
+      const dy = Math.abs(last.y - first.y);
+      const maxArea = Math.max(...trail.map((entry) => entry.area || 0));
+      if (dt < 70 || dt > CAMERA_GESTURE.trailWindowMs) return false;
+      if (Math.abs(dx) < minDistance) return false;
+      if (dy > maxVerticalDrift) return false;
+      if (maxArea < CAMERA_GESTURE.minPalmArea) return false;
+      fireCameraCommand(dx > 0 ? 'right' : 'left').catch(() => {});
+      return true;
+    }
+
+    function pushHandSample(metrics, now) {
+      cameraState.handSeenAt = now;
+      cameraState.palmArea = metrics.area;
+      cameraState.smoothX = cameraState.handTrail.length ? (cameraState.smoothX * 0.58) + (metrics.x * 0.42) : metrics.x;
+      cameraState.smoothY = cameraState.handTrail.length ? (cameraState.smoothY * 0.58) + (metrics.y * 0.42) : metrics.y;
+      cameraState.handTrail = trimTrail(cameraState.handTrail, CAMERA_GESTURE.trailWindowMs, now);
+      const last = cameraState.handTrail[cameraState.handTrail.length - 1];
+      if (!last || now - last.ts >= 24 || Math.abs(last.x - cameraState.smoothX) >= 0.024) {
+        cameraState.handTrail.push({ x: cameraState.smoothX, y: cameraState.smoothY, area: metrics.area, ts: now });
+      }
+      if (maybeFireSwipe(cameraState.handTrail, CAMERA_GESTURE.swipeDistanceNorm, CAMERA_GESTURE.swipeVerticalToleranceNorm)) {
+        cameraState.handTrail = [];
+        cameraState.motionTrail = [];
+      }
+    }
+
+    function pushMotionSample(x, y, motionAvg, now) {
+      cameraState.motionTrail = trimTrail(cameraState.motionTrail, CAMERA_GESTURE.trailWindowMs, now);
+      const last = cameraState.motionTrail[cameraState.motionTrail.length - 1];
+      const pseudoArea = clamp((motionAvg / 18) * 0.04, CAMERA_GESTURE.minPalmArea, 0.08);
+      if (!last || now - last.ts >= 24 || Math.abs(last.x - x) >= 0.03) {
+        cameraState.motionTrail.push({ x, y, area: pseudoArea, ts: now });
+      }
+      if (maybeFireSwipe(cameraState.motionTrail, 0.23, 0.19)) {
+        cameraState.motionTrail = [];
+      }
+    }
+
+    function updateCoverState(avgLuma, motionAvg, now) {
+      if (!cameraState.baselineLuma) cameraState.baselineLuma = avgLuma;
+      const darkThreshold = clamp(cameraState.baselineLuma * CAMERA_GESTURE.darkRatio, CAMERA_GESTURE.darkMin, CAMERA_GESTURE.darkMax);
+      const releaseThreshold = Math.max(CAMERA_GESTURE.releaseMin, cameraState.baselineLuma * CAMERA_GESTURE.releaseRatio);
+      const recentHand = now - cameraState.handSeenAt <= CAMERA_GESTURE.coverRecentHandMs;
+      const coverCandidate = avgLuma < darkThreshold && (recentHand || motionAvg > cameraState.motionFloor * 1.55 || cameraState.palmArea > 0.045);
+
+      if (!coverCandidate || avgLuma > darkThreshold * 1.08) {
+        cameraState.baselineLuma = (cameraState.baselineLuma * 0.972) + (avgLuma * 0.028);
       }
 
-      if (cameraState.trail.length < 3) return;
-
-      const sequence = cameraState.trail.slice(-3).map((entry) => entry.region).join('');
-      if (sequence === '012') {
-        cameraState.trail = [];
-        fireCameraCommand('right').catch(() => {});
-      } else if (sequence === '210') {
-        cameraState.trail = [];
-        fireCameraCommand('left').catch(() => {});
+      if (coverCandidate) {
+        if (!cameraState.holdStartedAt) cameraState.holdStartedAt = now;
+        if (!cameraState.holdLatched && now - cameraState.holdStartedAt >= CAMERA_GESTURE.darkHoldMs) {
+          cameraState.holdLatched = true;
+          cameraState.handTrail = [];
+          cameraState.motionTrail = [];
+          fireCameraCommand('hold').catch(() => {});
+        }
+      } else {
+        cameraState.holdStartedAt = 0;
+        if (avgLuma > releaseThreshold) {
+          cameraState.holdLatched = false;
+        }
       }
+    }
+
+    function extractHandMetrics(result) {
+      const hand = result?.landmarks?.[0];
+      if (!Array.isArray(hand) || !hand.length) return null;
+
+      const palmIndexes = [0, 5, 9, 13, 17];
+      let cx = 0;
+      let cy = 0;
+      let minX = 1;
+      let minY = 1;
+      let maxX = 0;
+      let maxY = 0;
+
+      for (const index of palmIndexes) {
+        const point = hand[index];
+        if (!point) continue;
+        cx += point.x;
+        cy += point.y;
+      }
+      cx /= palmIndexes.length;
+      cy /= palmIndexes.length;
+
+      for (const point of hand) {
+        if (!point) continue;
+        if (point.x < minX) minX = point.x;
+        if (point.x > maxX) maxX = point.x;
+        if (point.y < minY) minY = point.y;
+        if (point.y > maxY) maxY = point.y;
+      }
+
+      return {
+        x: 1 - cx,
+        y: cy,
+        area: Math.max(0, (maxX - minX) * (maxY - minY)),
+        gesture: result?.gestures?.[0]?.[0]?.categoryName || ''
+      };
     }
 
     async function processCameraFrame() {
       if (!cameraState.running || cameraState.busy || !els.cameraGhostVideo || !els.gestureCanvas) return;
       if (els.cameraGhostVideo.readyState < 2) return;
 
+      const nowPerf = performance.now();
+      if (nowPerf - cameraState.lastFrameAt < CAMERA_GESTURE.analyzeIntervalMs) return;
+      cameraState.lastFrameAt = nowPerf;
       cameraState.busy = true;
 
       try {
@@ -2568,13 +2743,26 @@
         ctx.drawImage(els.cameraGhostVideo, -width, 0, width, height);
         ctx.restore();
 
+        const now = Date.now();
+        let metrics = null;
+        if (cameraState.gestureRecognizer && now - cameraState.lastInferenceAt >= CAMERA_GESTURE.mediapipeIntervalMs && els.cameraGhostVideo.currentTime !== cameraState.lastVideoTime) {
+          cameraState.lastInferenceAt = now;
+          cameraState.lastVideoTime = els.cameraGhostVideo.currentTime;
+          try {
+            metrics = extractHandMetrics(cameraState.gestureRecognizer.recognizeForVideo(els.cameraGhostVideo));
+            if (metrics?.gesture) cameraState.lastStaticGesture = metrics.gesture;
+          } catch (error) {
+            console.warn('MediaPipe frame failed', error);
+          }
+        }
+
         const { data } = ctx.getImageData(0, 0, width, height);
         const gray = new Uint8Array(width * height);
-        const regionSum = [0, 0, 0];
-        const regionCount = [0, 0, 0];
         let lumaSum = 0;
+        let diffEnergy = 0;
+        let weightedX = 0;
+        let weightedY = 0;
         const prev = cameraState.prevGray;
-        const regionWidth = width / 3;
 
         for (let i = 0, px = 0; i < data.length; i += 4, px += 1) {
           const luma = (data[i] * 38 + data[i + 1] * 75 + data[i + 2] * 15) >> 7;
@@ -2582,70 +2770,51 @@
           lumaSum += luma;
 
           if (prev) {
-            const x = px % width;
-            const region = Math.min(2, Math.floor(x / regionWidth));
-            regionSum[region] += Math.abs(luma - prev[px]);
-            regionCount[region] += 1;
+            const diff = Math.abs(luma - prev[px]);
+            if (diff > 12) {
+              const x = px % width;
+              const y = (px / width) | 0;
+              diffEnergy += diff;
+              weightedX += x * diff;
+              weightedY += y * diff;
+            }
           }
         }
 
         cameraState.prevGray = gray;
         const avgLuma = lumaSum / gray.length;
+        const motionAvg = prev ? (diffEnergy / gray.length) : 0;
+        cameraState.motionFloor = (cameraState.motionFloor * 0.92) + (Math.min(motionAvg, 16) * 0.08);
 
-        if (cameraState.baselineLuma === 0) cameraState.baselineLuma = avgLuma;
-        if (!cameraState.holdLatched || avgLuma > 34) {
-          cameraState.baselineLuma = (cameraState.baselineLuma * 0.965) + (avgLuma * 0.035);
+        if (metrics && metrics.area >= CAMERA_GESTURE.minPalmArea) {
+          pushHandSample(metrics, now);
+        } else if (now - cameraState.handSeenAt > CAMERA_GESTURE.handTimeoutMs) {
+          cameraState.palmArea = 0;
+          cameraState.handTrail = [];
         }
 
-        const darkThreshold = clamp(cameraState.baselineLuma * 0.34, 11, 24);
-        const coverEligible = cameraState.baselineLuma > 26;
+        updateCoverState(avgLuma, motionAvg, now);
 
-        if (coverEligible && avgLuma < darkThreshold) {
-          if (!cameraState.holdStartedAt) cameraState.holdStartedAt = Date.now();
-          if (!cameraState.holdLatched && Date.now() - cameraState.holdStartedAt >= CAMERA_GESTURE.darkHoldMs) {
-            cameraState.holdLatched = true;
-            fireCameraCommand('hold').catch(() => {});
-          }
-        } else {
-          cameraState.holdStartedAt = 0;
-          if (avgLuma > Math.max(34, darkThreshold * 1.45)) {
-            cameraState.holdLatched = false;
-          }
+        const motionThreshold = Math.max(CAMERA_GESTURE.motionThreshold, cameraState.motionFloor * 1.35);
+        const handRecentlySeen = now - cameraState.handSeenAt < 120;
+        if (prev && diffEnergy > 0 && motionAvg > motionThreshold && !handRecentlySeen) {
+          const x = weightedX / diffEnergy / width;
+          const y = weightedY / diffEnergy / height;
+          pushMotionSample(x, y, motionAvg, now);
+        } else if (!prev || motionAvg <= motionThreshold * 0.7) {
+          cameraState.motionTrail = trimTrail(cameraState.motionTrail, 180, now);
         }
 
-        if (!prev) return;
-
-        const regionMotion = regionSum.map((sum, index) => regionCount[index] ? sum / regionCount[index] : 0);
-        const floorSample = Math.min(...regionMotion);
-        cameraState.motionFloor = (cameraState.motionFloor * 0.9) + (floorSample * 0.1);
-        const threshold = Math.max(CAMERA_GESTURE.motionThreshold, cameraState.motionFloor * 2.3);
-
-        const ranked = regionMotion
-          .map((value, region) => ({ value, region }))
-          .sort((a, b) => b.value - a.value);
-
-        const strongest = ranked[0];
-        const second = ranked[1] || { value: 0 };
-
-        if (
-          strongest.value > threshold &&
-          strongest.value > second.value * CAMERA_GESTURE.dominanceRatio &&
-          Date.now() - cameraState.lastCommandAt > 280
-        ) {
-          registerMotionRegion(strongest.region, Date.now());
-        }
-
-        if (cameraState.running) {
-          const motionLabel = strongest.value > threshold
-            ? strongest.region === 0 ? 'Watching left side movement…'
-            : strongest.region === 1 ? 'Watching center movement…'
-            : 'Watching right side movement…'
-            : state.dimmed
-              ? 'Ghost mode on. Keep the screen barely awake.'
-              : 'Camera is live. Swipe or cover the lens.';
-          if (!cameraState.holdLatched && Date.now() - cameraState.lastCommandAt > 420) {
-            setCameraStatus('Hand camera live', 'live');
-            setGestureStatus(motionLabel);
+        if (!cameraState.holdLatched && now - cameraState.lastCommandAt > 460) {
+          setCameraStatus(cameraState.mpReady ? 'Gesture camera live' : 'Gesture camera live (fast fallback)', 'live');
+          if (state.dimmed) {
+            setGestureStatus('Ghost mode is on. The UI is almost black while gestures keep running.');
+          } else if (metrics && metrics.area >= CAMERA_GESTURE.minPalmArea) {
+            setGestureStatus('Hand locked. Swipe right for next, left for previous, or darken the lens to play or pause.');
+          } else if (cameraState.mpError) {
+            setGestureStatus('Camera is running with the fast motion fallback.');
+          } else {
+            setGestureStatus('Camera is live. Swipe across the lens or darken it to toggle playback.');
           }
         }
       } catch (error) {
@@ -2653,6 +2822,16 @@
       } finally {
         cameraState.busy = false;
       }
+    }
+
+    function startCameraLoop() {
+      if (cameraState.rafId) cancelAnimationFrame(cameraState.rafId);
+      const tick = () => {
+        if (!cameraState.running) return;
+        processCameraFrame().catch(() => {});
+        cameraState.rafId = requestAnimationFrame(tick);
+      };
+      cameraState.rafId = requestAnimationFrame(tick);
     }
 
     async function startGestureCamera() {
@@ -2675,44 +2854,47 @@
           audio: false,
           video: {
             facingMode: { ideal: 'user' },
-            width: { ideal: 320 },
-            height: { ideal: 240 },
-            frameRate: { ideal: 15, max: 20 }
+            width: { ideal: 640 },
+            height: { ideal: 480 },
+            frameRate: { ideal: 30, max: 30 }
           }
         });
 
         cameraState.stream = stream;
-        els.cameraPreview.srcObject = stream;
         els.cameraGhostVideo.srcObject = stream;
-        await Promise.allSettled([
-          els.cameraPreview.play(),
-          els.cameraGhostVideo.play()
-        ]);
+        await els.cameraGhostVideo.play();
 
         cameraState.running = true;
         resetCameraVision();
         updateCameraButtons();
-        setCameraStatus('Hand camera live', 'live');
-        setGestureStatus('Camera is live. Swipe right for next, left for previous, or cover the lens to play or pause.');
+        setCameraStatus('Gesture camera live', 'live');
+        setGestureStatus('Camera is live. Swipe across the lens or darken it for about a second to play or pause.');
         setStatus('Hand gesture camera ready', 'good');
-        cameraState.loopTimer = setInterval(() => {
-          processCameraFrame().catch(() => {});
-        }, CAMERA_GESTURE.frameIntervalMs);
+        startCameraLoop();
         setupProximitySupport().catch(() => {});
+        ensureGestureRecognizer().then(() => {
+          if (cameraState.running) {
+            setGestureStatus('High-accuracy hand tracking loaded.');
+          }
+        }).catch(() => {
+          if (cameraState.running) {
+            setGestureStatus('Camera is live with the fast motion fallback.');
+          }
+        });
         await syncWakeLock();
       } catch (error) {
         console.warn('Camera start failed', error);
         setCameraStatus('Camera blocked', 'error');
-        setGestureStatus('Camera permission was denied or unavailable. Swipes need the front camera. Proximity support, if any, can still handle play or pause only.');
+        setGestureStatus('Camera permission was denied or unavailable. Proximity, if exposed by this browser, can still handle play or pause.');
         setProximityStatus('Proximity: checking');
         setupProximitySupport().catch(() => {});
       }
     }
 
     async function stopGestureCamera() {
-      if (cameraState.loopTimer) {
-        clearInterval(cameraState.loopTimer);
-        cameraState.loopTimer = null;
+      if (cameraState.rafId) {
+        cancelAnimationFrame(cameraState.rafId);
+        cameraState.rafId = null;
       }
 
       teardownProximitySupport();
@@ -2724,10 +2906,6 @@
         cameraState.stream = null;
       }
 
-      if (els.cameraPreview) {
-        els.cameraPreview.pause();
-        els.cameraPreview.srcObject = null;
-      }
       if (els.cameraGhostVideo) {
         els.cameraGhostVideo.pause();
         els.cameraGhostVideo.srcObject = null;
@@ -2737,7 +2915,7 @@
       resetCameraVision();
       updateCameraButtons();
       setCameraStatus('Hand camera off');
-      setGestureStatus('Swipe your hand right for next, left for previous, or cover the lens to play or pause.');
+      setGestureStatus('Hand camera is off.');
       setProximityStatus('Proximity: off');
       await syncWakeLock();
     }
@@ -3436,7 +3614,7 @@
       document.addEventListener('visibilitychange', () => {
         syncWakeLock().catch(() => {});
         if (document.visibilityState !== 'visible' && cameraState.running) {
-          setGestureStatus('Keep this page visible. Locking the screen or hiding the tab will usually stop gesture reading.');
+          setGestureStatus('Keep this page visible. Phone browsers usually pause camera reading when the tab is hidden or the screen fully turns off.');
         }
       });
       window.addEventListener('beforeunload', () => {
