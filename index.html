@@ -3360,6 +3360,8 @@
     nowPlayingRaf: 0,
     npElements: { bar: null, currentTimeEl: null, totalTimeEl: null },
     lastRenderHash: '',
+    wakeLock: null,
+    wakeLockRequested: false,
     gestureActive: false,
     pointerId: null,
     startAngle: 0,
@@ -3974,6 +3976,7 @@
       indicator = `<div class="pod-scroll-indicator" data-scroll-indicator="true" aria-label="Scroll list"><span style="height:${thumbHeight}%;top:${top}%"></span></div>`;
     }
     ui.menuView.innerHTML = rows ? `<div class="pod-list-wrap"><ul class="${klass}">${rows}</ul>${indicator}</div>` : '<div class="pod-empty">No devices found.</div>';
+    void ui.menuView.offsetHeight;
     ui.menuView.classList.add('active');
     ui.nowView.classList.remove('active');
     const indicatorEl = ui.menuView.querySelector('[data-scroll-indicator="true"]');
@@ -4157,13 +4160,6 @@
   function selectStep(direction){
     playUiClick();
     if (state.view === 'nowplaying') {
-      const target = volumeValue() + (direction > 0 ? 4 : -4);
-      if (legacy.volumeSlider) {
-        legacy.volumeSlider.value = Math.max(0, Math.min(100, target));
-        legacy.volumeSlider.dispatchEvent(new Event('input', { bubbles: true }));
-        legacy.volumeSlider.dispatchEvent(new Event('change', { bubbles: true }));
-      }
-      setTimeout(render, 120);
       return;
     }
     state.selected += direction;
@@ -4210,14 +4206,24 @@
       clearNowPlayingCache();
       stopNowPlayingLoop();
     }
-    if (state.view === 'home') {
-      state.selected = 0;
-      render();
-      return;
-    }
     state.view = 'home';
     state.selected = 0;
+    state.menuOffset = 0;
+    state.lastRenderHash = '';
+    parseDevices();
     render();
+    requestAnimationFrame(() => {
+      if (state.view !== 'home') return;
+      state.menuOffset = 0;
+      parseDevices();
+      render();
+    });
+    setTimeout(() => {
+      if (state.view !== 'home') return;
+      state.menuOffset = 0;
+      parseDevices();
+      render();
+    }, 80);
   }
 
   function refreshDevices(){
@@ -4432,14 +4438,44 @@
     render();
   }
 
+  async function requestScreenWakeLock(){
+    if (!('wakeLock' in navigator)) return;
+    if (document.visibilityState !== 'visible') return;
+    try {
+      if (state.wakeLock) return;
+      state.wakeLock = await navigator.wakeLock.request('screen');
+      state.wakeLockRequested = true;
+      state.wakeLock.addEventListener('release', () => {
+        state.wakeLock = null;
+      });
+    } catch (_) {
+      state.wakeLock = null;
+    }
+  }
+
+  async function releaseScreenWakeLock(){
+    if (!state.wakeLock) return;
+    try {
+      await state.wakeLock.release();
+    } catch (_) {}
+    state.wakeLock = null;
+  }
+
   attachLikedObserver();
   render();
   startNowPlayingLoop();
   setTimeout(refreshDevices, 400);
   setInterval(sync, 900);
   setTimeout(sync, 900);
-  document.addEventListener('fullscreenchange', render);
-  document.addEventListener('webkitfullscreenchange', render);
+  requestScreenWakeLock();
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') requestScreenWakeLock();
+    else releaseScreenWakeLock();
+  });
+  window.addEventListener('pageshow', requestScreenWakeLock);
+  document.addEventListener('pointerdown', requestScreenWakeLock, { passive: true });
+  document.addEventListener('fullscreenchange', () => { render(); requestScreenWakeLock(); });
+  document.addEventListener('webkitfullscreenchange', () => { render(); requestScreenWakeLock(); });
 })();
 </script>
 
