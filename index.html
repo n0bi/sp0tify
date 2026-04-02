@@ -839,6 +839,296 @@
       }
     }
   </style>
+
+<style id="ipod-face-overrides">
+  body {
+    background: linear-gradient(180deg, #f7f7f4 0%, #ecece8 100%) !important;
+    overflow: hidden !important;
+  }
+  #screen {
+    position: fixed !important;
+    left: -200vw !important;
+    top: -200vh !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  #ipodApp {
+    --device-w: min(100vw, 460px);
+    --screen-w: min(84vw, 330px);
+    --screen-h: clamp(214px, 39vh, 318px);
+    --wheel-size: min(82vw, 318px);
+    --bezel: #f9f9f7;
+    --bezel-2: #ecece8;
+    --bezel-stroke: #cfcfc9;
+    --screen-bg: #c3c4bb;
+    --screen-bg-2: #b8b9b0;
+    --screen-ink: #161616;
+    --screen-soft: rgba(22,22,22,0.66);
+    --screen-faint: rgba(22,22,22,0.38);
+    --wheel-fill: #e7e7e4;
+    --wheel-stroke: rgba(0,0,0,0.13);
+    --wheel-label: rgba(255,255,255,0.88);
+    --wheel-symbol: rgba(255,255,255,0.85);
+    --font-wheel: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    --font-screen: 'SF Mono', Monaco, Menlo, Consolas, 'Courier New', monospace;
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(180deg, #f7f7f4 0%, #ecece8 100%);
+    padding: max(12px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+    overflow: hidden;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .ipod-face {
+    width: var(--device-w);
+    min-height: min(100dvh - 24px, 860px);
+    max-height: min(100dvh - 24px, 860px);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    align-content: start;
+    justify-items: center;
+    gap: clamp(18px, 2.4vh, 26px);
+    padding: clamp(14px, 2vh, 24px) 0 clamp(14px, 2vh, 22px);
+  }
+  .ipod-screen-frame {
+    width: var(--screen-w);
+    border-radius: 13px;
+    padding: 8px;
+    background: linear-gradient(180deg, var(--bezel) 0%, var(--bezel-2) 100%);
+    border: 1px solid var(--bezel-stroke);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.95), inset 0 -1px 0 rgba(0,0,0,.06);
+  }
+  .ipod-screen {
+    width: 100%;
+    height: var(--screen-h);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.08), transparent 16%),
+      linear-gradient(180deg, var(--screen-bg) 0%, var(--screen-bg-2) 100%);
+    border: 1.2px solid rgba(0,0,0,.32);
+    border-radius: 10px;
+    color: var(--screen-ink);
+    font-family: var(--font-screen);
+    display: grid;
+    grid-template-rows: auto 1fr;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.16);
+    position: relative;
+  }
+  .ipod-screen::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(180deg, rgba(255,255,255,0.022) 0 1px, rgba(0,0,0,0.018) 1px 2px);
+    opacity: .34;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+  }
+  .ipod-topbar {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 8px;
+    min-height: 24px;
+    padding: 4px 8px 5px;
+    border-bottom: 1px solid rgba(0,0,0,.58);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: -.02em;
+  }
+  .ipod-topbar .title {
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .top-icon-left { font-size: 12px; line-height: 1; }
+  .top-icon-right {
+    width: 18px; height: 12px; display: inline-block; position: relative;
+    border: 1.5px solid currentColor; border-radius: 2px;
+  }
+  .top-icon-right::before,
+  .top-icon-right::after {
+    content: ''; position: absolute; bottom: 1px; width: 2px; background: currentColor; border-radius: 1px;
+  }
+  .top-icon-right::before { left: 4px; height: 5px; }
+  .top-icon-right::after { left: 9px; height: 8px; }
+  .top-icon-right span { position:absolute; left: 14px; bottom:1px; width:2px; height:3px; background: currentColor; border-radius:1px; }
+  .ipod-body {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    padding: 4px 0 0;
+  }
+  .pod-view { position: absolute; inset: 0; display: none; }
+  .pod-view.active { display: block; }
+  .pod-menu, .pod-device-list {
+    list-style: none; margin: 0; padding: 0;
+  }
+  .pod-row {
+    height: 26px;
+    display: grid;
+    grid-template-columns: minmax(0,1fr) auto auto;
+    align-items: center;
+    gap: 6px;
+    padding: 0 8px;
+    font-size: clamp(13px, 3vw, 16px);
+    font-weight: 700;
+    letter-spacing: -.03em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .pod-row .label { overflow: hidden; text-overflow: ellipsis; }
+  .pod-row .value { font-size: .82em; opacity: .84; max-width: 112px; overflow: hidden; text-overflow: ellipsis; }
+  .pod-row .chev { padding-left: 2px; }
+  .pod-row.selected { background: #202020; color: #efefe9; }
+  .pod-note {
+    position: absolute; left: 8px; right: 8px; bottom: 6px;
+    font-size: 10px; line-height: 1.25; opacity: .72;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .np-wrap {
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto auto;
+    gap: 7px;
+    padding: 7px 8px 8px;
+  }
+  .np-meta {
+    font-size: 11px; opacity: .76;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .np-main {
+    display: grid;
+    grid-template-columns: 68px 1fr;
+    gap: 10px;
+    align-items: start;
+  }
+  .np-art {
+    width: 68px; aspect-ratio: 1 / 1; overflow: hidden;
+    border: 1px solid rgba(0,0,0,.42); background: rgba(0,0,0,.08);
+  }
+  .np-art img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(.96); }
+  .np-text { min-width: 0; }
+  .np-title {
+    font-size: clamp(16px, 3.6vw, 20px); font-weight: 900; line-height: 1.08;
+    min-height: calc(1.08em * 2);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .np-artist, .np-album {
+    margin-top: 5px;
+    font-size: clamp(13px, 2.9vw, 16px); line-height: 1.14;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .np-album { opacity: .78; }
+  .np-progress {
+    display: grid; gap: 5px; margin-top: 2px;
+  }
+  .np-bar, .np-volbar {
+    height: 8px; position: relative; overflow: hidden;
+    border: 1px solid rgba(0,0,0,.56); background: rgba(0,0,0,.08);
+  }
+  .np-bar > span, .np-volbar > span {
+    position: absolute; inset: 0 auto 0 0; width: 0%; background: rgba(0,0,0,.86);
+  }
+  .np-times, .np-subline {
+    display: flex; justify-content: space-between; gap: 10px;
+    font-size: 11px; line-height: 1.1; opacity: .8;
+  }
+  .np-subline { margin-top: auto; }
+  .wheel-zone {
+    width: 100%;
+    display: grid;
+    place-items: center;
+    flex: 1 1 auto;
+  }
+  .wheel {
+    width: var(--wheel-size);
+    aspect-ratio: 1 / 1;
+    position: relative;
+    border-radius: 50%;
+    background: var(--wheel-fill);
+    border: 1px solid var(--wheel-stroke);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+  }
+  .wheel-ring {
+    position: absolute;
+    inset: 12%;
+    border-radius: 50%;
+  }
+  .wheel-center {
+    position: absolute;
+    inset: 34%;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #f4f4f1 0%, #e5e5e1 100%);
+    border: 1px solid rgba(0,0,0,.11);
+    cursor: pointer;
+  }
+  .wheel-btn {
+    position: absolute;
+    border: 0;
+    background: transparent;
+    color: rgba(0,0,0,.22);
+    font-family: var(--font-wheel);
+    font-weight: 700;
+    letter-spacing: .02em;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .wheel-btn:active { color: rgba(0,0,0,.48); }
+  .wheel-btn.menu {
+    top: 7.5%; left: 50%; transform: translateX(-50%);
+    width: 38%; height: 18%; font-size: clamp(19px, 5vw, 24px);
+  }
+  .wheel-btn.prev {
+    left: 6.5%; top: 50%; transform: translateY(-50%);
+    width: 18%; height: 28%; font-size: clamp(20px, 5vw, 28px);
+  }
+  .wheel-btn.next {
+    right: 6.5%; top: 50%; transform: translateY(-50%);
+    width: 18%; height: 28%; font-size: clamp(20px, 5vw, 28px);
+  }
+  .wheel-btn.play {
+    left: 50%; bottom: 7.5%; transform: translateX(-50%);
+    width: 36%; height: 18%; font-size: clamp(18px, 4.8vw, 24px);
+  }
+  .wheel-hint {
+    width: var(--screen-w);
+    font-family: var(--font-screen);
+    font-size: 10px;
+    color: rgba(0,0,0,.48);
+    text-align: center;
+    line-height: 1.25;
+    margin-top: -4px;
+  }
+  @media (max-width: 390px) {
+    #ipodApp {
+      --screen-w: min(86vw, 308px);
+      --wheel-size: min(84vw, 290px);
+      --screen-h: clamp(206px, 37vh, 282px);
+    }
+  }
+  @media (max-height: 720px) {
+    .ipod-face {
+      gap: 16px;
+      padding-top: 10px;
+      padding-bottom: 12px;
+    }
+  }
+</style>
+
 </head>
 <body>
   <main id="screen" class="screen" aria-label="Spotify remote dashboard">
@@ -2753,5 +3043,431 @@
       if (window.Spotify) installPlayer();
     })();
   </script>
+
+<div id="ipodApp" aria-label="sp0tify iPod interface">
+  <div class="ipod-face">
+    <div class="ipod-screen-frame">
+      <div class="ipod-screen" aria-live="polite">
+        <div class="ipod-topbar">
+          <span id="podTopLeft" class="top-icon-left">▶</span>
+          <div id="podTopTitle" class="title">sp0tify</div>
+          <span class="top-icon-right" aria-hidden="true"><span></span></span>
+        </div>
+        <div class="ipod-body">
+          <div id="podMenuView" class="pod-view active"></div>
+          <div id="podNowView" class="pod-view"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wheel-zone">
+      <div id="podWheel" class="wheel" aria-label="Click wheel">
+        <div id="podWheelRing" class="wheel-ring" aria-hidden="true"></div>
+        <button id="podMenuBtn" class="wheel-btn menu" type="button" aria-label="Menu">MENU</button>
+        <button id="podPrevBtn" class="wheel-btn prev" type="button" aria-label="Previous">⏮</button>
+        <button id="podNextBtn" class="wheel-btn next" type="button" aria-label="Next">⏭</button>
+        <button id="podPlayBtn" class="wheel-btn play" type="button" aria-label="Play or pause">▶❚❚</button>
+        <button id="podCenterBtn" class="wheel-center" type="button" aria-label="Select"></button>
+      </div>
+    </div>
+
+    <div class="wheel-hint">Scroll the wheel to move. Press center to select.</div>
+  </div>
+</div>
+
+
+<script id="ipod-face-script">
+(function(){
+  const legacy = {
+    loginBtn: document.getElementById('loginBtn'),
+    signOutBtn: document.getElementById('signOutMiniBtn'),
+    setupAudioBtn: document.getElementById('setupAudioBtn'),
+    setupDeviceBtn: document.getElementById('setupDeviceBtn'),
+    refreshDevicesBtn: document.getElementById('refreshDevicesBtn'),
+    closeDevicesBtn: document.getElementById('closeDevicesBtn'),
+    connectRemoteBtn: document.getElementById('connectRemoteBtn'),
+    shuffleBtn: document.getElementById('shuffleBtn'),
+    recommendBtn: document.getElementById('recommendBtn'),
+    heartBtn: document.getElementById('heartBtn'),
+    prevBtn: document.getElementById('prevBtn'),
+    playPauseBtn: document.getElementById('playPauseBtn'),
+    nextBtn: document.getElementById('nextBtn'),
+    fullscreenBtn: document.getElementById('fullscreenBtn'),
+    albumArt: document.getElementById('albumArt'),
+    trackName: document.getElementById('trackName'),
+    artistName: document.getElementById('artistName'),
+    metaTop: document.getElementById('metaTop'),
+    currentTime: document.getElementById('currentTime'),
+    totalTime: document.getElementById('totalTime'),
+    timeline: document.getElementById('timeline'),
+    volumeSlider: document.getElementById('volumeSlider'),
+    deviceList: document.getElementById('deviceList'),
+    audioBtn: document.getElementById('audioBtn'),
+    useDeviceBtn: document.getElementById('useDeviceBtn'),
+    connectBtn: document.getElementById('connectRemoteBtn')
+  };
+
+  const ui = {
+    menuView: document.getElementById('podMenuView'),
+    nowView: document.getElementById('podNowView'),
+    topTitle: document.getElementById('podTopTitle'),
+    topLeft: document.getElementById('podTopLeft'),
+    wheel: document.getElementById('podWheel'),
+    ring: document.getElementById('podWheelRing'),
+    center: document.getElementById('podCenterBtn'),
+    menuBtn: document.getElementById('podMenuBtn'),
+    prevBtn: document.getElementById('podPrevBtn'),
+    nextBtn: document.getElementById('podNextBtn'),
+    playBtn: document.getElementById('podPlayBtn')
+  };
+
+  const state = {
+    view: 'home',
+    selected: 0,
+    devices: [],
+    menuItems: [],
+    renderToken: '',
+    wheelActive: false,
+    lastAngle: 0,
+    wheelAccum: 0,
+    lastStepAt: 0,
+    currentGesture: null
+  };
+
+  function isAuthed(){
+    return legacy.signOutBtn && !legacy.signOutBtn.classList.contains('hidden');
+  }
+
+  function isDisabled(el){
+    return !el || el.disabled;
+  }
+
+  function clickLegacy(el){
+    if (!el || el.disabled) return;
+    el.click();
+  }
+
+  function text(el, fallback=''){
+    return (el && (el.textContent || '').trim()) || fallback;
+  }
+
+  function currentTrackTitle(){ return text(legacy.trackName, 'Nothing playing'); }
+  function currentArtist(){ return text(legacy.artistName, isAuthed() ? 'Open Spotify on a device' : 'Sign in first'); }
+  function currentContext(){ return text(legacy.metaTop, 'sp0tify'); }
+  function currentArt(){ return legacy.albumArt && legacy.albumArt.getAttribute('src') || ''; }
+  function currentTime(){ return text(legacy.currentTime, '0:00'); }
+  function totalTime(){ return text(legacy.totalTime, '0:00'); }
+  function progressValue(){ return legacy.timeline ? Number(legacy.timeline.value || 0) : 0; }
+  function volumeValue(){ return legacy.volumeSlider ? Number(legacy.volumeSlider.value || 0) : 0; }
+  function isShuffleOn(){ return !!legacy.shuffleBtn && legacy.shuffleBtn.classList.contains('active'); }
+  function isLiked(){ return !!legacy.heartBtn && legacy.heartBtn.classList.contains('active'); }
+  function isAudioReady(){ return !!legacy.audioBtn && legacy.audioBtn.classList.contains('active'); }
+  function isUsingThisDevice(){ return !!legacy.useDeviceBtn && legacy.useDeviceBtn.classList.contains('active'); }
+  function isRemoteSelected(){ return !!legacy.connectBtn && legacy.connectBtn.classList.contains('active'); }
+  function isFullscreen(){ return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+
+  function clampIndex(){
+    if (!state.menuItems.length) { state.selected = 0; return; }
+    if (state.selected < 0) state.selected = state.menuItems.length - 1;
+    if (state.selected >= state.menuItems.length) state.selected = 0;
+  }
+
+  function parseDevices(){
+    const out = [];
+    if (!legacy.deviceList) return out;
+    legacy.deviceList.querySelectorAll('[data-device-id]').forEach(btn => {
+      const id = btn.getAttribute('data-device-id') || '';
+      const head = btn.querySelector('.device-item-head span');
+      const meta = btn.querySelector('.device-item-meta');
+      out.push({
+        id,
+        label: head ? head.textContent.trim() : (btn.textContent || 'Device').trim(),
+        meta: meta ? meta.textContent.replace(/\s+/g,' ').trim() : '',
+        active: btn.classList.contains('active'),
+        disabled: btn.disabled,
+        click(){ btn.click(); }
+      });
+    });
+    state.devices = out;
+    return out;
+  }
+
+  function buildHomeItems(){
+    const items = [];
+    items.push({ label: 'Now Playing', value: '', type: 'nav', next: 'nowplaying' });
+    items.push({ label: 'Devices', value: state.devices.find(d => d.active)?.label || '', type: 'nav', next: 'devices' });
+    items.push({ label: 'Shuffle', value: isShuffleOn() ? 'On' : 'Off', action: () => clickLegacy(legacy.shuffleBtn) });
+    items.push({ label: 'Recommend', value: legacy.recommendBtn && legacy.recommendBtn.classList.contains('active') ? 'Queued' : '', action: () => clickLegacy(legacy.recommendBtn) });
+    items.push({ label: 'Like Song', value: isLiked() ? 'Yes' : '', action: () => clickLegacy(legacy.heartBtn) });
+    items.push({ label: 'Audio', value: isAudioReady() ? 'On' : '', action: () => clickLegacy(legacy.setupAudioBtn) });
+    items.push({ label: 'Use Device', value: isUsingThisDevice() ? 'On' : '', action: () => clickLegacy(legacy.setupDeviceBtn) });
+    items.push({ label: 'Full Screen', value: isFullscreen() ? 'On' : '', action: toggleFullscreen });
+    items.push({ label: isAuthed() ? 'Sign Out' : 'Connect Spotify', value: '', action: () => isAuthed() ? clickLegacy(legacy.signOutBtn) : clickLegacy(legacy.loginBtn) });
+    return items;
+  }
+
+  function buildDeviceItems(){
+    const devices = parseDevices();
+    const items = devices.map(device => ({
+      label: device.label,
+      value: device.active ? 'Active' : '',
+      disabled: device.disabled,
+      action: () => device.click()
+    }));
+    items.unshift({ label: 'Refresh', value: '', action: refreshDevices });
+    return items;
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>\"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
+  }
+
+  function renderMenuView(title, items, note=''){
+    state.menuItems = items;
+    clampIndex();
+    ui.topTitle.textContent = title;
+    ui.topLeft.textContent = '▶';
+    const rows = items.map((item, index) => {
+      const classes = ['pod-row'];
+      if (index === state.selected) classes.push('selected');
+      const value = item.value ? `<span class="value">${escapeHtml(item.value)}</span>` : '<span class="value"></span>';
+      const chev = item.next ? '<span class="chev">›</span>' : '<span class="chev"></span>';
+      return `<li class="${classes.join(' ')}"><span class="label">${escapeHtml(item.label)}</span>${value}${chev}</li>`;
+    }).join('');
+    ui.menuView.innerHTML = `<ul class="${state.view === 'devices' ? 'pod-device-list' : 'pod-menu'}">${rows}</ul>${note ? `<div class="pod-note">${escapeHtml(note)}</div>` : ''}`;
+    ui.menuView.classList.add('active');
+    ui.nowView.classList.remove('active');
+  }
+
+  function renderNowPlaying(){
+    ui.topTitle.textContent = 'Now Playing';
+    ui.topLeft.textContent = isAuthed() ? (isUsingThisDevice() || isRemoteSelected() ? '▶' : '▸') : '▸';
+    const art = currentArt();
+    const progress = Math.max(0, Math.min(100, progressValue() / 10));
+    const volume = Math.max(0, Math.min(100, volumeValue()));
+    const title = currentTrackTitle();
+    const artist = currentArtist();
+    const meta = currentContext();
+    ui.nowView.innerHTML = `
+      <div class="np-wrap">
+        <div class="np-meta">${escapeHtml(meta)}</div>
+        <div class="np-main">
+          <div class="np-art">${art ? `<img src="${escapeHtml(art)}" alt="Album art">` : ''}</div>
+          <div class="np-text">
+            <div class="np-title">${escapeHtml(title)}</div>
+            <div class="np-artist">${escapeHtml(artist)}</div>
+            <div class="np-album">${escapeHtml(meta)}</div>
+          </div>
+        </div>
+        <div class="np-progress">
+          <div class="np-bar"><span style="width:${progress}%"></span></div>
+          <div class="np-times"><span>${escapeHtml(currentTime())}</span><span>${escapeHtml(totalTime())}</span></div>
+        </div>
+        <div class="np-subline"><span>${isShuffleOn() ? 'Shuffle On' : 'Shuffle Off'}</span><span>${isLiked() ? 'Liked' : 'Not Liked'}</span></div>
+        <div class="np-progress">
+          <div class="np-volbar"><span style="width:${volume}%"></span></div>
+          <div class="np-times"><span>Vol</span><span>${volume}%</span></div>
+        </div>
+      </div>`;
+    ui.nowView.classList.add('active');
+    ui.menuView.classList.remove('active');
+  }
+
+  function render(){
+    parseDevices();
+    if (state.view === 'nowplaying') {
+      renderNowPlaying();
+      return;
+    }
+    if (state.view === 'devices') {
+      renderMenuView('Devices', buildDeviceItems(), 'Center selects a Spotify Connect device.');
+      return;
+    }
+    renderMenuView('sp0tify', buildHomeItems(), isAuthed() ? 'MENU returns here. Left and right skip tracks.' : 'Connect Spotify once to control your other devices.');
+  }
+
+  function selectStep(direction){
+    if (state.view === 'nowplaying') {
+      const target = volumeValue() + (direction > 0 ? 4 : -4);
+      if (legacy.volumeSlider) {
+        legacy.volumeSlider.value = Math.max(0, Math.min(100, target));
+        legacy.volumeSlider.dispatchEvent(new Event('input', { bubbles: true }));
+        legacy.volumeSlider.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      return;
+    }
+    state.selected += direction;
+    clampIndex();
+    render();
+  }
+
+  function activateSelection(){
+    if (state.view === 'nowplaying') {
+      clickLegacy(legacy.playPauseBtn);
+      return;
+    }
+    const item = state.menuItems[state.selected];
+    if (!item || item.disabled) return;
+    if (item.next === 'nowplaying') {
+      state.view = 'nowplaying';
+      render();
+      return;
+    }
+    if (item.next === 'devices') {
+      state.view = 'devices';
+      refreshDevices();
+      render();
+      return;
+    }
+    if (typeof item.action === 'function') {
+      item.action();
+      setTimeout(render, 180);
+      setTimeout(render, 700);
+    }
+  }
+
+  function goMenu(){
+    if (state.view === 'home') {
+      state.selected = 0;
+      render();
+      return;
+    }
+    state.view = 'home';
+    state.selected = 0;
+    render();
+  }
+
+  function refreshDevices(){
+    clickLegacy(legacy.connectRemoteBtn);
+    setTimeout(() => clickLegacy(legacy.refreshDevicesBtn), 40);
+    setTimeout(() => {
+      parseDevices();
+      render();
+      clickLegacy(legacy.closeDevicesBtn);
+    }, 500);
+    setTimeout(() => {
+      parseDevices();
+      render();
+      clickLegacy(legacy.closeDevicesBtn);
+    }, 1200);
+  }
+
+  async function toggleFullscreen(){
+    const root = document.documentElement;
+    const active = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (active) {
+        if (document.exitFullscreen) await document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      } else {
+        if (root.requestFullscreen) await root.requestFullscreen({ navigationUI: 'hide' }).catch(()=>root.requestFullscreen());
+        else if (root.webkitRequestFullscreen) root.webkitRequestFullscreen();
+      }
+    } catch (_) {}
+    setTimeout(render, 120);
+  }
+
+  function pointAngle(event){
+    const rect = ui.wheel.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    return Math.atan2(event.clientY - cy, event.clientX - cx);
+  }
+
+  function pointDistance(event){
+    const rect = ui.wheel.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = event.clientX - cx;
+    const dy = event.clientY - cy;
+    return Math.sqrt(dx * dx + dy * dy) / (rect.width / 2);
+  }
+
+  function normalizeDelta(delta){
+    while (delta > Math.PI) delta -= Math.PI * 2;
+    while (delta < -Math.PI) delta += Math.PI * 2;
+    return delta;
+  }
+
+  function onWheelDown(event){
+    if (event.target.closest('.wheel-btn, .wheel-center')) return;
+    const dist = pointDistance(event);
+    if (dist < 0.42 || dist > 0.98) return;
+    state.wheelActive = true;
+    state.lastAngle = pointAngle(event);
+    state.wheelAccum = 0;
+    state.currentGesture = event.pointerId;
+    ui.wheel.setPointerCapture && ui.wheel.setPointerCapture(event.pointerId);
+    event.preventDefault();
+  }
+
+  function onWheelMove(event){
+    if (!state.wheelActive) return;
+    if (state.currentGesture != null && event.pointerId !== state.currentGesture) return;
+    const angle = pointAngle(event);
+    const delta = normalizeDelta(angle - state.lastAngle);
+    state.lastAngle = angle;
+    state.wheelAccum += delta;
+    const threshold = 0.24;
+    while (Math.abs(state.wheelAccum) >= threshold) {
+      const dir = state.wheelAccum > 0 ? 1 : -1;
+      selectStep(dir);
+      state.wheelAccum -= threshold * dir;
+    }
+    event.preventDefault();
+  }
+
+  function onWheelUp(event){
+    if (!state.wheelActive) return;
+    state.wheelActive = false;
+    state.currentGesture = null;
+    state.wheelAccum = 0;
+    event.preventDefault();
+  }
+
+  ui.menuBtn.addEventListener('click', goMenu);
+  ui.prevBtn.addEventListener('click', () => clickLegacy(legacy.prevBtn));
+  ui.nextBtn.addEventListener('click', () => clickLegacy(legacy.nextBtn));
+  ui.playBtn.addEventListener('click', () => clickLegacy(legacy.playPauseBtn));
+  ui.center.addEventListener('click', activateSelection);
+  ui.wheel.addEventListener('pointerdown', onWheelDown, { passive: false });
+  ui.wheel.addEventListener('pointermove', onWheelMove, { passive: false });
+  ui.wheel.addEventListener('pointerup', onWheelUp, { passive: false });
+  ui.wheel.addEventListener('pointercancel', onWheelUp, { passive: false });
+  ui.wheel.addEventListener('contextmenu', e => e.preventDefault());
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') { selectStep(-1); event.preventDefault(); }
+    else if (event.key === 'ArrowDown' || event.key === 'ArrowRight') { selectStep(1); event.preventDefault(); }
+    else if (event.key === 'Enter' || event.key === ' ') { activateSelection(); event.preventDefault(); }
+    else if (event.key === 'Escape' || event.key.toLowerCase() === 'm') { goMenu(); event.preventDefault(); }
+  });
+
+  function computeRenderToken(){
+    return [
+      isAuthed(), currentTrackTitle(), currentArtist(), currentContext(), currentArt(), currentTime(), totalTime(), progressValue(), volumeValue(),
+      isShuffleOn(), isLiked(), isAudioReady(), isUsingThisDevice(), isRemoteSelected(), isFullscreen(),
+      (legacy.recommendBtn && legacy.recommendBtn.classList.contains('active')) ? 1 : 0,
+      parseDevices().map(d => `${d.id}:${d.label}:${d.active}:${d.disabled}`).join('|')
+    ].join('~');
+  }
+
+  function sync(){
+    const token = computeRenderToken();
+    if (token !== state.renderToken) {
+      state.renderToken = token;
+      render();
+    }
+  }
+
+  render();
+  setTimeout(refreshDevices, 400);
+  setInterval(sync, 300);
+  setTimeout(sync, 900);
+  document.addEventListener('fullscreenchange', render);
+  document.addEventListener('webkitfullscreenchange', render);
+})();
+</script>
+
 </body>
 </html>
