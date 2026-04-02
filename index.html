@@ -259,6 +259,7 @@
     input[type="range"] {
       --progress: 0%;
       -webkit-appearance: none;
+      will-change: background;
       appearance: none;
       width: 100%;
       height: 30px;
@@ -1142,6 +1143,7 @@
     inset: 0 auto 0 0;
     width: 0%;
     background: rgba(0,0,0,.88);
+    will-change: width;
   }
   .np-times {
     display: flex;
@@ -1173,6 +1175,14 @@
     touch-action: none;
     -webkit-tap-highlight-color: transparent;
     overflow: hidden;
+    will-change: transform;
+  }
+  .wheel.active {
+    transform: scale(0.985);
+    transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .wheel.turning::after {
+    box-shadow: inset 0 2px 10px rgba(255,255,255,.12), inset 0 -16px 26px rgba(0,0,0,.4);
   }
   .wheel::after {
     content: '';
@@ -2471,9 +2481,15 @@
       els.currentTime.textContent = formatTime(position);
       els.totalTime.textContent = formatTime(duration);
       if (!state.seeking) {
-        els.timeline.max = duration > 0 ? String(duration) : '1000';
-        els.timeline.value = String(Math.min(position, duration || 1000));
-        updateRangeVisual(els.timeline);
+        const newMax = duration > 0 ? String(duration) : '1000';
+        const newVal = String(Math.min(position, duration || 1000));
+        if (els.timeline.max !== newMax) {
+          els.timeline.max = newMax;
+        }
+        if (els.timeline.value !== newVal) {
+          els.timeline.value = newVal;
+          updateRangeVisual(els.timeline);
+        }
       }
     }
 
@@ -3235,6 +3251,8 @@
     menuVisibleCount: 6,
     renderToken: '',
     nowPlayingRaf: 0,
+    npElements: { bar: null, currentTimeEl: null, totalTimeEl: null },
+    lastRenderHash: '',
     gestureActive: false,
     pointerId: null,
     startAngle: 0,
@@ -3260,6 +3278,23 @@
   if (legacy.signOutBtn) {
     legacy.signOutBtn.hidden = true;
     legacy.signOutBtn.style.display = 'none';
+  }
+
+  function haptic(ms = 8) {
+    try {
+      if ('vibrate' in navigator) navigator.vibrate(ms);
+    } catch (_) {}
+  }
+
+  function clearNowPlayingCache() {
+    state.npElements = { bar: null, currentTimeEl: null, totalTimeEl: null };
+  }
+
+  function stopNowPlayingLoop() {
+    if (state.nowPlayingRaf) {
+      cancelAnimationFrame(state.nowPlayingRaf);
+      state.nowPlayingRaf = 0;
+    }
   }
 
   function isAuthed() {
@@ -3617,6 +3652,8 @@
   }
 
   function renderMenuView(title, items){
+    clearNowPlayingCache();
+    stopNowPlayingLoop();
     state.menuItems = items;
     clampIndex();
     ui.topTitle.textContent = title;
@@ -3647,24 +3684,19 @@
   }
 
   function updateNowPlayingDynamic(){
-    if (state.view !== 'nowplaying' || !ui.nowView.classList.contains('active')) return;
+    if (state.view !== 'nowplaying' || !ui.nowView.classList.contains('active') || !state.npElements.bar) return;
     const durationMs = displayDurationMs();
     const positionMs = displayPositionMs();
     const progress = durationMs > 0 ? Math.max(0, Math.min(100, (positionMs / durationMs) * 100)) : 0;
-    const bar = ui.nowView.querySelector('.np-bar > span');
-    const current = ui.nowView.querySelector('.np-current-time');
-    const total = ui.nowView.querySelector('.np-total-time');
-    if (bar) bar.style.width = `${progress}%`;
-    if (current) current.textContent = formatTimeMs(positionMs);
-    if (total) total.textContent = formatTimeMs(durationMs);
+    state.npElements.bar.style.width = `${progress}%`;
+    if (state.npElements.currentTimeEl) state.npElements.currentTimeEl.textContent = formatTimeMs(positionMs);
+    if (state.npElements.totalTimeEl) state.npElements.totalTimeEl.textContent = formatTimeMs(durationMs);
   }
 
   function startNowPlayingLoop(){
     if (state.nowPlayingRaf) return;
     const tick = () => {
-      if (state.view === 'nowplaying' && ui.nowView.classList.contains('active')) {
-        updateNowPlayingDynamic();
-      }
+      updateNowPlayingDynamic();
       state.nowPlayingRaf = requestAnimationFrame(tick);
     };
     state.nowPlayingRaf = requestAnimationFrame(tick);
@@ -3700,11 +3732,15 @@
           <div class="np-times"><span class="np-current-time">${escapeHtml(formatTimeMs(positionMs))}</span><span class="np-total-time">${escapeHtml(formatTimeMs(durationMs))}</span></div>
         </div>
       </div>`;
+    state.npElements.bar = ui.nowView.querySelector('.np-bar > span');
+    state.npElements.currentTimeEl = ui.nowView.querySelector('.np-current-time');
+    state.npElements.totalTimeEl = ui.nowView.querySelector('.np-total-time');
     const likeBtn = ui.nowView.querySelector('#npLikeBtn');
     if (likeBtn) {
       likeBtn.addEventListener('click', (event) => {
         event.preventDefault();
         event.stopPropagation();
+        haptic();
         clickLegacy(legacy.heartBtn);
         setTimeout(sync, 120);
         setTimeout(renderNowPlaying, 280);
@@ -3743,6 +3779,7 @@
   }
 
   function selectStep(direction){
+    haptic(6);
     if (state.view === 'nowplaying') {
       const target = volumeValue() + (direction > 0 ? 4 : -4);
       if (legacy.volumeSlider) {
@@ -3759,6 +3796,7 @@
   }
 
   function activateSelection(){
+    haptic();
     if (state.view === 'nowplaying') {
       clickLegacy(legacy.playPauseBtn);
       setTimeout(render, 120);
@@ -3797,6 +3835,10 @@
   }
 
   function goMenu(){
+    if (state.view === 'nowplaying') {
+      clearNowPlayingCache();
+      stopNowPlayingLoop();
+    }
     if (state.view === 'playlistTracks') {
       state.view = 'playlists';
       state.selected = state.activePlaylistIndex || 0;
@@ -3867,6 +3909,7 @@
   }
 
   function handleSectorTap(sector){
+    haptic();
     if (sector === 'menu') { goMenu(); return; }
     if (sector === 'prev') { clickLegacy(legacy.prevBtn); return; }
     if (sector === 'next') { clickLegacy(legacy.nextBtn); return; }
@@ -3876,6 +3919,7 @@
   function onWheelDown(event){
     const g = wheelGeometry(event);
     if (g.dist > 1.14) return;
+    ui.wheel.classList.add('active');
     state.gestureActive = true;
     state.pointerId = event.pointerId;
     state.startAngle = g.angle;
@@ -3898,6 +3942,7 @@
     const travel = Math.hypot(event.clientX - state.startX, event.clientY - state.startY);
     if (travel > 10) state.moved = true;
     if (g.dist > 0.04) {
+      ui.wheel.classList.add('turning');
       state.accum += delta;
       const threshold = 0.12;
       while (Math.abs(state.accum) >= threshold) {
@@ -3911,6 +3956,8 @@
 
   function onWheelUp(event){
     if (!state.gestureActive || event.pointerId !== state.pointerId) return;
+    ui.wheel.classList.remove('active');
+    ui.wheel.classList.remove('turning');
     const g = wheelGeometry(event);
     const duration = Date.now() - state.startT;
     const travel = Math.hypot(event.clientX - state.startX, event.clientY - state.startY);
@@ -3941,29 +3988,46 @@
     else if (event.key === 'Escape' || event.key.toLowerCase() === 'm') { goMenu(); event.preventDefault(); }
   });
 
-  function computeRenderToken(){
+  function computeLightHash(){
+    const devices = state.devices || [];
+    const activeDevice = devices.find((device) => device.active);
     return [
-      isAuthed(), currentTrackTitle(), currentArtist(), currentContext(), currentArt(), volumeValue(),
-      isShuffleOn(), isLiked(), isAudioReady(), isUsingThisDevice(), isRemoteSelected(), isFullscreen(), isPaused(),
+      isAuthed(),
+      currentTrackTitle(),
+      currentArtist(),
+      currentContext(),
+      currentArt(),
+      volumeValue(),
+      isShuffleOn() ? 1 : 0,
+      isLiked() ? 1 : 0,
+      isAudioReady() ? 1 : 0,
+      isUsingThisDevice() ? 1 : 0,
+      isRemoteSelected() ? 1 : 0,
+      isFullscreen() ? 1 : 0,
+      isPaused() ? 1 : 0,
       legacy.recommendBtn && legacy.recommendBtn.classList.contains('active') ? 1 : 0,
-      state.likedTracks.length, state.playlists.length, state.view, state.selected, state.menuOffset,
-      parseDevices().map((d) => `${d.id}:${d.label}:${d.active}:${d.disabled}`).join('|')
-    ].join('~');
+      state.view,
+      state.selected,
+      state.menuOffset,
+      state.likedTracks.length,
+      state.playlists.length,
+      devices.length,
+      activeDevice ? activeDevice.id : ''
+    ].join('|');
   }
 
   function sync(){
     syncPlaybackClock();
-    const token = computeRenderToken();
-    if (token !== state.renderToken) {
-      state.renderToken = token;
-      render();
-    }
+    const hash = computeLightHash();
+    if (hash === state.lastRenderHash) return;
+    state.lastRenderHash = hash;
+    render();
   }
 
   render();
   startNowPlayingLoop();
   setTimeout(refreshDevices, 400);
-  setInterval(sync, 500);
+  setInterval(sync, 900);
   setTimeout(sync, 900);
   document.addEventListener('fullscreenchange', render);
   document.addEventListener('webkitfullscreenchange', render);
