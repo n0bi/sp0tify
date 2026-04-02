@@ -2049,6 +2049,7 @@
       }).join('');
       els.deviceList.querySelectorAll('[data-device-id]').forEach(button => {
         button.addEventListener('click', async () => {
+          playUiClick();
           const deviceId = button.getAttribute('data-device-id') || '';
           const device = state.devices.find(entry => entry.id === deviceId);
           if (!device || device.is_restricted) return;
@@ -2154,48 +2155,90 @@
     }
 
     async function commandPrevious() {
+      const localTarget = isLocalCommandTarget();
+      if (localTarget && state.player) {
+        try {
+          await state.player.previousTrack();
+          return;
+        } catch (_) {}
+      }
       try {
-        return await apiPlayerCommand('/v1/me/player/previous');
+        await apiPlayerCommand('/v1/me/player/previous');
       } catch (error) {
-        if (isLocalCommandTarget() && state.player) return state.player.previousTrack();
+        if (localTarget && state.player) {
+          try {
+            await state.player.previousTrack();
+            return;
+          } catch (_) {}
+        }
         throw error;
       }
     }
 
     async function commandNext() {
+      const localTarget = isLocalCommandTarget();
+      if (localTarget && state.player) {
+        try {
+          await state.player.nextTrack();
+          return;
+        } catch (_) {}
+      }
       try {
-        return await apiPlayerCommand('/v1/me/player/next');
+        await apiPlayerCommand('/v1/me/player/next');
       } catch (error) {
-        if (isLocalCommandTarget() && state.player) return state.player.nextTrack();
+        if (localTarget && state.player) {
+          try {
+            await state.player.nextTrack();
+            return;
+          } catch (_) {}
+        }
         throw error;
       }
     }
 
     async function commandTogglePlay() {
-      if (isLocalCommandTarget() && state.player) {
+      const localTarget = isLocalCommandTarget();
+      if (localTarget && state.player) {
         try {
-          return await state.player.togglePlay();
-        } catch (error) {
-          // fall through to Web API / legacy fallback
-        }
+          if (!state.activated && typeof activateAudio === 'function') {
+            await activateAudio();
+          }
+          if (state.playbackState?.paused) await state.player.resume();
+          else await state.player.pause();
+          return;
+        } catch (_) {}
       }
       try {
-        if (state.playbackState?.paused) return await apiPlayerCommand('/v1/me/player/play', { method: 'PUT' });
-        return await apiPlayerCommand('/v1/me/player/pause', { method: 'PUT' });
+        if (state.playbackState?.paused) await apiPlayerCommand('/v1/me/player/play', { method: 'PUT' });
+        else await apiPlayerCommand('/v1/me/player/pause', { method: 'PUT' });
       } catch (error) {
+        if (localTarget && state.player) {
+          try {
+            await state.player.togglePlay();
+            return;
+          } catch (_) {}
+        }
         clickLegacy(legacy.playPauseBtn);
         throw error;
       }
     }
 
     async function commandSeek(positionMs) {
-      if (isLocalCommandTarget() && state.player) return state.player.seek(positionMs);
-      return apiPlayerCommand('/v1/me/player/seek', { method: 'PUT', query: { position_ms: String(Math.max(0, Math.round(positionMs || 0))) } });
+      const target = Math.max(0, Math.round(positionMs || 0));
+      if (isLocalCommandTarget() && state.player) {
+        try {
+          await state.player.seek(target);
+          return;
+        } catch (_) {}
+      }
+      return apiPlayerCommand('/v1/me/player/seek', { method: 'PUT', query: { position_ms: String(target) } });
     }
 
     async function commandSetVolume(volume) {
       const bounded = Math.max(0, Math.min(1, Number.isFinite(volume) ? volume : 0));
-      if (isLocalCommandTarget() && state.player && !state.selectedDeviceId) return syncPlayerVolume(bounded);
+      if (isLocalCommandTarget() && state.player) {
+        return syncPlayerVolume(bounded);
+      }
       if (!canControlVolume()) throw new Error('Volume is not available for this device');
       return apiPlayerCommand('/v1/me/player/volume', { method: 'PUT', query: { volume_percent: String(Math.round(bounded * 100)) } });
     }
@@ -3323,6 +3366,32 @@
     legacy.signOutBtn.style.display = 'none';
   }
 
+  let clickAudioContext = null;
+  let lastClickSoundAt = 0;
+  function playUiClick() {
+    const now = Date.now();
+    if (now - lastClickSoundAt < 42) return;
+    lastClickSoundAt = now;
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    try {
+      if (!clickAudioContext) clickAudioContext = new AudioCtx();
+      if (clickAudioContext.state === 'suspended') clickAudioContext.resume().catch(() => {});
+      const ctx = clickAudioContext;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(920, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(720, ctx.currentTime + 0.028);
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.009, ctx.currentTime + 0.004);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.04);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.042);
+    } catch (_) {}
+  }
 
   function clearNowPlayingCache() {
     state.npElements = { bar: null, currentTimeEl: null, totalTimeEl: null };
@@ -3517,6 +3586,9 @@
         await transferPlayback();
       } else {
         clickLegacy(legacy.setupDeviceBtn);
+      }
+      if (state.deviceId) {
+        setSelectedDevice({ id: state.deviceId, name: APP_CONFIG.DEVICE_NAME, supports_volume: true });
       }
       if (typeof refreshPlaybackSoon === 'function') {
         await refreshPlaybackSoon(180);
@@ -3815,15 +3887,20 @@
       });
       state.view = 'nowplaying';
       state.selected = index;
+      state.playbackClock.trackKey = '';
       if (typeof refreshPlaybackSoon === 'function') {
         await refreshPlaybackSoon(140);
-        await refreshPlaybackSoon(260);
+        await refreshPlaybackSoon(320);
       }
       syncPlaybackClock();
       render();
     } catch (error) {
       console.warn('Liked playback failed', error);
-      clickLegacy(legacy.playPauseBtn);
+      try {
+        if (typeof commandTogglePlay === 'function') await commandTogglePlay();
+      } catch (_) {
+        clickLegacy(legacy.playPauseBtn);
+      }
     }
   }
 
@@ -4044,6 +4121,7 @@
   }
 
   function selectStep(direction){
+    playUiClick();
     if (state.view === 'nowplaying') {
       const target = volumeValue() + (direction > 0 ? 4 : -4);
       if (legacy.volumeSlider) {
@@ -4060,6 +4138,7 @@
   }
 
   function activateSelection(){
+    playUiClick();
     if (state.view === 'nowplaying') {
       return;
     }
@@ -4160,27 +4239,43 @@
     return 'menu';
   }
 
-  function handleSectorTap(sector){
+  async function handleSectorTap(sector){
+    playUiClick();
     if (sector === 'menu') { goMenu(); return; }
     if (sector === 'prev') {
-      Promise.resolve(typeof commandPrevious === 'function' ? commandPrevious() : clickLegacy(legacy.prevBtn))
-        .catch(() => clickLegacy(legacy.prevBtn))
-        .then(() => typeof refreshPlaybackSoon === 'function' ? refreshPlaybackSoon(90) : null)
-        .then(() => { syncPlaybackClock(); render(); });
+      try {
+        if (typeof commandPrevious === 'function') await commandPrevious();
+        else clickLegacy(legacy.prevBtn);
+      } catch (_) {
+        clickLegacy(legacy.prevBtn);
+      }
+      if (typeof refreshPlaybackSoon === 'function') refreshPlaybackSoon(90).catch(() => {});
+      syncPlaybackClock();
+      render();
       return;
     }
     if (sector === 'next') {
-      Promise.resolve(typeof commandNext === 'function' ? commandNext() : clickLegacy(legacy.nextBtn))
-        .catch(() => clickLegacy(legacy.nextBtn))
-        .then(() => typeof refreshPlaybackSoon === 'function' ? refreshPlaybackSoon(90) : null)
-        .then(() => { syncPlaybackClock(); render(); });
+      try {
+        if (typeof commandNext === 'function') await commandNext();
+        else clickLegacy(legacy.nextBtn);
+      } catch (_) {
+        clickLegacy(legacy.nextBtn);
+      }
+      if (typeof refreshPlaybackSoon === 'function') refreshPlaybackSoon(90).catch(() => {});
+      syncPlaybackClock();
+      render();
       return;
     }
     if (sector === 'play') {
-      Promise.resolve(typeof commandTogglePlay === 'function' ? commandTogglePlay() : clickLegacy(legacy.playPauseBtn))
-        .catch(() => clickLegacy(legacy.playPauseBtn))
-        .then(() => typeof refreshPlaybackSoon === 'function' ? refreshPlaybackSoon(90) : null)
-        .then(() => { syncPlaybackClock(); render(); });
+      try {
+        if (typeof commandTogglePlay === 'function') await commandTogglePlay();
+        else clickLegacy(legacy.playPauseBtn);
+      } catch (_) {
+        clickLegacy(legacy.playPauseBtn);
+      }
+      if (typeof refreshPlaybackSoon === 'function') refreshPlaybackSoon(90).catch(() => {});
+      syncPlaybackClock();
+      render();
       return;
     }
   }
@@ -4213,7 +4308,7 @@
     if (travel > 10) state.moved = true;
     if (g.dist > 0.04) {
       state.accum += delta;
-      const threshold = 0.095;
+      const threshold = 0.155;
       while (Math.abs(state.accum) >= threshold) {
         const dir = state.accum > 0 ? 1 : -1;
         selectStep(dir);
@@ -4249,6 +4344,7 @@
   ui.center.addEventListener('pointerup', (event) => {
     event.preventDefault();
     event.stopPropagation();
+    playUiClick();
     activateSelection();
   }, { passive: false });
   ui.center.addEventListener('click', (event) => {
