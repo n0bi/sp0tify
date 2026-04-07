@@ -1,1575 +1,3060 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Vintage Camera</title>
-  <style>
-    :root {
-      --bg: #050507;
-      --panel: rgba(14, 14, 18, 0.9);
-      --line: rgba(255,255,255,.08);
-      --text: #f5f5f7;
-      --muted: rgba(255,255,255,.68);
-      --shadow: 0 24px 60px rgba(0,0,0,.4);
-      --radius: 30px;
-      --button-shadow: 0 12px 30px rgba(0,0,0,.28);
-    }
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><title>sp0tify</title><style>html,body{margin:0;min-height:100%;background:#050505}#controller,[hidden],#screen,#overlay,#deviceSheet{display:none!important}.hidden{display:none!important}button,input,svg,canvas,img{box-sizing:border-box}</style><style id="ipod-overlay-style">body{background:radial-gradient(circle at 50% 0%,#252525 0%,#111 44%,#050505 100%) !important;overflow:hidden !important}#screen{position:fixed !important;left:-200vw !important;top:-200vh !important;width:1px !important;height:1px !important;overflow:hidden !important;opacity:0 !important;pointer-events:none !important}#ipodApp{--face-w:min(92vw,372px);--wheel-size:min(92vw,372px);--screen-h:clamp(240px,41vh,332px);--screen-bg:#d7ded2;--screen-bg-2:#c9d0c4;--screen-ink:#111;--screen-accent:#2e2e2e;--screen-strong:#101010;--screen-soft:rgba(16,16,16,.58);--screen-faint:rgba(16,16,16,.34);--black-1:#111111;--black-2:#1b1b1b;--black-3:#202020;--black-4:#2b2b2b;--ring-line:rgba(255,255,255,.05);--ring-line-2:rgba(0,0,0,.6);--wheel-label:rgba(255,255,255,.62);--wheel-symbol:rgba(255,255,255,.66);--screen-shadow:0 1px 0 rgba(255,255,255,.06),inset 0 10px 16px rgba(255,255,255,.04),inset 0 -6px 14px rgba(0,0,0,.09),inset 0 0 0 1px rgba(255,255,255,.07);--wheel-shadow:0 18px 40px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.06),inset 0 -2px 8px rgba(0,0,0,.22),inset 0 0 0 1px rgba(255,255,255,.04);--center-shadow:inset 0 1px 0 rgba(255,255,255,.08),inset 0 -2px 7px rgba(0,0,0,.28),0 2px 10px rgba(0,0,0,.14);position:fixed;inset:0;display:grid;place-items:center;padding:max(12px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));background:radial-gradient(circle at 50% -8%,rgba(255,255,255,.06),transparent 28%),linear-gradient(180deg,#151515 0%,#050505 100%);-webkit-user-select:none;user-select:none;overflow:hidden;touch-action:manipulation}.ipod-face{width:var(--face-w);min-height:min(100dvh - 24px,820px);display:grid;grid-template-rows:auto 1fr;align-content:start;justify-items:center;gap:clamp(22px,3vh,32px);padding:clamp(8px,1.2vh,16px) 0 clamp(10px,1.4vh,18px)}.ipod-screen-frame{width:var(--wheel-size);border-radius:14px;padding:8px;background:linear-gradient(180deg,#0a0a0a 0%,#1a1a1a 100%);border:1px solid rgba(255,255,255,.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),inset 0 -1px 0 rgba(0,0,0,.55),0 10px 32px rgba(0,0,0,.28)}.ipod-screen{width:100%;height:var(--screen-h);position:relative;overflow:hidden;border-radius:10px;border:1.2px solid rgba(0,0,0,.76);background:linear-gradient(180deg,var(--screen-bg) 0%,var(--screen-bg-2) 100%);color:var(--screen-ink);font-family:'Arial Narrow','Helvetica Neue',Arial,sans-serif;display:grid;grid-template-rows:auto 1fr;box-shadow:var(--screen-shadow)}.ipod-screen::before{content:'';position:absolute;inset:-18% -8%;background:linear-gradient(130deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,.03) 26%,transparent 42%,rgba(255,255,255,.08) 82%,rgba(255,255,255,.12) 100%);opacity:.34;pointer-events:none;mix-blend-mode:screen}.ipod-screen::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(180deg,rgba(255,255,255,.024) 0 1px,rgba(0,0,0,.018) 1px 2px);opacity:.22;pointer-events:none;mix-blend-mode:multiply}.ipod-topbar{position:relative;z-index:1;display:grid;grid-template-columns:18px 1fr 18px;align-items:center;gap:8px;min-height:26px;padding:4px 8px 5px;border-bottom:1px solid rgba(0,0,0,.58);font-size:12px;font-weight:700;letter-spacing:-.02em}.ipod-topbar .title{text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.top-icon-left{width:0;height:0;border-left:8px solid var(--screen-accent);border-top:5px solid transparent;border-bottom:5px solid transparent;justify-self:start}.top-icon-right.visualizer{display:inline-grid;grid-template-columns:repeat(4,2px);gap:2px;align-items:end;justify-content:end;height:12px;width:16px;justify-self:end}.top-icon-right.visualizer span{display:block;width:2px;border-radius:2px;background:var(--screen-accent);opacity:.92;animation:vizBounce 1s ease-in-out infinite;transform-origin:bottom}.top-icon-right.visualizer span:nth-child(1){height:4px;animation-delay:-.15s}.top-icon-right.visualizer span:nth-child(2){height:8px;animation-delay:-.4s}.top-icon-right.visualizer span:nth-child(3){height:6px;animation-delay:-.25s}.top-icon-right.visualizer span:nth-child(4){height:10px;animation-delay:-.55s}.top-icon-right.visualizer.paused span,.top-icon-right.visualizer.idle span{animation:none}.top-icon-right.visualizer.paused span{opacity:.55}.top-icon-right.visualizer.idle span{opacity:.26}@keyframes vizBounce{0%,100%{transform:scaleY(.45)}50%{transform:scaleY(1)}}.ipod-body{position:relative;z-index:1;overflow:hidden;padding:4px 0 0}.pod-view{position:absolute;inset:0;display:none}.pod-view.active{display:block}.pod-menu,.pod-device-list{list-style:none;margin:0;padding:0}.pod-menu,.pod-device-list{position:relative}.pod-row{height:25px;display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:6px;padding:0 8px;font-size:clamp(14px,3.45vw,17px);line-height:1;font-weight:700;letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pod-row .label,.pod-row .value{overflow:hidden;text-overflow:ellipsis}.pod-row .value{font-size:.82em;opacity:.8;max-width:110px}.pod-row.selected{background:#1f1f1f;color:#e7e7df}.pod-scroll-indicator{position:absolute;top:4px;right:2px;bottom:4px;width:12px;border-radius:999px;background:rgba(0,0,0,.08);overflow:hidden;touch-action:none;cursor:pointer}.pod-scroll-indicator span{position:absolute;left:2px;width:calc(100% - 4px);border-radius:inherit;background:rgba(0,0,0,.38);pointer-events:none}.np-wrap{height:100%;display:grid;grid-template-rows:auto 1fr auto;gap:6px;padding:9px 8px 14px}.np-header{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:8px;min-height:16px;font-size:11px;color:var(--screen-soft)}.np-context{display:block;min-width:0;min-height:1px}.np-like{width:18px;height:18px;margin:0;padding:0;border:0;background:transparent;color:var(--screen-strong);display:inline-grid;place-items:center;cursor:pointer}.np-like svg{width:14px;height:14px;display:block}.np-main{display:grid;grid-template-columns:minmax(0,1fr);gap:7px;align-items:start;align-self:center;justify-items:start;min-height:0;padding:2px 10px 0}.np-art{display:grid;place-items:center;width:48px;height:48px;overflow:hidden;border:1px solid rgba(0,0,0,.4);border-radius:3px;background:rgba(0,0,0,.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.1)}.np-art img{display:block;width:100%;height:100%;object-fit:cover;image-rendering:auto}.np-text{min-width:0;align-self:start;justify-self:stretch;text-align:left;width:100%}.np-title{font-size:clamp(20px,4.7vw,24px);line-height:1.08;font-weight:700;min-height:calc(1.08em * 2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;letter-spacing:-.035em}.np-artist,.np-album{margin-top:4px;font-size:clamp(16px,3.8vw,19px);line-height:1.08;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.025em}.np-album{display:block;opacity:.92}.np-bottom{align-self:end;display:grid;gap:5px;padding:0 12px 18px}.np-bar{height:8px;position:relative;overflow:hidden;border:1px solid rgba(0,0,0,.56);border-radius:2px;background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.15);touch-action:none;cursor:pointer}.np-bar>span{position:absolute;inset:0 auto 0 0;width:0%;background:rgba(0,0,0,.88);will-change:width}.np-times{display:flex;justify-content:space-between;gap:12px;font-size:11px;line-height:1.1;color:var(--screen-soft);padding-inline:0;letter-spacing:-.01em}.pod-empty{padding:10px 8px;font-size:13px;color:var(--screen-soft)}.wheel-zone{width:100%;display:grid;place-items:center;flex:1 1 auto}.wheel{position:relative;width:var(--wheel-size);aspect-ratio:1 / 1;border-radius:50%;background:linear-gradient(180deg,#202020 0%,#161616 100%);box-shadow:var(--wheel-shadow);border:1px solid rgba(255,255,255,.05);touch-action:none;-webkit-tap-highlight-color:transparent;overflow:hidden}.wheel::after{content:'';position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 2px 10px rgba(255,255,255,.02),inset 0 -16px 26px rgba(0,0,0,.26);pointer-events:none}.wheel-ring{position:absolute;inset:0;border-radius:50%}.wheel-label{position:absolute;color:var(--wheel-label);font-family:'Arial Narrow','Helvetica Neue',Arial,sans-serif;font-weight:700;letter-spacing:.05em;pointer-events:none;text-transform:uppercase;user-select:none}.wheel-label.menu{top:10.5%;left:50%;transform:translateX(-50%);font-size:clamp(20px,5.2vw,26px)}.wheel-label.prev,.wheel-label.next,.wheel-label.play{display:grid;place-items:center;width:19%;height:19%;font-size:clamp(24px,5.6vw,30px);line-height:1}.wheel-label.prev{left:8%;top:50%;transform:translateY(-50%)}.wheel-label.next{right:8%;top:50%;transform:translateY(-50%)}.wheel-label.play{left:50%;bottom:7.5%;transform:translateX(-50%)}.wheel-center{position:absolute;inset:34%;border-radius:50%;background:linear-gradient(180deg,#1b1b1b 0%,#0f0f0f 100%);border:1px solid rgba(255,255,255,.06);box-shadow:var(--center-shadow);cursor:pointer;-webkit-tap-highlight-color:transparent}.wheel-center::after{content:'';position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(0,0,0,.3);pointer-events:none}@media (max-width:420px){#ipodApp{--face-w:min(94vw,360px);--wheel-size:min(94vw,360px)}}@media (max-height:760px){.ipod-face{gap:18px}#ipodApp{--screen-h:clamp(220px,39vh,296px)}}</style></head><body><div id="controller" hidden><main id="screen"><img id="bgArt" alt=""><canvas id="paletteCanvas" width="32" height="32"></canvas><div id="gestureZone"><img id="albumArt" alt=""><div id="metaTop"></div><h1 id="trackName"></h1><p id="artistName"></p></div><input id="timeline" type="range" min="0" max="1000" value="0" step="1"><span id="currentTime"></span><span id="totalTime"></span><button id="shuffleBtn" type="button"></button><button id="recommendBtn" type="button"></button><button id="prevBtn" type="button"></button><button id="playPauseBtn" type="button"><svg id="playPauseIcon" viewBox="0 0 64 64"></svg></button><button id="nextBtn" type="button"></button><button id="heartBtn" type="button"><svg viewBox="0 0 24 24"></svg></button><button id="muteBtn" type="button"><svg id="volumeIcon" viewBox="0 0 24 24"></svg></button><input id="volumeSlider" type="range" min="0" max="100" value="100" step="1"><button id="useDeviceBtn" type="button"></button><button id="audioBtn" type="button"></button><button id="connectRemoteBtn" type="button"></button><button id="fullscreenBtn" type="button"><svg id="fullscreenIcon" viewBox="0 0 24 24"></svg></button><div id="statusLive" aria-live="polite"></div><div id="overlay"><h2 id="overlayTitle"></h2><p id="overlayCopy"></p><button id="loginBtn" type="button"></button><button id="setupAudioBtn" type="button"></button><button id="setupDeviceBtn" type="button"></button><button id="closeOverlayBtn" type="button"></button></div><div id="deviceSheet"><button id="refreshDevicesBtn" type="button"></button><button id="closeDevicesBtn" type="button"></button><div id="deviceList"></div></div></main><button id="signOutMiniBtn" type="button"></button></div><script src="https://sdk.scdn.co/spotify-player.js"></script><script>
+    const APP_CONFIG = Object.freeze({
+      CLIENT_ID: 'bfade0ed83a54868834c9c7a6cdb690f',
+      DEVICE_NAME: 'Sp0tify',
+      REDIRECT_URI: 'https://n0bi.github.io/sp0tify/'
+    });
 
-    * { box-sizing: border-box; }
-
-    html, body {
-      margin: 0;
-      width: 100%;
-      min-height: 100%;
-      background:
-        radial-gradient(circle at top, rgba(255,255,255,.06), transparent 25%),
-        linear-gradient(180deg, #11131a, #050507 72%);
-      color: var(--text);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      overflow: hidden;
-    }
-
-    body { padding: 10px; }
-
-    .app {
-      width: 100%;
-      min-height: calc(100dvh - 20px);
-      display: flex;
-      align-items: stretch;
-      justify-content: center;
-    }
-
-    .camera-shell {
-      width: min(100%, 980px);
-      min-height: 100%;
-      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015));
-      border: 1px solid var(--line);
-      border-radius: 34px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .viewer {
-      position: relative;
-      flex: 1 1 auto;
-      min-height: min(76dvh, 960px);
-      overflow: hidden;
-      border-radius: var(--radius);
-      background: #000;
-      border: 1px solid rgba(255,255,255,.08);
-    }
-
-    video,
-    canvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      display: block;
-      background: #000;
-    }
-
-    video { display: none; }
-
-    #preview,
-    #output {
-      object-fit: cover;
-      image-rendering: auto;
-    }
-
-    #output {
-      display: none;
-      z-index: 1;
-    }
-
-    .viewer::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background: linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,0) 16%, rgba(0,0,0,.08) 100%);
-      mix-blend-mode: screen;
-      z-index: 3;
-    }
-
-    .hud {
-      position: absolute;
-      inset: 0;
-      z-index: 4;
-      pointer-events: none;
-    }
-
-    .mode-badge,
-    .icon-btn,
-    .toast {
-      position: absolute;
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,.1);
-      box-shadow: 0 10px 30px rgba(0,0,0,.24);
-      background: rgba(0,0,0,.4);
-      color: rgba(255,255,255,.96);
-    }
-
-    .mode-badge {
-      left: 12px;
-      top: 12px;
-      border-radius: 999px;
-      padding: 8px 11px;
-      font-size: 11px;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      line-height: 1;
-    }
-
-    .icon-btn {
-      right: 12px;
-      top: 12px;
-      width: 44px;
-      height: 44px;
-      border-radius: 999px;
-      pointer-events: auto;
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-      appearance: none;
-      font: inherit;
-    }
-
-    .icon-btn:active { transform: scale(.98); }
-
-    .icon-btn svg {
-      width: 18px;
-      height: 18px;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 1.8;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    .toast {
-      left: 50%;
-      bottom: 14px;
-      transform: translateX(-50%);
-      border-radius: 999px;
-      padding: 9px 12px;
-      font-size: 12px;
-      white-space: nowrap;
-      display: none;
-      max-width: calc(100% - 24px);
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .controls {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding: 2px 2px 4px;
-    }
-
-    .mode-row {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      padding-bottom: 2px;
-    }
-
-    .mode-row::-webkit-scrollbar { display: none; }
-
-    .mode-chip,
-    .pill-btn {
-      appearance: none;
-      border: 1px solid rgba(255,255,255,.1);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      border-radius: 999px;
-      padding: 9px 11px;
-      font: inherit;
-      font-size: 12px;
-      letter-spacing: .02em;
-      cursor: pointer;
-      transition: transform .15s ease, background .15s ease, border-color .15s ease, opacity .15s ease;
-      white-space: nowrap;
-      box-shadow: var(--button-shadow);
-    }
-
-    .mode-chip:active,
-    .pill-btn:active { transform: scale(.98); }
-
-    .mode-chip.active {
-      background: rgba(255,255,255,.16);
-      border-color: rgba(255,255,255,.22);
-    }
-
-    .capture-row {
-      min-height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    .capture-btn {
-      appearance: none;
-      width: 74px;
-      height: 74px;
-      border-radius: 999px;
-      border: 4px solid rgba(255,255,255,.92);
-      background: transparent;
-      padding: 0;
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-      box-shadow: var(--button-shadow);
-      transition: transform .15s ease, opacity .15s ease;
-    }
-
-    .capture-btn::before {
-      content: "";
-      width: 54px;
-      height: 54px;
-      border-radius: 999px;
-      background: #ff3b30;
-      box-shadow: inset 0 -10px 16px rgba(0,0,0,.14), inset 0 10px 14px rgba(255,255,255,.14);
-    }
-
-    .capture-btn.is-retake::after {
-      content: "↻";
-      position: absolute;
-      color: rgba(255,255,255,.96);
-      font-size: 28px;
-      line-height: 1;
-      font-weight: 700;
-      text-shadow: 0 2px 10px rgba(0,0,0,.28);
-      transform: translateY(-1px);
-      pointer-events: none;
-    }
-
-    .capture-btn:active { transform: scale(.97); }
-    .capture-btn:disabled { opacity: .55; cursor: wait; }
-
-    .pill-btn:disabled {
-      opacity: .42;
-      cursor: not-allowed;
-    }
-
-    .save-btn {
-      min-width: 86px;
-      text-align: center;
-    }
-
-    @media (max-width: 720px) {
-      body { padding: 0; }
-      .app { min-height: 100dvh; }
-      .camera-shell {
-        width: 100%;
-        border-radius: 0;
-        min-height: 100dvh;
-        padding: 8px;
-      }
-      .viewer {
-        min-height: calc(100dvh - 154px);
-        border-radius: 24px;
-      }
-      .mode-chip,
-      .pill-btn {
-        padding: 8px 10px;
-        font-size: 11px;
-      }
-      .capture-btn {
-        width: 76px;
-        height: 76px;
-      }
-      .capture-btn::before {
-        width: 56px;
-        height: 56px;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="app" id="appRoot">
-    <div class="camera-shell" id="cameraShell">
-      <div class="viewer" id="viewer">
-        <video id="video" autoplay playsinline muted></video>
-        <canvas id="preview"></canvas>
-        <canvas id="output"></canvas>
-        <div class="hud">
-          <div id="modeBadge" class="mode-badge">Disposable</div>
-          <button id="fullscreenBtn" class="icon-btn" type="button" aria-label="Toggle fullscreen">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M8 3H3v5"></path>
-              <path d="M16 3h5v5"></path>
-              <path d="M21 16v5h-5"></path>
-              <path d="M8 21H3v-5"></path>
-            </svg>
-          </button>
-          <div id="toast" class="toast"></div>
-        </div>
-      </div>
-
-      <div class="controls">
-        <div class="mode-row" id="modeRow" aria-label="Camera looks"></div>
-
-        <div class="capture-row">
-          <button id="captureBtn" class="capture-btn" type="button" aria-label="Capture photo" disabled></button>
-          <button id="saveBtn" class="pill-btn save-btn" type="button" disabled>Save</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  
-  <script type="module">
-    const video = document.getElementById('video');
-    const preview = document.getElementById('preview');
-    const output = document.getElementById('output');
-    const captureBtn = document.getElementById('captureBtn');
-    const saveBtn = document.getElementById('saveBtn');
-    const viewer = document.getElementById('viewer');
-    const modeBadge = document.getElementById('modeBadge');
-    const modeRow = document.getElementById('modeRow');
-    const fullscreenBtn = document.getElementById('fullscreenBtn');
-    const toast = document.getElementById('toast');
-    const appRoot = document.getElementById('appRoot');
-
-    const MODES = {
-      disposable: {
-        badge: 'Disposable',
-        label: 'Disposable',
-        filePrefix: 'disposable_flash',
-        previewLongEdge: 820,
-        maxLongEdge: 1520,
-        outputQuality: 0.9,
-        profile: {
-          cropZoom: 1.22,
-          contrast: 1.14,
-          exposure: 1.08,
-          saturation: 1.05,
-          warmthR: 1.08,
-          warmthG: 1.01,
-          warmthB: 0.92,
-          blackLift: 12,
-          highlightPush: 0.28,
-          noise: 18,
-          colorNoise: 9,
-          vignette: 0.18,
-          hotspot: 0.15,
-          chromaShift: 1.3,
-          sharpen: 0.1,
-          flashBloom: 0.2,
-          barrel: 0.03,
-          edgeBlur: 0.24,
-          edgeBlurStart: 0.48,
-          blockiness: 0.36,
-          haze: 0.05,
-          magentaBoost: 3,
-          coolBoost: 0,
-          lowLightExposureBoost: 0.08,
-          lowLightNoiseBoost: 4,
-          lowLightBloomBoost: 0.08,
-          lowLightContrastBoost: 0.03
-        }
-      },
-      ccd: {
-        badge: 'CCD digicam',
-        label: 'CCD digicam',
-        filePrefix: 'ccd_digicam',
-        previewLongEdge: 860,
-        maxLongEdge: 1580,
-        outputQuality: 0.92,
-        profile: {
-          cropZoom: 1.34,
-          contrast: 0.96,
-          exposure: 1.05,
-          saturation: 0.9,
-          warmthR: 0.98,
-          warmthG: 1.01,
-          warmthB: 1.08,
-          blackLift: 13,
-          highlightPush: 0.12,
-          noise: 11,
-          colorNoise: 5,
-          vignette: 0.1,
-          hotspot: 0.04,
-          chromaShift: 0.95,
-          sharpen: 0.16,
-          flashBloom: 0.01,
-          barrel: 0.012,
-          edgeBlur: 0.08,
-          edgeBlurStart: 0.66,
-          blockiness: 0.18,
-          haze: 0.08,
-          magentaBoost: 0,
-          coolBoost: 4,
-          lowLightExposureBoost: 0.06,
-          lowLightNoiseBoost: 3,
-          lowLightBloomBoost: 0.01,
-          lowLightContrastBoost: 0.01
-        }
-      },
-      instant: {
-        badge: 'Polaroid soft',
-        label: 'Polaroid soft',
-        filePrefix: 'polaroid_soft',
-        previewLongEdge: 820,
-        maxLongEdge: 1520,
-        outputQuality: 0.91,
-        profile: {
-          cropZoom: 1.78,
-          contrast: 0.84,
-          exposure: 1.04,
-          saturation: 0.8,
-          warmthR: 1.05,
-          warmthG: 1.0,
-          warmthB: 0.95,
-          blackLift: 22,
-          highlightPush: 0.08,
-          noise: 13,
-          colorNoise: 5,
-          vignette: 0.11,
-          hotspot: 0.03,
-          chromaShift: 0.38,
-          sharpen: 0.01,
-          blur: 0.16,
-          flashBloom: 0.05,
-          barrel: 0.01,
-          edgeBlur: 0.34,
-          edgeBlurStart: 0.34,
-          blockiness: 0.05,
-          haze: 0.2,
-          magentaBoost: 2.5,
-          coolBoost: 0.8,
-          edgeFade: 0.38,
-          lowLightExposureBoost: 0.05,
-          lowLightNoiseBoost: 2,
-          lowLightBloomBoost: 0.02,
-          lowLightContrastBoost: 0.01
-        }
-      },
-      instax: {
-        badge: 'Instax',
-        label: 'Instax',
-        filePrefix: 'instax_soft',
-        previewLongEdge: 860,
-        maxLongEdge: 1600,
-        outputQuality: 0.92,
-        profile: {
-          cropZoom: 1.56,
-          contrast: 0.92,
-          exposure: 1.08,
-          saturation: 0.84,
-          warmthR: 1.03,
-          warmthG: 1.0,
-          warmthB: 1.05,
-          blackLift: 12,
-          highlightPush: 0.16,
-          noise: 8,
-          colorNoise: 3,
-          vignette: 0.08,
-          hotspot: 0.09,
-          chromaShift: 0.26,
-          sharpen: 0.03,
-          blur: 0.1,
-          flashBloom: 0.08,
-          barrel: 0.009,
-          edgeBlur: 0.24,
-          edgeBlurStart: 0.4,
-          blockiness: 0.04,
-          haze: 0.14,
-          magentaBoost: 1.2,
-          coolBoost: 2.2,
-          edgeFade: 0.22,
-          lowLightExposureBoost: 0.08,
-          lowLightNoiseBoost: 1.8,
-          lowLightBloomBoost: 0.06,
-          lowLightContrastBoost: 0.03
-        }
-      },
-      vcr: {
-        badge: 'VGA CCTV',
-        label: 'VGA CCTV',
-        filePrefix: 'vga_cctv',
-        previewLongEdge: 520,
-        maxLongEdge: 920,
-        outputQuality: 0.86,
-        profile: {
-          cropZoom: 1.1,
-          contrast: 0.97,
-          exposure: 1.02,
-          saturation: 1.02,
-          warmthR: 1.02,
-          warmthG: 1.0,
-          warmthB: 1.01,
-          blackLift: 4,
-          highlightPush: 0.05,
-          noise: 5.2,
-          colorNoise: 1.8,
-          vignette: 0.02,
-          hotspot: 0,
-          chromaShift: 0.16,
-          sharpen: 0.14,
-          blur: 0.07,
-          flashBloom: 0,
-          barrel: 0,
-          edgeBlur: 0,
-          edgeBlurStart: 0.7,
-          blockiness: 0.1,
-          haze: 0.01,
-          magentaBoost: 0.8,
-          coolBoost: 0.18,
-          edgeFade: 0,
-          vcrStrength: 0.22,
-          lowLightExposureBoost: 0.02,
-          lowLightNoiseBoost: 1.4,
-          lowLightBloomBoost: 0,
-          lowLightContrastBoost: 0.01
-        }
-      }
+    const STORAGE_KEYS = {
+      accessToken: 'spotify_car_ui_access_token',
+      refreshToken: 'spotify_car_ui_refresh_token',
+      expiresAt: 'spotify_car_ui_expires_at',
+      codeVerifier: 'spotify_car_ui_code_verifier',
+      oauthState: 'spotify_car_ui_oauth_state',
+      overlayDismissed: 'spotify_car_ui_overlay_dismissed',
+      volume: 'spotify_car_ui_volume',
+      previousVolume: 'spotify_car_ui_previous_volume',
+      selectedDeviceId: 'spotify_car_ui_selected_device_id',
+      likedSongsCache: 'spotify_car_ui_liked_songs_cache_v1',
+      likedSongsCacheAt: 'spotify_car_ui_liked_songs_cache_at_v1'
     };
 
-    const STATE = {
-      mode: 'disposable',
-      stream: null,
-      captured: false,
-      lastBlobUrl: '',
-      toastTimer: 0,
-      previewRAF: 0,
-      previewVideoFrameRequest: 0,
-      lastPreviewTick: 0,
-      previewFPS: 12,
-      renderBusy: false,
-      faceDetector: null,
-      faceDetectorChecked: false,
-      faceDetectorNoticeShown: false,
-      latestFaces: [],
-      faceDetectPending: null,
-      lastFaceDetectAt: 0,
-      vcrFieldPhase: 0
+    const SCOPES = [
+      'streaming',
+      'user-read-playback-state',
+      'user-modify-playback-state',
+      'user-read-currently-playing',
+      'user-library-read',
+      'user-library-modify'
+    ];
+
+    const DEFAULT_ART = `data:image/svg+xml;utf8,${encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
+        <defs>
+          <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+            <stop stop-color="#6b506f"/>
+            <stop offset="1" stop-color="#1a1a1d"/>
+          </linearGradient>
+        </defs>
+        <rect width="800" height="800" fill="url(#g)"/>
+        <rect x="130" y="130" width="540" height="540" rx="18" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)"/>
+        <circle cx="400" cy="400" r="170" fill="rgba(0,0,0,0.2)" stroke="rgba(255,255,255,0.22)" stroke-width="16"/>
+        <circle cx="400" cy="400" r="52" fill="#111" stroke="rgba(255,255,255,0.22)" stroke-width="10"/>
+      </svg>
+    `)}`;
+
+    const els = {
+      screen: document.getElementById('screen'),
+      statusLive: document.getElementById('statusLive'),
+      signOutMiniBtn: document.getElementById('signOutMiniBtn'),
+      bgArt: document.getElementById('bgArt'),
+      paletteCanvas: document.getElementById('paletteCanvas'),
+      albumArt: document.getElementById('albumArt'),
+      gestureZone: document.getElementById('gestureZone'),
+      metaTop: document.getElementById('metaTop'),
+      trackName: document.getElementById('trackName'),
+      artistName: document.getElementById('artistName'),
+      currentTime: document.getElementById('currentTime'),
+      totalTime: document.getElementById('totalTime'),
+      timeline: document.getElementById('timeline'),
+      shuffleBtn: document.getElementById('shuffleBtn'),
+      prevBtn: document.getElementById('prevBtn'),
+      playPauseBtn: document.getElementById('playPauseBtn'),
+      playPauseIcon: document.getElementById('playPauseIcon'),
+      nextBtn: document.getElementById('nextBtn'),
+      heartBtn: document.getElementById('heartBtn'),
+      recommendBtn: document.getElementById('recommendBtn'),
+      muteBtn: document.getElementById('muteBtn'),
+      volumeIcon: document.getElementById('volumeIcon'),
+      volumeSlider: document.getElementById('volumeSlider'),
+      audioBtn: document.getElementById('audioBtn'),
+      useDeviceBtn: document.getElementById('useDeviceBtn'),
+      connectRemoteBtn: document.getElementById('connectRemoteBtn'),
+      fullscreenBtn: document.getElementById('fullscreenBtn'),
+      fullscreenIcon: document.getElementById('fullscreenIcon'),
+      overlay: document.getElementById('overlay'),
+      overlayTitle: document.getElementById('overlayTitle'),
+      overlayCopy: document.getElementById('overlayCopy'),
+      loginBtn: document.getElementById('loginBtn'),
+      setupAudioBtn: document.getElementById('setupAudioBtn'),
+      setupDeviceBtn: document.getElementById('setupDeviceBtn'),
+      closeOverlayBtn: document.getElementById('closeOverlayBtn'),
+      deviceSheet: document.getElementById('deviceSheet'),
+      deviceList: document.getElementById('deviceList'),
+      refreshDevicesBtn: document.getElementById('refreshDevicesBtn'),
+      closeDevicesBtn: document.getElementById('closeDevicesBtn')
     };
 
-    function clamp(value, min = 0, max = 255) {
+    const state = {
+      player: null,
+      deviceId: null,
+      sdkReady: false,
+      ready: false,
+      activated: false,
+      playbackState: null,
+      refreshPromise: null,
+      likeRequest: null,
+      currentUri: '',
+      currentLiked: false,
+      shuffleEnabled: false,
+      shuffleRequest: null,
+      recommendRequest: null,
+      discoveryQueued: false,
+      seeking: false,
+      timelineTimer: null,
+      lastPlayerSnapshotAt: 0,
+      redirectMismatch: false,
+      volumeSyncPending: null,
+      volume: 0.8,
+      previousVolume: 0.8,
+      gestureCooldownUntil: 0,
+      selectedDeviceId: '',
+      selectedDeviceName: '',
+      selectedDeviceSupportsVolume: true,
+      playbackDeviceId: '',
+      playbackDeviceName: '',
+      playbackDeviceSupportsVolume: true,
+      devices: [],
+      playbackPollTimer: null,
+      gradientArtSrc: ''
+    };
+
+    const gesture = {
+      pointerId: null,
+      startX: 0,
+      startY: 0,
+      lastX: 0,
+      lastY: 0,
+      startTime: 0,
+      tracking: false,
+      active: false,
+      pointerType: '',
+      captureEl: null
+    };
+
+    const touchGesture = {
+      identifier: null,
+      startX: 0,
+      startY: 0,
+      lastX: 0,
+      lastY: 0,
+      startTime: 0,
+      tracking: false
+    };
+
+    function setSaved(key, value) { localStorage.setItem(key, value); }
+    function getSaved(key) { return localStorage.getItem(key) || ''; }
+    function removeSaved(key) { localStorage.removeItem(key); }
+
+    function hasTokens() {
+      return !!getSaved(STORAGE_KEYS.accessToken) && !!getSaved(STORAGE_KEYS.refreshToken);
+    }
+
+    function formatTime(ms) {
+      if (!Number.isFinite(ms) || ms < 0) return '0:00';
+      const totalSeconds = Math.floor(ms / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${minutes}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    function randomString(length = 64) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      const bytes = new Uint8Array(length);
+      crypto.getRandomValues(bytes);
+      let output = '';
+      for (let i = 0; i < bytes.length; i++) output += chars[bytes[i] % chars.length];
+      return output;
+    }
+
+    async function sha256(message) {
+      return crypto.subtle.digest('SHA-256', new TextEncoder().encode(message));
+    }
+
+    function base64UrlEncode(buffer) {
+      const bytes = new Uint8Array(buffer);
+      let text = '';
+      for (let i = 0; i < bytes.length; i++) text += String.fromCharCode(bytes[i]);
+      return btoa(text).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+    }
+
+    function updateRangeVisual(input) {
+      const min = Number(input.min || 0);
+      const max = Number(input.max || 100);
+      const value = Number(input.value || 0);
+      const percent = max > min ? ((value - min) / (max - min)) * 100 : 0;
+      input.style.setProperty('--progress', `${percent}%`);
+    }
+
+    function clamp(value, min, max) {
       return Math.max(min, Math.min(max, value));
     }
 
-    function lerp(a, b, t) {
-      return a + (b - a) * t;
+    function rgbaFromColor(color, alpha) {
+      return `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`;
     }
 
-    function fitSize(width, height, maxLongEdge) {
-      const longEdge = Math.max(width, height);
-      if (longEdge <= maxLongEdge) return { width, height };
-      const scale = maxLongEdge / longEdge;
-      return {
-        width: Math.max(1, Math.round(width * scale)),
-        height: Math.max(1, Math.round(height * scale))
-      };
-    }
-
-    function showToast(message, sticky = false) {
-      toast.textContent = message;
-      toast.style.display = 'block';
-      clearTimeout(STATE.toastTimer);
-      if (!sticky) {
-        STATE.toastTimer = window.setTimeout(() => {
-          toast.style.display = 'none';
-        }, 1800);
+    function rgbToHsl(r, g, b) {
+      r /= 255; g /= 255; b /= 255;
+      const max = Math.max(r, g, b);
+      const min = Math.min(r, g, b);
+      let h = 0;
+      let s = 0;
+      const l = (max + min) / 2;
+      if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r: h = ((g - b) / d + (g < b ? 6 : 0)); break;
+          case g: h = ((b - r) / d + 2); break;
+          default: h = ((r - g) / d + 4); break;
+        }
+        h /= 6;
       }
+      return { h, s, l };
     }
 
-    function hideToast() {
-      clearTimeout(STATE.toastTimer);
-      toast.style.display = 'none';
-    }
-
-    function getViewerAspect() {
-      return viewer.clientWidth && viewer.clientHeight
-        ? viewer.clientWidth / viewer.clientHeight
-        : 4 / 3;
-    }
-
-    function getCoverCrop(srcWidth, srcHeight, targetAspect) {
-      const srcAspect = srcWidth / srcHeight;
-      let sx = 0;
-      let sy = 0;
-      let sw = srcWidth;
-      let sh = srcHeight;
-
-      if (srcAspect > targetAspect) {
-        sw = srcHeight * targetAspect;
-        sx = (srcWidth - sw) / 2;
+    function hslToRgb(h, s, l) {
+      let r;
+      let g;
+      let b;
+      if (s === 0) {
+        r = g = b = l;
       } else {
-        sh = srcWidth / targetAspect;
-        sy = (srcHeight - sh) / 2;
-      }
-
-      return { sx, sy, sw, sh };
-    }
-
-    function applyCenterZoomToCrop(crop, srcWidth, srcHeight, zoom = 1) {
-      if (!zoom || zoom <= 1) return crop;
-
-      const sw = crop.sw / zoom;
-      const sh = crop.sh / zoom;
-      const sx = Math.max(0, Math.min(srcWidth - sw, crop.sx + (crop.sw - sw) / 2));
-      const sy = Math.max(0, Math.min(srcHeight - sh, crop.sy + (crop.sh - sh) / 2));
-
-      return { sx, sy, sw, sh };
-    }
-
-    function sceneStats(data) {
-      let lum = 0;
-      let sat = 0;
-      let samples = 0;
-
-      for (let i = 0; i < data.length; i += 32) {
-        const r = data[i];
-        const g = data[i + 1];
-        const b = data[i + 2];
-        const max = Math.max(r, g, b);
-        const min = Math.min(r, g, b);
-
-        lum += 0.2126 * r + 0.7152 * g + 0.0722 * b;
-        sat += max === 0 ? 0 : (max - min) / max;
-        samples++;
-      }
-
-      return {
-        luminance: lum / Math.max(1, samples),
-        saturation: sat / Math.max(1, samples)
-      };
-    }
-
-    function buildProfile(modeKey, stats) {
-      const base = MODES[modeKey].profile;
-      const lowLight = stats.luminance < 104;
-      const darkAmount = clamp((122 - stats.luminance) / 90, 0, 1);
-      const saturationBias = clamp((stats.saturation - 0.32) * 1.6, -0.12, 0.12);
-
-      return {
-        cropZoom: base.cropZoom || 1,
-        contrast: base.contrast + (lowLight ? base.lowLightContrastBoost * darkAmount : 0),
-        exposure: base.exposure + (lowLight ? base.lowLightExposureBoost * darkAmount : 0),
-        saturation: base.saturation + saturationBias,
-        warmthR: base.warmthR,
-        warmthG: base.warmthG,
-        warmthB: base.warmthB,
-        blackLift: base.blackLift,
-        highlightPush: base.highlightPush,
-        noise: base.noise + (lowLight ? base.lowLightNoiseBoost * darkAmount : 0),
-        colorNoise: base.colorNoise + (lowLight ? 1.2 * darkAmount : 0),
-        vignette: base.vignette,
-        hotspot: base.hotspot + (lowLight ? 0.03 * darkAmount : 0),
-        chromaShift: base.chromaShift,
-        sharpen: base.sharpen,
-        blur: base.blur || 0,
-        flashBloom: base.flashBloom + (lowLight ? base.lowLightBloomBoost * darkAmount : 0),
-        barrel: base.barrel,
-        edgeBlur: base.edgeBlur || 0,
-        edgeBlurStart: base.edgeBlurStart || 0.6,
-        blockiness: base.blockiness,
-        haze: base.haze + (lowLight ? 0.03 * darkAmount : 0),
-        magentaBoost: base.magentaBoost,
-        coolBoost: base.coolBoost,
-        edgeFade: base.edgeFade || 0,
-        vcrStrength: base.vcrStrength || 0,
-        lowLight
-      };
-    }
-
-    function drawCoveredFrame(targetCanvas, longEdgeCap, cropZoom = 1) {
-      const sourceWidth = video.videoWidth;
-      const sourceHeight = video.videoHeight;
-      const aspect = getViewerAspect();
-      const baseCrop = getCoverCrop(sourceWidth, sourceHeight, aspect);
-      const crop = applyCenterZoomToCrop(baseCrop, sourceWidth, sourceHeight, cropZoom);
-      const fitted = fitSize(crop.sw, crop.sh, longEdgeCap);
-
-      targetCanvas.width = fitted.width;
-      targetCanvas.height = fitted.height;
-
-      const ctx = targetCanvas.getContext('2d', { willReadFrequently: true });
-      ctx.imageSmoothingEnabled = true;
-      ctx.drawImage(
-        video,
-        crop.sx, crop.sy, crop.sw, crop.sh,
-        0, 0, fitted.width, fitted.height
-      );
-
-      return { ctx, crop, width: fitted.width, height: fitted.height };
-    }
-
-    function applyBarrelWarp(sourceCanvas, amount) {
-      if (!amount) return sourceCanvas;
-
-      const width = sourceCanvas.width;
-      const height = sourceCanvas.height;
-      const srcCtx = sourceCanvas.getContext('2d', { willReadFrequently: true });
-      const srcFrame = srcCtx.getImageData(0, 0, width, height);
-      const src = srcFrame.data;
-
-      const warpedCanvas = document.createElement('canvas');
-      warpedCanvas.width = width;
-      warpedCanvas.height = height;
-      const dstCtx = warpedCanvas.getContext('2d', { willReadFrequently: true });
-      const dstFrame = dstCtx.createImageData(width, height);
-      const dst = dstFrame.data;
-
-      const cx = width / 2;
-      const cy = height / 2;
-      const maxRadius = Math.sqrt(cx * cx + cy * cy);
-
-      for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-          const dx = (x - cx) / maxRadius;
-          const dy = (y - cy) / maxRadius;
-          const r2 = dx * dx + dy * dy;
-          const factor = 1 - amount * r2;
-          const sx = Math.round(cx + (x - cx) * factor);
-          const sy = Math.round(cy + (y - cy) * factor);
-          const di = ((y * width) + x) * 4;
-
-          if (sx < 0 || sy < 0 || sx >= width || sy >= height) {
-            dst[di] = 0;
-            dst[di + 1] = 0;
-            dst[di + 2] = 0;
-            dst[di + 3] = 255;
-            continue;
-          }
-
-          const si = ((sy * width) + sx) * 4;
-          dst[di] = src[si];
-          dst[di + 1] = src[si + 1];
-          dst[di + 2] = src[si + 2];
-          dst[di + 3] = 255;
-        }
-      }
-
-      dstCtx.putImageData(dstFrame, 0, 0);
-      return warpedCanvas;
-    }
-
-    function downsampleSoft(ctx, sourceCanvas, width, height, scale = 0.76) {
-      const softCanvas = document.createElement('canvas');
-      softCanvas.width = Math.max(1, Math.round(width * scale));
-      softCanvas.height = Math.max(1, Math.round(height * scale));
-      const softCtx = softCanvas.getContext('2d');
-      softCtx.imageSmoothingEnabled = true;
-      softCtx.drawImage(sourceCanvas, 0, 0, softCanvas.width, softCanvas.height);
-      ctx.imageSmoothingEnabled = true;
-      ctx.drawImage(softCanvas, 0, 0, softCanvas.width, softCanvas.height, 0, 0, width, height);
-    }
-
-    function blurPass(ctx, width, height, amount) {
-      if (amount <= 0.005) return;
-
-      const softCanvas = document.createElement('canvas');
-      const softScale = Math.max(0.58, 1 - amount * 0.55);
-      softCanvas.width = Math.max(1, Math.round(width * softScale));
-      softCanvas.height = Math.max(1, Math.round(height * softScale));
-      const sctx = softCanvas.getContext('2d');
-      sctx.imageSmoothingEnabled = true;
-      sctx.drawImage(ctx.canvas, 0, 0, softCanvas.width, softCanvas.height);
-
-      ctx.save();
-      ctx.globalAlpha = Math.min(0.42, 0.18 + amount * 0.85);
-      ctx.filter = `blur(${Math.max(1.2, width * amount * 0.006)}px)`;
-      ctx.drawImage(softCanvas, 0, 0, softCanvas.width, softCanvas.height, 0, 0, width, height);
-      ctx.restore();
-    }
-
-    function drawSoftEdgeFade(ctx, width, height, strength) {
-      if (strength <= 0.01) return;
-
-      const fade = ctx.createRadialGradient(
-        width / 2, height / 2, Math.min(width, height) * 0.28,
-        width / 2, height / 2, Math.max(width, height) * 0.82
-      );
-      fade.addColorStop(0, 'rgba(255,247,238,0)');
-      fade.addColorStop(0.66, `rgba(255,247,238,${strength * 0.08})`);
-      fade.addColorStop(1, `rgba(255,247,238,${strength * 0.34})`);
-      ctx.save();
-      ctx.fillStyle = fade;
-      ctx.fillRect(0, 0, width, height);
-      ctx.restore();
-    }
-
-    function primaryColorPass(imageData, width, height, profile) {
-      const data = imageData.data;
-      const cx = width / 2;
-      const cy = height / 2;
-      const maxDist = Math.sqrt(cx * cx + cy * cy);
-
-      for (let i = 0; i < data.length; i += 4) {
-        const px = (i / 4) % width;
-        const py = Math.floor((i / 4) / width);
-        const dx = px - cx;
-        const dy = py - cy;
-        const dist = Math.sqrt(dx * dx + dy * dy) / maxDist;
-        const radial = Math.min(1, dist);
-
-        let r = data[i];
-        let g = data[i + 1];
-        let b = data[i + 2];
-
-        r = ((r - 128) * profile.contrast + 128) * profile.exposure;
-        g = ((g - 128) * profile.contrast + 128) * profile.exposure;
-        b = ((b - 128) * profile.contrast + 128) * profile.exposure;
-
-        const lumaBeforeSat = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-        r = lumaBeforeSat + (r - lumaBeforeSat) * profile.saturation;
-        g = lumaBeforeSat + (g - lumaBeforeSat) * profile.saturation;
-        b = lumaBeforeSat + (b - lumaBeforeSat) * profile.saturation;
-
-        r = r * profile.warmthR + profile.blackLift + profile.magentaBoost;
-        g = g * profile.warmthG + profile.blackLift * 0.84;
-        b = b * profile.warmthB + profile.blackLift + profile.coolBoost;
-
-        const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-        const hot = profile.hotspot * Math.pow(1 - radial, 2.3);
-        const vig = 1 - profile.vignette * Math.pow(radial, 1.85);
-
-        if (luma > 170) {
-          const bump = (luma - 170) * profile.highlightPush;
-          r += bump;
-          g += bump;
-          b += bump;
-        }
-
-        if (profile.haze > 0) {
-          const hazeGain = profile.haze * (1 - radial * 0.65);
-          r = lerp(r, 233, hazeGain * 0.2);
-          g = lerp(g, 231, hazeGain * 0.2);
-          b = lerp(b, 228, hazeGain * 0.2);
-        }
-
-        const monoNoise = (Math.random() * 2 - 1) * profile.noise;
-        const cNoiseR = (Math.random() * 2 - 1) * profile.colorNoise;
-        const cNoiseG = (Math.random() * 2 - 1) * profile.colorNoise;
-        const cNoiseB = (Math.random() * 2 - 1) * profile.colorNoise;
-
-        r = (r + monoNoise + cNoiseR) * vig + hot * 255;
-        g = (g + monoNoise + cNoiseG) * vig + hot * 249;
-        b = (b + monoNoise + cNoiseB) * vig + hot * 244;
-
-        data[i] = clamp(r);
-        data[i + 1] = clamp(g);
-        data[i + 2] = clamp(b);
-      }
-
-      return imageData;
-    }
-
-    function chromaticAberrationPass(imageData, width, height, profile) {
-      const src = new Uint8ClampedArray(imageData.data);
-      const data = imageData.data;
-      const cx = width / 2;
-      const cy = height / 2;
-      const maxDist = Math.sqrt(cx * cx + cy * cy);
-      const index = (x, y) => ((y * width) + x) * 4;
-
-      for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-          const dx = x - cx;
-          const dy = y - cy;
-          const dist = Math.sqrt(dx * dx + dy * dy) / maxDist;
-          if (dist < 0.18) continue;
-
-          const shift = Math.max(0, Math.round(profile.chromaShift * dist));
-          const rx = Math.max(0, Math.min(width - 1, x + Math.sign(dx || 1) * shift));
-          const bx = Math.max(0, Math.min(width - 1, x - Math.sign(dx || 1) * shift));
-          const ry = Math.max(0, Math.min(height - 1, y + Math.sign(dy || 1) * shift));
-          const by = Math.max(0, Math.min(height - 1, y - Math.sign(dy || 1) * shift));
-
-          const i = index(x, y);
-          const ir = index(rx, ry);
-          const ib = index(bx, by);
-
-          data[i] = src[ir];
-          data[i + 2] = src[ib + 2];
-        }
-      }
-
-      return imageData;
-    }
-
-    function flashBloomPass(ctx, width, height, amount) {
-      if (amount <= 0.01) return;
-
-      const bloomCanvas = document.createElement('canvas');
-      bloomCanvas.width = Math.max(1, Math.round(width * 0.3));
-      bloomCanvas.height = Math.max(1, Math.round(height * 0.3));
-      const bctx = bloomCanvas.getContext('2d');
-      bctx.filter = `blur(${Math.max(7, Math.round(width * 0.012))}px) brightness(${1 + amount * 1.6})`;
-      bctx.drawImage(ctx.canvas, 0, 0, bloomCanvas.width, bloomCanvas.height);
-
-      ctx.save();
-      ctx.globalAlpha = 0.18 + amount * 0.42;
-      ctx.filter = `blur(${Math.max(6, Math.round(width * 0.005))}px)`;
-      ctx.drawImage(bloomCanvas, 0, 0, bloomCanvas.width, bloomCanvas.height, 0, 0, width, height);
-      ctx.restore();
-    }
-
-    function sharpenPass(ctx, width, height, amount) {
-      if (amount <= 0) return;
-
-      const base = ctx.getImageData(0, 0, width, height);
-      const blurredCanvas = document.createElement('canvas');
-      blurredCanvas.width = Math.max(1, Math.round(width * 0.88));
-      blurredCanvas.height = Math.max(1, Math.round(height * 0.88));
-      const bctx = blurredCanvas.getContext('2d');
-      bctx.drawImage(ctx.canvas, 0, 0, blurredCanvas.width, blurredCanvas.height);
-
-      const tmpCanvas = document.createElement('canvas');
-      tmpCanvas.width = width;
-      tmpCanvas.height = height;
-      const tctx = tmpCanvas.getContext('2d');
-      tctx.drawImage(blurredCanvas, 0, 0, blurredCanvas.width, blurredCanvas.height, 0, 0, width, height);
-
-      const blur = tctx.getImageData(0, 0, width, height);
-      const bd = base.data;
-      const sd = blur.data;
-
-      for (let i = 0; i < bd.length; i += 4) {
-        bd[i] = clamp(bd[i] + (bd[i] - sd[i]) * amount);
-        bd[i + 1] = clamp(bd[i + 1] + (bd[i + 1] - sd[i + 1]) * amount);
-        bd[i + 2] = clamp(bd[i + 2] + (bd[i + 2] - sd[i + 2]) * amount);
-      }
-
-      ctx.putImageData(base, 0, 0);
-    }
-
-    function blockArtifactsPass(ctx, width, height, strength) {
-      if (strength <= 0) return;
-
-      const blockCanvas = document.createElement('canvas');
-      const blockScale = 0.22 - Math.min(0.08, strength * 0.06);
-      blockCanvas.width = Math.max(1, Math.round(width * blockScale));
-      blockCanvas.height = Math.max(1, Math.round(height * blockScale));
-      const bctx = blockCanvas.getContext('2d');
-      bctx.imageSmoothingEnabled = true;
-      bctx.drawImage(ctx.canvas, 0, 0, blockCanvas.width, blockCanvas.height);
-
-      ctx.save();
-      ctx.globalAlpha = 0.1 + strength * 0.18;
-      ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(blockCanvas, 0, 0, blockCanvas.width, blockCanvas.height, 0, 0, width, height);
-      ctx.restore();
-    }
-
-    function edgeBlurPass(ctx, width, height, amount, start) {
-      if (amount <= 0.01) return;
-
-      const overlay = document.createElement('canvas');
-      overlay.width = width;
-      overlay.height = height;
-      const octx = overlay.getContext('2d');
-      const blurRadius = Math.max(1.6, Math.min(8, width * amount * 0.012));
-
-      octx.filter = `blur(${blurRadius}px)`;
-      octx.drawImage(ctx.canvas, 0, 0, width, height);
-      octx.filter = 'none';
-      octx.globalCompositeOperation = 'destination-in';
-
-      const gradient = octx.createRadialGradient(
-        width / 2, height / 2, Math.min(width, height) * Math.max(0.12, start * 0.34),
-        width / 2, height / 2, Math.max(width, height) * 0.76
-      );
-      gradient.addColorStop(0, 'rgba(255,255,255,0)');
-      gradient.addColorStop(Math.max(0.01, Math.min(0.84, start)), 'rgba(255,255,255,0)');
-      gradient.addColorStop(1, 'rgba(255,255,255,1)');
-      octx.fillStyle = gradient;
-      octx.fillRect(0, 0, width, height);
-      octx.globalCompositeOperation = 'source-over';
-
-      ctx.save();
-      ctx.globalAlpha = Math.min(0.98, amount * 1.28);
-      ctx.drawImage(overlay, 0, 0, width, height);
-      ctx.restore();
-    }
-
-    function drawVignette(ctx, width, height, strength) {
-      const gradient = ctx.createRadialGradient(
-        width / 2, height / 2, Math.min(width, height) * 0.18,
-        width / 2, height / 2, Math.max(width, height) * 0.72
-      );
-      gradient.addColorStop(0, 'rgba(0,0,0,0)');
-      gradient.addColorStop(0.65, `rgba(0,0,0,${strength * 0.12})`);
-      gradient.addColorStop(1, `rgba(0,0,0,${strength * 0.48})`);
-      ctx.save();
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, width, height);
-      ctx.restore();
-    }
-
-    function drawAnalogFrameBorder(ctx, width, height, opacity = 0.18) {
-      ctx.save();
-      ctx.strokeStyle = `rgba(255,245,238,${opacity})`;
-      ctx.lineWidth = Math.max(1, width * 0.0025);
-      ctx.strokeRect(ctx.lineWidth / 2, ctx.lineWidth / 2, width - ctx.lineWidth, height - ctx.lineWidth);
-      ctx.restore();
-    }
-
-    function compositeToCanvas(renderCanvas, targetCanvas) {
-      targetCanvas.width = renderCanvas.width;
-      targetCanvas.height = renderCanvas.height;
-      const ctx = targetCanvas.getContext('2d');
-      ctx.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
-      ctx.drawImage(renderCanvas, 0, 0);
-    }
-
-    function normalizeDetectedFaces(faceResults) {
-      const detections = Array.isArray(faceResults)
-        ? faceResults
-        : (faceResults && Array.isArray(faceResults.detections) ? faceResults.detections : []);
-
-      return detections.map((face) => {
-        const box = face.boundingBox || face;
-        return {
-          x: box.originX ?? box.x ?? 0,
-          y: box.originY ?? box.y ?? 0,
-          width: box.width ?? 0,
-          height: box.height ?? 0
+        const hue2rgb = (p, q, t) => {
+          if (t < 0) t += 1;
+          if (t > 1) t -= 1;
+          if (t < 1/6) return p + (q - p) * 6 * t;
+          if (t < 1/2) return q;
+          if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+          return p;
         };
-      }).filter((box) => box.width > 1 && box.height > 1);
-    }
-
-    async function ensureFaceDetector() {
-      if (STATE.faceDetectorChecked) return STATE.faceDetector;
-      STATE.faceDetectorChecked = true;
-
-      try {
-        showToast('Loading face mosaic model…', true);
-        const { FaceDetector: MPFaceDetector, FilesetResolver } = await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/+esm');
-        const vision = await FilesetResolver.forVisionTasks(
-          'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
-        );
-        STATE.faceDetector = await MPFaceDetector.createFromOptions(vision, {
-          baseOptions: {
-            modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/latest/blaze_face_short_range.tflite',
-            delegate: 'GPU'
-          },
-          runningMode: 'VIDEO',
-          minDetectionConfidence: 0.42,
-          minSuppressionThreshold: 0.28
-        });
-        STATE.faceDetectorNoticeShown = false;
-        hideToast();
-      } catch (gpuErr) {
-        console.error(gpuErr);
-        try {
-          const { FaceDetector: MPFaceDetector, FilesetResolver } = await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/+esm');
-          const vision = await FilesetResolver.forVisionTasks(
-            'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
-          );
-          STATE.faceDetector = await MPFaceDetector.createFromOptions(vision, {
-            baseOptions: {
-              modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/latest/blaze_face_short_range.tflite',
-              delegate: 'CPU'
-            },
-            runningMode: 'VIDEO',
-            minDetectionConfidence: 0.42,
-            minSuppressionThreshold: 0.28
-          });
-          STATE.faceDetectorNoticeShown = false;
-          hideToast();
-        } catch (cpuErr) {
-          console.error(cpuErr);
-          STATE.faceDetector = null;
-          if (!STATE.faceDetectorNoticeShown) {
-            STATE.faceDetectorNoticeShown = true;
-            showToast('Face mosaic model could not load', true);
-          }
-        }
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
       }
-
-      return STATE.faceDetector;
-    }
-
-    function getDetectionCanvas(sourceCanvas) {
-      const detectCanvas = document.createElement('canvas');
-      const maxLongEdge = 240;
-      const fitted = fitSize(sourceCanvas.width, sourceCanvas.height, maxLongEdge);
-      detectCanvas.width = fitted.width;
-      detectCanvas.height = fitted.height;
-      const dctx = detectCanvas.getContext('2d', { willReadFrequently: false });
-      dctx.imageSmoothingEnabled = true;
-      dctx.drawImage(sourceCanvas, 0, 0, detectCanvas.width, detectCanvas.height);
-      return detectCanvas;
-    }
-
-    async function detectFacesOnCanvas(sourceCanvas, force = false) {
-      const detector = await ensureFaceDetector();
-      if (!detector) return STATE.latestFaces;
-
-      const now = performance.now();
-      if (!force && STATE.faceDetectPending) return STATE.latestFaces;
-      if (!force && now - STATE.lastFaceDetectAt < 160) return STATE.latestFaces;
-
-      STATE.lastFaceDetectAt = now;
-      const scaleX = sourceCanvas.width;
-      const scaleY = sourceCanvas.height;
-      const detectionCanvas = getDetectionCanvas(sourceCanvas);
-      const ratioX = scaleX / detectionCanvas.width;
-      const ratioY = scaleY / detectionCanvas.height;
-
-      const job = Promise.resolve().then(() => {
-        const result = detector.detectForVideo(detectionCanvas, now);
-        const faces = normalizeDetectedFaces(result).map((face) => ({
-          x: face.x * ratioX,
-          y: face.y * ratioY,
-          width: face.width * ratioX,
-          height: face.height * ratioY
-        }));
-        STATE.latestFaces = faces;
-        return faces;
-      }).catch((err) => {
-        console.error(err);
-        return STATE.latestFaces;
-      }).finally(() => {
-        STATE.faceDetectPending = null;
-      });
-
-      STATE.faceDetectPending = job;
-      return force ? job : STATE.latestFaces;
-    }
-
-    function applyMosaicToFaces(ctx, faces, strength = 1) {
-      if (!faces || !faces.length) return;
-      const canvas = ctx.canvas;
-      const scratch = document.createElement('canvas');
-      const sctx = scratch.getContext('2d');
-
-      faces.forEach((face) => {
-        const padX = face.width * 0.1;
-        const padY = face.height * 0.12;
-        const x = Math.max(0, Math.floor(face.x - padX));
-        const y = Math.max(0, Math.floor(face.y - padY));
-        const w = Math.min(canvas.width - x, Math.ceil(face.width + padX * 2));
-        const h = Math.min(canvas.height - y, Math.ceil(face.height + padY * 2));
-        if (w < 4 || h < 4) return;
-
-        const pixelSize = Math.max(3, Math.round(Math.min(w, h) / lerp(28, 18, strength)));
-        const smallW = Math.max(1, Math.round(w / pixelSize));
-        const smallH = Math.max(1, Math.round(h / pixelSize));
-        scratch.width = smallW;
-        scratch.height = smallH;
-        sctx.imageSmoothingEnabled = true;
-        sctx.clearRect(0, 0, smallW, smallH);
-        sctx.drawImage(canvas, x, y, w, h, 0, 0, smallW, smallH);
-
-        ctx.save();
-        ctx.beginPath();
-        ctx.ellipse(x + w / 2, y + h / 2, w * 0.46, h * 0.5, 0, 0, Math.PI * 2);
-        ctx.clip();
-        ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(scratch, 0, 0, smallW, smallH, x, y, w, h);
-        ctx.globalAlpha = 0.05;
-        ctx.fillStyle = '#111';
-        ctx.fillRect(x, y, w, h);
-        ctx.restore();
-      });
-    }
-
-    function applyVcrPass(ctx, width, height, strength, phase = 0) {
-      const lowCanvas = document.createElement('canvas');
-      lowCanvas.width = Math.max(280, Math.round(width * lerp(0.74, 0.62, strength)));
-      lowCanvas.height = Math.max(200, Math.round(height * lerp(0.74, 0.62, strength)));
-      const lctx = lowCanvas.getContext('2d');
-      lctx.imageSmoothingEnabled = true;
-      lctx.filter = `blur(${Math.max(0.16, width * 0.00032)}px)`;
-      lctx.drawImage(ctx.canvas, 0, 0, lowCanvas.width, lowCanvas.height);
-      lctx.filter = 'none';
-
-      ctx.save();
-      ctx.clearRect(0, 0, width, height);
-      ctx.imageSmoothingEnabled = true;
-      ctx.drawImage(lowCanvas, 0, 0, lowCanvas.width, lowCanvas.height, 0, 0, width, height);
-      ctx.restore();
-
-      const bleedCanvas = document.createElement('canvas');
-      bleedCanvas.width = width;
-      bleedCanvas.height = height;
-      const bctx = bleedCanvas.getContext('2d');
-      bctx.filter = `blur(${Math.max(0.28, width * 0.00065)}px)`;
-      bctx.drawImage(ctx.canvas, 0, 0, width, height);
-      bctx.filter = 'none';
-
-      ctx.save();
-      ctx.globalAlpha = 0.03 + strength * 0.03;
-      ctx.drawImage(bleedCanvas, 1, 0);
-      ctx.globalAlpha = 0.016 + strength * 0.02;
-      ctx.drawImage(bleedCanvas, -1, 0);
-      ctx.restore();
-
-      const base = ctx.getImageData(0, 0, width, height);
-      const data = base.data;
-      const original = new Uint8ClampedArray(data);
-      const globalShift = Math.sin(phase * 0.12) * (0.08 + strength * 0.12);
-      for (let y = 0; y < height; y++) {
-        const drift = Math.sin((y * 0.005) + phase * 0.03) * (0.04 + strength * 0.08);
-        const microWobble = Math.sin((y * 0.018) + phase * 0.07) * (0.03 + strength * 0.05);
-        const xShift = Math.round(globalShift + drift + microWobble);
-        const rowLift = Math.sin((y * 0.013) + phase * 0.025) * (0.06 + strength * 0.11);
-        const chromaJitter = Math.round(Math.sin((y * 0.015) + phase * 0.06) * (0.08 + strength * 0.14));
-        for (let x = 0; x < width; x++) {
-          const i = ((y * width) + x) * 4;
-          const srcX = Math.max(0, Math.min(width - 1, x + xShift));
-          const srcR = Math.max(0, Math.min(width - 1, srcX + chromaJitter));
-          const srcB = Math.max(0, Math.min(width - 1, srcX - chromaJitter));
-          const si = ((y * width) + srcX) * 4;
-          const sri = ((y * width) + srcR) * 4;
-          const sbi = ((y * width) + srcB) * 4;
-
-          data[i] = clamp(original[sri] + rowLift + (Math.random() * 2 - 1) * (0.38 + strength * 0.34));
-          data[i + 1] = clamp(original[si + 1] + rowLift * 0.58 + (Math.random() * 2 - 1) * (0.34 + strength * 0.28));
-          data[i + 2] = clamp(original[sbi + 2] + rowLift * 0.72 + (Math.random() * 2 - 1) * (0.4 + strength * 0.36));
-        }
-      }
-      ctx.putImageData(base, 0, 0);
-    }
-
-    async function processFrame(modeKey, longEdgeCap, options = {}) {
-      const sourceWidth = video.videoWidth;
-      const sourceHeight = video.videoHeight;
-      if (!sourceWidth || !sourceHeight) return null;
-
-      const fastPreview = !!options.fastPreview;
-      let profile;
-      if (fastPreview && modeKey === 'vcr') {
-        profile = { ...MODES[modeKey].profile, lowLight: false };
-      } else {
-        const statsCanvas = document.createElement('canvas');
-        const initialFrame = drawCoveredFrame(statsCanvas, longEdgeCap);
-        const scan = initialFrame.ctx.getImageData(0, 0, initialFrame.width, initialFrame.height);
-        const stats = sceneStats(scan.data);
-        profile = buildProfile(modeKey, stats);
-      }
-
-      let sourceCanvas = document.createElement('canvas');
-      drawCoveredFrame(sourceCanvas, longEdgeCap, profile.cropZoom);
-
-      if (profile.barrel) {
-        sourceCanvas = applyBarrelWarp(sourceCanvas, profile.barrel);
-      }
-
-      const renderCanvas = document.createElement('canvas');
-      renderCanvas.width = sourceCanvas.width;
-      renderCanvas.height = sourceCanvas.height;
-      const rctx = renderCanvas.getContext('2d', { willReadFrequently: true });
-
-      rctx.clearRect(0, 0, renderCanvas.width, renderCanvas.height);
-      downsampleSoft(rctx, sourceCanvas, renderCanvas.width, renderCanvas.height, modeKey === 'vcr' ? 0.88 : 0.76);
-
-      let frame = rctx.getImageData(0, 0, renderCanvas.width, renderCanvas.height);
-      frame = primaryColorPass(frame, renderCanvas.width, renderCanvas.height, profile);
-      frame = chromaticAberrationPass(frame, renderCanvas.width, renderCanvas.height, profile);
-      rctx.putImageData(frame, 0, 0);
-
-      flashBloomPass(rctx, renderCanvas.width, renderCanvas.height, profile.flashBloom);
-      blurPass(rctx, renderCanvas.width, renderCanvas.height, profile.blur);
-      edgeBlurPass(rctx, renderCanvas.width, renderCanvas.height, profile.edgeBlur, profile.edgeBlurStart);
-      sharpenPass(rctx, renderCanvas.width, renderCanvas.height, profile.sharpen);
-      blockArtifactsPass(rctx, renderCanvas.width, renderCanvas.height, profile.blockiness);
-      drawVignette(rctx, renderCanvas.width, renderCanvas.height, profile.vignette);
-      drawSoftEdgeFade(rctx, renderCanvas.width, renderCanvas.height, profile.edgeFade);
-
-      if (modeKey === 'instant' || modeKey === 'instax') {
-        drawAnalogFrameBorder(rctx, renderCanvas.width, renderCanvas.height, modeKey === 'instant' ? 0.17 : 0.12);
-      }
-
-      if (modeKey === 'vcr') {
-        const faces = await detectFacesOnCanvas(sourceCanvas, !!options.forceFaceDetection);
-        applyVcrPass(rctx, renderCanvas.width, renderCanvas.height, profile.vcrStrength, STATE.vcrFieldPhase);
-        applyMosaicToFaces(rctx, faces, 0.8);
-      }
-
       return {
-        canvas: renderCanvas,
-        profile
+        r: Math.round(r * 255),
+        g: Math.round(g * 255),
+        b: Math.round(b * 255)
       };
     }
 
-    function updateCaptureUi() {
-      captureBtn.setAttribute('aria-label', STATE.captured ? 'Retake photo' : 'Capture photo');
-      captureBtn.classList.toggle('is-retake', STATE.captured);
-      saveBtn.disabled = !STATE.captured;
+    function tuneColor(color, { saturationBoost = 1, lightness = null, darken = 0 } = {}) {
+      const hsl = rgbToHsl(color.r, color.g, color.b);
+      const tuned = hslToRgb(
+        hsl.h,
+        clamp(hsl.s * saturationBoost, 0.16, 0.9),
+        lightness == null ? clamp(hsl.l - darken, 0.08, 0.6) : clamp(lightness, 0.08, 0.6)
+      );
+      return tuned;
     }
 
-    function syncPreviewCanvas() {
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.4);
-      const width = Math.max(1, Math.round(viewer.clientWidth * dpr));
-      const height = Math.max(1, Math.round(viewer.clientHeight * dpr));
-      if (preview.width !== width || preview.height !== height) {
-        preview.width = width;
-        preview.height = height;
+    function averageColors(colors, fallback) {
+      if (!colors.length) return fallback;
+      let r = 0, g = 0, b = 0;
+      for (const color of colors) {
+        r += color.r;
+        g += color.g;
+        b += color.b;
       }
-    }
-
-    async function renderPreview(now = 0) {
-      if (STATE.captured || STATE.renderBusy) return;
-      if (video.readyState < 2) return;
-
-      const frameInterval = 1000 / STATE.previewFPS;
-      if (now - STATE.lastPreviewTick < frameInterval) return;
-
-      STATE.lastPreviewTick = now;
-      STATE.renderBusy = true;
-      syncPreviewCanvas();
-
-      const modeKey = STATE.mode;
-      const mode = MODES[modeKey];
-      try {
-        const result = await processFrame(modeKey, mode.previewLongEdge, { fastPreview: true });
-        if (result && !STATE.captured && modeKey === STATE.mode) {
-          const pctx = preview.getContext('2d');
-          pctx.clearRect(0, 0, preview.width, preview.height);
-          pctx.imageSmoothingEnabled = true;
-          pctx.drawImage(result.canvas, 0, 0, preview.width, preview.height);
-          STATE.vcrFieldPhase = (STATE.vcrFieldPhase + 1) % 2;
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        STATE.renderBusy = false;
-      }
-    }
-
-    function requestNextPreviewFrame() {
-      if (video.requestVideoFrameCallback) {
-        STATE.previewVideoFrameRequest = video.requestVideoFrameCallback((now) => {
-          requestNextPreviewFrame();
-          renderPreview(now);
-        });
-      } else {
-        STATE.previewRAF = requestAnimationFrame((now) => {
-          requestNextPreviewFrame();
-          renderPreview(now);
-        });
-      }
-    }
-
-    function startPreviewLoop() {
-      cancelAnimationFrame(STATE.previewRAF);
-      if (video.cancelVideoFrameCallback && STATE.previewVideoFrameRequest) {
-        video.cancelVideoFrameCallback(STATE.previewVideoFrameRequest);
-      }
-      STATE.previewVideoFrameRequest = 0;
-      STATE.lastPreviewTick = 0;
-      requestNextPreviewFrame();
-    }
-
-    async function setMode(modeKey) {
-      STATE.mode = modeKey;
-      const mode = MODES[modeKey];
-      modeBadge.textContent = mode.badge;
-
-      Array.from(modeRow.querySelectorAll('.mode-chip')).forEach((button) => {
-        button.classList.toggle('active', button.dataset.mode === modeKey);
-      });
-
-      if (modeKey === 'vcr') {
-        await ensureFaceDetector();
-      }
-
-      if (!STATE.captured && video.readyState >= 2 && !STATE.renderBusy) {
-        syncPreviewCanvas();
-        STATE.renderBusy = true;
-        try {
-          const result = await processFrame(STATE.mode, mode.previewLongEdge, { fastPreview: true });
-          if (result && modeKey === STATE.mode && !STATE.captured) {
-            const pctx = preview.getContext('2d');
-            pctx.clearRect(0, 0, preview.width, preview.height);
-            pctx.drawImage(result.canvas, 0, 0, preview.width, preview.height);
-          }
-        } catch (err) {
-          console.error(err);
-        } finally {
-          STATE.renderBusy = false;
-        }
-      }
-    }
-
-    function buildModeButtons() {
-      const fragment = document.createDocumentFragment();
-      Object.entries(MODES).forEach(([key, value]) => {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'mode-chip';
-        button.textContent = value.label;
-        button.dataset.mode = key;
-        button.addEventListener('click', () => {
-          if (STATE.captured) return;
-          setMode(key);
-        });
-        fragment.appendChild(button);
-      });
-      modeRow.appendChild(fragment);
-      setMode(STATE.mode);
-      updateCaptureUi();
-    }
-
-    async function capturePhoto() {
-      if (STATE.captured || video.readyState < 2) return;
-
-      captureBtn.disabled = true;
-      showToast('Processing…', true);
-
-      const modeKey = STATE.mode;
-      const mode = MODES[modeKey];
-
-      try {
-        const result = await processFrame(modeKey, mode.maxLongEdge, { forceFaceDetection: modeKey === 'vcr' });
-        if (!result) {
-          captureBtn.disabled = false;
-          showToast('Could not capture frame');
-          return;
-        }
-
-        compositeToCanvas(result.canvas, output);
-        preview.style.display = 'none';
-        output.style.display = 'block';
-
-        STATE.captured = true;
-        updateCaptureUi();
-        hideToast();
-        showToast('Tap save to download');
-      } catch (err) {
-        console.error(err);
-        showToast('Could not capture frame');
-      } finally {
-        captureBtn.disabled = false;
-      }
-    }
-
-    function retake() {
-      output.style.display = 'none';
-      preview.style.display = 'block';
-      STATE.captured = false;
-      updateCaptureUi();
-      hideToast();
-      setMode(STATE.mode);
-    }
-
-    async function saveCurrentImage() {
-      const quality = MODES[STATE.mode].outputQuality;
-      const blob = await new Promise(resolve => output.toBlob(resolve, 'image/jpeg', quality));
-      if (!blob) return;
-
-      if (STATE.lastBlobUrl) URL.revokeObjectURL(STATE.lastBlobUrl);
-      STATE.lastBlobUrl = URL.createObjectURL(blob);
-
-      const a = document.createElement('a');
-      a.href = STATE.lastBlobUrl;
-      a.download = `${MODES[STATE.mode].filePrefix}_${Date.now()}.jpg`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      showToast('Saved');
-    }
-
-    async function startCamera() {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        showToast('Camera not available in this browser', true);
-        return;
-      }
-
-      const preferred = {
-        audio: false,
-        video: {
-          facingMode: { ideal: 'environment' },
-          width: { ideal: 1280 },
-          height: { ideal: 960 }
-        }
+      return {
+        r: Math.round(r / colors.length),
+        g: Math.round(g / colors.length),
+        b: Math.round(b / colors.length)
       };
+    }
 
-      const fallback = { audio: false, video: true };
 
-      try {
-        STATE.stream = await navigator.mediaDevices.getUserMedia(preferred);
-      } catch (err) {
-        try {
-          STATE.stream = await navigator.mediaDevices.getUserMedia(fallback);
-        } catch (err2) {
-          console.error(err2);
-          showToast('Camera permission denied or no camera found', true);
-          return;
-        }
-      }
+    function setBackgroundGradient(colors) {
+      const screen = els.screen;
+      if (!screen) return;
+      const primary = tuneColor(colors.primary, { saturationBoost: 1.22, lightness: 0.24 });
+      const secondary = tuneColor(colors.secondary, { saturationBoost: 1.08, lightness: 0.18 });
+      const accent = tuneColor(colors.accent, { saturationBoost: 1.18, lightness: 0.3 });
+      const gradient = `radial-gradient(circle at 18% 16%, ${rgbaFromColor(accent, 0.26)} 0%, transparent 42%), linear-gradient(160deg, ${rgbaFromColor(primary, 0.16)} 0%, ${rgbaFromColor(secondary, 0.12)} 38%, #09090b 78%)`;
+      screen.style.background = gradient.replace(/\s+/g, ' ');
+    }
 
-      video.srcObject = STATE.stream;
+    function setDefaultBackground() {
+      setBackgroundGradient({
+        primary: { r: 112, g: 78, b: 141 },
+        secondary: { r: 58, g: 104, b: 150 },
+        tertiary: { r: 104, g: 74, b: 82 },
+        accent: { r: 140, g: 98, b: 165 }
+      });
+    }
 
-      try {
-        await video.play();
-      } catch (err) {
-        console.error(err);
-        showToast('Could not start camera preview', true);
+    async function extractPaletteFromImage(src) {
+      const canvas = els.paletteCanvas;
+      const ctx = canvas?.getContext('2d', { willReadFrequently: true });
+      if (!canvas || !ctx || !src) {
+        setDefaultBackground();
         return;
       }
+      try {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.decoding = 'async';
+        img.referrerPolicy = 'no-referrer';
+        await new Promise((resolve, reject) => {
+          img.onload = () => resolve();
+          img.onerror = reject;
+          img.src = src;
+        });
 
-      captureBtn.disabled = false;
-      hideToast();
-      updateCaptureUi();
-      syncPreviewCanvas();
-      startPreviewLoop();
+        const size = 24;
+        canvas.width = size;
+        canvas.height = size;
+        ctx.clearRect(0, 0, size, size);
+        ctx.drawImage(img, 0, 0, size, size);
+        const { data } = ctx.getImageData(0, 0, size, size);
+
+        const all = [];
+        const bright = [];
+        const dark = [];
+        const saturated = [];
+
+        for (let i = 0; i < data.length; i += 16) {
+          const alpha = data[i + 3];
+          if (alpha < 40) continue;
+          const sample = { r: data[i], g: data[i + 1], b: data[i + 2] };
+          const { s, l } = rgbToHsl(sample.r, sample.g, sample.b);
+          if (l < 0.035) continue;
+          all.push(sample);
+          if (l > 0.52) bright.push(sample);
+          if (l < 0.28) dark.push(sample);
+          if (s > 0.3) saturated.push(sample);
+        }
+
+        const fallback = { r: 104, g: 84, b: 126 };
+        const base = averageColors(all, fallback);
+        const brightMix = averageColors(bright, base);
+        const darkMix = averageColors(dark, base);
+        const saturatedMix = averageColors(saturated, brightMix);
+
+        setBackgroundGradient({
+          primary: base,
+          secondary: saturatedMix,
+          tertiary: darkMix,
+          accent: brightMix
+        });
+        state.gradientArtSrc = src;
+      } catch (error) {
+        console.warn('Background palette extraction failed', error);
+        setDefaultBackground();
+      }
+    }
+
+    function normalizeUrl(rawUrl) {
+      const url = new URL(rawUrl, location.origin);
+      let path = url.pathname.replace(/index\.html$/i, '');
+      if (!path.endsWith('/')) path += '/';
+      return `${url.origin}${path}`;
+    }
+
+    function setStatus(message, tone = 'warn') {
+      if (els.statusLive) els.statusLive.textContent = message;
+      if (els.audioBtn) {
+        els.audioBtn.dataset.statusTone = tone;
+        els.audioBtn.title = message;
+      }
+    }
+
+    function updateSetupOverlayButtons() {
+      if (!els.setupAudioBtn || !els.setupDeviceBtn || !els.closeOverlayBtn) return;
+      els.setupAudioBtn.disabled = !state.player;
+      els.setupDeviceBtn.disabled = !state.deviceId;
+      els.setupAudioBtn.textContent = state.activated ? 'Audio ready' : 'Activate audio';
+    }
+
+    function setOverlay(mode) {
+      const show = mode !== 'hidden';
+      els.overlay.classList.toggle('show', show);
+
+      els.loginBtn.classList.add('hidden');
+      els.setupAudioBtn.classList.add('hidden');
+      els.setupDeviceBtn.classList.add('hidden');
+      els.closeOverlayBtn.classList.add('hidden');
+
+      if (mode === 'signin') {
+        els.overlayTitle.textContent = 'Open sp0tify';
+        els.overlayCopy.textContent = 'Sign in once, then this browser stays ready for quick access.';
+        els.loginBtn.classList.remove('hidden');
+      } else if (mode === 'setup') {
+        els.overlayTitle.textContent = 'Set up playback';
+        els.overlayCopy.textContent = 'Activate audio, switch playback to this dashboard, or close this prompt if you do not want to use this device right now.';
+        els.setupAudioBtn.classList.remove('hidden');
+        els.setupDeviceBtn.classList.remove('hidden');
+        els.closeOverlayBtn.classList.remove('hidden');
+        updateSetupOverlayButtons();
+      }
+    }
+
+    function getCommandDeviceId() {
+      return state.selectedDeviceId || state.playbackDeviceId || state.deviceId || '';
+    }
+
+    function isLocalCommandTarget() {
+      const targetId = getCommandDeviceId();
+      return !!targetId && !!state.deviceId && targetId === state.deviceId;
+    }
+
+    function canControlVolume() {
+      if (!hasTokens()) return false;
+      if (isLocalCommandTarget()) return !!state.player || !!getCommandDeviceId();
+      if (state.selectedDeviceId) return !!state.selectedDeviceSupportsVolume;
+      if (state.playbackDeviceId) return !!state.playbackDeviceSupportsVolume;
+      return !!state.player;
+    }
+
+    function updateTransportButtons(enabled) {
+      els.shuffleBtn.disabled = !enabled;
+      els.prevBtn.disabled = !enabled;
+      els.playPauseBtn.disabled = !enabled;
+      els.nextBtn.disabled = !enabled;
+      els.timeline.disabled = !enabled;
+      els.heartBtn.disabled = !enabled;
+      els.recommendBtn.disabled = !enabled;
+      els.volumeSlider.disabled = !enabled || !canControlVolume();
+      els.muteBtn.disabled = !enabled || !canControlVolume();
+    }
+
+    function updateAudioButton() {
+      if (!els.audioBtn) return;
+      els.audioBtn.classList.toggle('active', !!state.activated);
+      els.audioBtn.setAttribute('aria-pressed', state.activated ? 'true' : 'false');
+      els.audioBtn.setAttribute('title', state.activated ? 'Audio active' : 'Activate audio');
+      updateSetupOverlayButtons();
+    }
+
+    function updateUseDeviceButton() {
+      if (!els.useDeviceBtn) return;
+      const localSelected = !!state.ready && !!state.deviceId && !!state.selectedDeviceId && state.selectedDeviceId === state.deviceId;
+      els.useDeviceBtn.classList.toggle('active', localSelected);
+      els.useDeviceBtn.setAttribute('aria-pressed', localSelected ? 'true' : 'false');
+      els.useDeviceBtn.setAttribute('title', localSelected ? 'Controlling this browser' : 'Use this device');
+      els.useDeviceBtn.setAttribute('aria-label', localSelected ? 'Controlling this browser' : 'Use this device');
+    }
+
+    function updateRemoteButton() {
+      if (!els.connectRemoteBtn) return;
+      const hasSelection = !!state.selectedDeviceId && state.selectedDeviceId !== state.deviceId;
+      els.connectRemoteBtn.disabled = !hasTokens();
+      els.connectRemoteBtn.classList.toggle('active', hasSelection || els.deviceSheet.classList.contains('show'));
+      const label = state.selectedDeviceName || state.playbackDeviceName || 'Choose Spotify Connect device';
+      els.connectRemoteBtn.setAttribute('title', hasSelection ? `Controlling ${label}` : 'Choose Spotify Connect device');
+      els.connectRemoteBtn.setAttribute('aria-label', hasSelection ? `Controlling ${label}` : 'Choose Spotify Connect device');
+    }
+
+    function updateAuxButtons() {
+      const authed = hasTokens();
+      els.signOutMiniBtn.classList.toggle('hidden', !authed);
+      els.audioBtn.disabled = !authed || !state.player;
+      els.useDeviceBtn.disabled = !authed || !state.deviceId;
+      if (els.connectRemoteBtn) els.connectRemoteBtn.disabled = !authed;
+      updateAudioButton();
+      updateUseDeviceButton();
+      updateRemoteButton();
+      syncFullscreenButton();
+      updateSetupOverlayButtons();
+    }
+
+    function getFullscreenElement() {
+      return document.fullscreenElement || document.webkitFullscreenElement || null;
+    }
+
+    function canRequestFullscreen() {
+      const root = document.documentElement;
+      return !!(document.fullscreenEnabled || document.webkitFullscreenEnabled || typeof root.requestFullscreen === 'function' || typeof root.webkitRequestFullscreen === 'function');
+    }
+
+    function getEnterFullscreenMarkup() {
+      return '<path d="M15 3h6v6"></path><path d="M9 21H3v-6"></path><path d="M21 15v6h-6"></path><path d="M3 9V3h6"></path>';
+    }
+
+    function getExitFullscreenMarkup() {
+      return '<path d="M21 9h-6V3"></path><path d="M3 9h6V3"></path><path d="M21 15h-6v6"></path><path d="M3 15h6v6"></path>';
+    }
+
+    function syncFullscreenButton() {
+      if (!els.fullscreenBtn) return;
+      const supported = canRequestFullscreen();
+      const active = !!getFullscreenElement();
+      els.fullscreenBtn.disabled = !supported;
+      els.fullscreenBtn.classList.toggle('active', active);
+      els.fullscreenBtn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      els.fullscreenBtn.setAttribute('aria-label', active ? 'Exit full screen' : 'Enter full screen');
+      els.fullscreenBtn.setAttribute('title', active ? 'Exit full screen' : 'Enter full screen');
+      if (els.fullscreenIcon) {
+        els.fullscreenIcon.innerHTML = active ? getExitFullscreenMarkup() : getEnterFullscreenMarkup();
+      }
+    }
+
+    async function requestFullscreenCompat() {
+      const root = document.documentElement;
+      if (typeof root.requestFullscreen === 'function') {
+        try {
+          return await root.requestFullscreen({ navigationUI: 'hide' });
+        } catch (error) {
+          return await root.requestFullscreen();
+        }
+      }
+      if (typeof root.webkitRequestFullscreen === 'function') {
+        return await root.webkitRequestFullscreen();
+      }
+      throw new Error('Full screen is not available in this browser');
+    }
+
+    async function exitFullscreenCompat() {
+      if (typeof document.exitFullscreen === 'function') {
+        return await document.exitFullscreen();
+      }
+      if (typeof document.webkitExitFullscreen === 'function') {
+        return await document.webkitExitFullscreen();
+      }
+      throw new Error('Full screen is not available in this browser');
     }
 
     async function toggleFullscreen() {
+      if (!canRequestFullscreen()) {
+        setStatus('Full screen is not available in this browser', 'warn');
+        return;
+      }
+
       try {
-        if (document.fullscreenElement) {
-          await document.exitFullscreen();
+        if (getFullscreenElement()) {
+          await exitFullscreenCompat();
         } else {
-          await appRoot.requestFullscreen();
+          await requestFullscreenCompat();
         }
-      } catch (err) {
-        console.error(err);
-        showToast('Fullscreen blocked by this browser');
+      } catch (error) {
+        setStatus(`Full screen failed: ${error.message}`, 'error');
+      } finally {
+        syncFullscreenButton();
       }
     }
 
-    captureBtn.addEventListener('click', () => {
-      if (STATE.captured) {
-        retake();
+
+    function setSelectedDevice(device = null, persist = true) {
+      state.selectedDeviceId = device?.id || '';
+      state.selectedDeviceName = device?.name || '';
+      state.selectedDeviceSupportsVolume = device ? device.supports_volume !== false : true;
+      if (persist) {
+        if (state.selectedDeviceId) setSaved(STORAGE_KEYS.selectedDeviceId, state.selectedDeviceId);
+        else removeSaved(STORAGE_KEYS.selectedDeviceId);
+      }
+      updateRemoteButton();
+      updateTransportButtons(!!state.playbackState || !!state.ready);
+    }
+
+    function updatePlaybackDeviceInfo(device = null) {
+      state.playbackDeviceId = device?.id || '';
+      state.playbackDeviceName = device?.name || '';
+      state.playbackDeviceSupportsVolume = device ? device.supports_volume !== false : true;
+      const targetId = getCommandDeviceId();
+      if (device && Number.isFinite(device.volume_percent) && (!targetId || device.id === targetId || (!state.selectedDeviceId && device.id === state.playbackDeviceId))) {
+        syncVolumeFromPlaybackDevice(device, false);
+      }
+      if (!state.selectedDeviceId) updateTransportButtons(!!state.playbackState || !!state.ready);
+      updateRemoteButton();
+    }
+
+    function normalizePlaybackState(input, source = 'sdk') {
+      if (!input) return null;
+      if (source === 'api') {
+        if (!input.item) return null;
+        const item = input.item;
+        return {
+          paused: !input.is_playing,
+          position: input.progress_ms || 0,
+          duration: item.duration_ms || 0,
+          context: input.context ? { metadata: { context_description: item.album?.name || input.context.type || 'Spotify' } } : null,
+          track_window: { current_track: {
+            id: item.id,
+            uri: item.uri,
+            name: item.name,
+            duration_ms: item.duration_ms,
+            artists: item.artists || [],
+            album: item.album || { images: [] }
+          } },
+          device: input.device || null
+        };
+      }
+      return input;
+    }
+
+    async function fetchAvailableDevices(render = true) {
+      const data = await spotifyFetch('/v1/me/player/devices');
+      state.devices = Array.isArray(data?.devices) ? data.devices : [];
+      const savedSelected = state.selectedDeviceId || getSaved(STORAGE_KEYS.selectedDeviceId);
+      if (savedSelected) {
+        const found = state.devices.find(device => device.id === savedSelected);
+        if (found) {
+          setSelectedDevice(found, false);
+        } else if (state.selectedDeviceId) {
+          setSelectedDevice(null);
+        }
+      }
+      if (render) renderDeviceList();
+      return state.devices;
+    }
+
+    function renderDeviceList() {
+      if (!els.deviceList) return;
+      if (!state.devices.length) {
+        els.deviceList.innerHTML = '<div class="device-item" style="cursor:default"><div class="device-item-head"><span>No devices found</span></div><div class="device-item-meta"><span class="device-chip">Open Spotify on the device first, then refresh.</span></div></div>';
+        return;
+      }
+      const activeId = state.playbackDeviceId;
+      const selectedId = state.selectedDeviceId;
+      els.deviceList.innerHTML = state.devices.map(device => {
+        const isSelected = selectedId && device.id === selectedId;
+        const isActive = activeId && device.id === activeId;
+        const isLocal = state.deviceId && device.id === state.deviceId;
+        const chips = [
+          `<span class="device-chip">${device.type || 'device'}</span>`,
+          isActive ? '<span class="device-chip good">Active</span>' : '',
+          isLocal ? '<span class="device-chip">This browser</span>' : '',
+          isSelected ? '<span class="device-chip good">Selected</span>' : '',
+          device.supports_volume === false ? '<span class="device-chip">No volume API</span>' : '',
+          device.is_restricted ? '<span class="device-chip">Restricted</span>' : ''
+        ].filter(Boolean).join('');
+        return `
+          <button class="device-item ${isSelected ? 'active' : ''}" type="button" data-device-id="${device.id || ''}" ${device.is_restricted || !device.id ? 'disabled' : ''}>
+            <div class="device-item-head">
+              <span>${device.name || 'Unnamed device'}</span>
+            </div>
+            <div class="device-item-meta">${chips}</div>
+          </button>
+        `;
+      }).join('');
+      els.deviceList.querySelectorAll('[data-device-id]').forEach(button => {
+        button.addEventListener('click', async () => {
+          playUiClick();
+          const deviceId = button.getAttribute('data-device-id') || '';
+          const device = state.devices.find(entry => entry.id === deviceId);
+          if (!device || device.is_restricted) return;
+          try {
+            setSelectedDevice(device);
+            await spotifyFetch('/v1/me/player', {
+              method: 'PUT',
+              body: JSON.stringify({ device_ids: [device.id], play: false })
+            });
+            updatePlaybackDeviceInfo(device);
+            syncVolumeFromPlaybackDevice(device, false);
+            setStatus(`Now controlling ${device.name}`, 'good');
+            closeDeviceSheet();
+            await hydratePlaybackState();
+            syncPlaybackFlags().catch(() => {});
+          } catch (error) {
+            setStatus(`Device selection failed: ${error.message}`, 'error');
+          }
+        });
+      });
+    }
+
+    async function openDeviceSheet() {
+      if (!hasTokens()) return;
+      els.deviceSheet.classList.add('show');
+      els.deviceSheet.setAttribute('aria-hidden', 'false');
+      updateRemoteButton();
+      els.deviceList.innerHTML = '<div class="device-item" style="cursor:default"><div class="device-item-head"><span>Loading…</span></div></div>';
+      try {
+        await fetchAvailableDevices(true);
+      } catch (error) {
+        els.deviceList.innerHTML = `<div class="device-item" style="cursor:default"><div class="device-item-head"><span>Could not load devices</span></div><div class="device-item-meta"><span class="device-chip">${error.message}</span></div></div>`;
+        setStatus(`Could not load devices: ${error.message}`, 'error');
+      }
+    }
+
+    function closeDeviceSheet() {
+      els.deviceSheet.classList.remove('show');
+      els.deviceSheet.setAttribute('aria-hidden', 'true');
+      updateRemoteButton();
+    }
+
+    async function refreshDevices() {
+      try {
+        await fetchAvailableDevices(true);
+        setStatus('Device list refreshed', 'good');
+      } catch (error) {
+        setStatus(`Could not refresh devices: ${error.message}`, 'error');
+      }
+    }
+
+    function isInteractiveTarget(target) {
+      return !!target?.closest('button, input, .overlay-card, a, label');
+    }
+
+    function clearGesture() {
+      if (gesture.captureEl && gesture.pointerId !== null && gesture.captureEl.releasePointerCapture) {
+        try {
+          gesture.captureEl.releasePointerCapture(gesture.pointerId);
+        } catch (error) {
+          /* ignore capture release errors */
+        }
+      }
+
+      gesture.pointerId = null;
+      gesture.startX = 0;
+      gesture.startY = 0;
+      gesture.lastX = 0;
+      gesture.lastY = 0;
+      gesture.startTime = 0;
+      gesture.tracking = false;
+      gesture.active = false;
+      gesture.pointerType = '';
+      gesture.captureEl = null;
+    }
+
+    function clearTouchGesture() {
+      touchGesture.identifier = null;
+      touchGesture.startX = 0;
+      touchGesture.startY = 0;
+      touchGesture.lastX = 0;
+      touchGesture.lastY = 0;
+      touchGesture.startTime = 0;
+      touchGesture.tracking = false;
+    }
+
+    function canUseGestures() {
+      return !!state.player && !els.overlay.classList.contains('show');
+    }
+
+    async function apiPlayerCommand(path, { method = 'POST', query = {}, body = null } = {}) {
+      const params = new URLSearchParams(query);
+      const targetId = getCommandDeviceId();
+      if (targetId) params.set('device_id', targetId);
+      const suffix = params.toString() ? `?${params.toString()}` : '';
+      return spotifyFetch(`${path}${suffix}`, { method, ...(body ? { body: JSON.stringify(body) } : {}) });
+    }
+
+    async function refreshPlaybackSoon(delay = 220) {
+      await new Promise(resolve => setTimeout(resolve, delay));
+      await hydratePlaybackState();
+      syncPlaybackFlags().catch(() => {});
+    }
+
+    async function commandPrevious() {
+      const localTarget = isLocalCommandTarget();
+      if (localTarget && state.player) {
+        try {
+          await state.player.previousTrack();
+          resetPlaybackProgressUI(0);
+          return;
+        } catch (_) {}
+      }
+      try {
+        await apiPlayerCommand('/v1/me/player/previous');
+        resetPlaybackProgressUI(0);
+      } catch (error) {
+        if (localTarget && state.player) {
+          try {
+            await state.player.previousTrack();
+            return;
+          } catch (_) {}
+        }
+        throw error;
+      }
+    }
+
+    async function commandNext() {
+      const localTarget = isLocalCommandTarget();
+      if (localTarget && state.player) {
+        try {
+          await state.player.nextTrack();
+          resetPlaybackProgressUI(0);
+          return;
+        } catch (_) {}
+      }
+      try {
+        await apiPlayerCommand('/v1/me/player/next');
+        resetPlaybackProgressUI(0);
+      } catch (error) {
+        if (localTarget && state.player) {
+          try {
+            await state.player.nextTrack();
+            return;
+          } catch (_) {}
+        }
+        throw error;
+      }
+    }
+
+    async function commandTogglePlay() {
+      const localTarget = isLocalCommandTarget();
+      if (localTarget && state.player) {
+        try {
+          if (!state.activated && typeof activateAudio === 'function') {
+            await activateAudio();
+          }
+          if (state.playbackState?.paused) await state.player.resume();
+          else await state.player.pause();
+          return;
+        } catch (_) {}
+      }
+      try {
+        if (state.playbackState?.paused) await apiPlayerCommand('/v1/me/player/play', { method: 'PUT' });
+        else await apiPlayerCommand('/v1/me/player/pause', { method: 'PUT' });
+      } catch (error) {
+        if (localTarget && state.player) {
+          try {
+            await state.player.togglePlay();
+            return;
+          } catch (_) {}
+        }
+        clickLegacy(legacy.playPauseBtn);
+        throw error;
+      }
+    }
+
+    async function commandSeek(positionMs) {
+      const target = Math.max(0, Math.round(positionMs || 0));
+      if (isLocalCommandTarget() && state.player) {
+        try {
+          await state.player.seek(target);
+          return;
+        } catch (_) {}
+      }
+      return apiPlayerCommand('/v1/me/player/seek', { method: 'PUT', query: { position_ms: String(target) } });
+    }
+
+    async function commandSetVolume(volume) {
+      const bounded = Math.max(0, Math.min(1, Number.isFinite(volume) ? volume : 0));
+      if (isLocalCommandTarget() && state.player) {
+        return syncPlayerVolume(bounded);
+      }
+      if (!canControlVolume()) throw new Error('Volume is not available for this device');
+      return apiPlayerCommand('/v1/me/player/volume', { method: 'PUT', query: { volume_percent: String(Math.round(bounded * 100)) } });
+    }
+
+    async function runGestureAction(direction) {
+      if ((!state.player && !hasTokens()) || Date.now() < state.gestureCooldownUntil) return;
+      state.gestureCooldownUntil = Date.now() + 360;
+
+      try {
+        if (direction === 'right') {
+          await commandPrevious();
+          setStatus('Previous track', 'good');
+          refreshPlaybackSoon().catch(() => {});
+        } else if (direction === 'left') {
+          await commandNext();
+          setStatus('Next track', 'good');
+          refreshPlaybackSoon().catch(() => {});
+        } else if (direction === 'up') {
+          const nextVolume = Math.min(1, state.volume + 0.08);
+          await applyVolume(nextVolume);
+          setStatus(`Volume ${Math.round(nextVolume * 100)}%`, 'good');
+        } else if (direction === 'down') {
+          const nextVolume = Math.max(0, state.volume - 0.08);
+          await applyVolume(nextVolume);
+          setStatus(`Volume ${Math.round(nextVolume * 100)}%`, 'good');
+        }
+      } catch (error) {
+        setStatus(`Gesture failed: ${error.message}`, 'error');
+      }
+    }
+
+    function findTrackedTouch(touchList) {
+      if (!touchList || touchGesture.identifier === null) return null;
+      for (const touch of touchList) {
+        if (touch.identifier === touchGesture.identifier) return touch;
+      }
+      return null;
+    }
+
+    function attachGestureEvents() {
+      const zone = els.gestureZone;
+      if (!zone) return;
+
+      zone.addEventListener('pointerdown', (event) => {
+        if (!canUseGestures()) return;
+        if (!event.isPrimary) return;
+        if (event.pointerType === 'mouse' && event.button !== 0) return;
+        if (event.pointerType === 'touch') return;
+        if (isInteractiveTarget(event.target)) return;
+
+        gesture.pointerId = event.pointerId;
+        gesture.startX = event.clientX;
+        gesture.startY = event.clientY;
+        gesture.lastX = event.clientX;
+        gesture.lastY = event.clientY;
+        gesture.startTime = performance.now();
+        gesture.tracking = true;
+        gesture.active = false;
+        gesture.pointerType = event.pointerType || 'mouse';
+        gesture.captureEl = zone;
+
+        if (zone.setPointerCapture) {
+          try {
+            zone.setPointerCapture(event.pointerId);
+          } catch (error) {
+            /* ignore pointer capture failures */
+          }
+        }
+      }, { passive: true });
+
+      zone.addEventListener('pointermove', (event) => {
+        if (!gesture.tracking || event.pointerId !== gesture.pointerId) return;
+        gesture.lastX = event.clientX;
+        gesture.lastY = event.clientY;
+
+        const dx = gesture.lastX - gesture.startX;
+        const dy = gesture.lastY - gesture.startY;
+        if (Math.hypot(dx, dy) > 18) gesture.active = true;
+      }, { passive: true });
+
+      const finishGesture = async (event) => {
+        if (!gesture.tracking || event.pointerId !== gesture.pointerId) return;
+
+        const dx = (typeof event.clientX === 'number' ? event.clientX : gesture.lastX) - gesture.startX;
+        const dy = (typeof event.clientY === 'number' ? event.clientY : gesture.lastY) - gesture.startY;
+        const absX = Math.abs(dx);
+        const absY = Math.abs(dy);
+        const duration = performance.now() - gesture.startTime;
+        const pointerType = gesture.pointerType;
+
+        clearGesture();
+
+        const horizontalThreshold = pointerType === 'mouse' ? 120 : 72;
+        const verticalThreshold = pointerType === 'mouse' ? 100 : 64;
+        const dominance = 1.35;
+
+        if (duration > 900) return;
+        if (absX < horizontalThreshold && absY < verticalThreshold) return;
+
+        if (absX >= horizontalThreshold && absX > absY * dominance) {
+          await runGestureAction(dx > 0 ? 'right' : 'left');
+          return;
+        }
+
+        if (absY >= verticalThreshold && absY > absX * dominance) {
+          await runGestureAction(dy < 0 ? 'up' : 'down');
+        }
+      };
+
+      zone.addEventListener('pointerup', finishGesture, { passive: true });
+      zone.addEventListener('pointercancel', clearGesture, { passive: true });
+      zone.addEventListener('pointerleave', () => {
+        if (gesture.pointerType === 'mouse' && !gesture.captureEl) clearGesture();
+      }, { passive: true });
+
+      zone.addEventListener('touchstart', (event) => {
+        if (!canUseGestures()) return;
+        if (touchGesture.tracking) return;
+        if (isInteractiveTarget(event.target)) return;
+        const touch = event.changedTouches && event.changedTouches[0];
+        if (!touch) return;
+        touchGesture.identifier = touch.identifier;
+        touchGesture.startX = touch.clientX;
+        touchGesture.startY = touch.clientY;
+        touchGesture.lastX = touch.clientX;
+        touchGesture.lastY = touch.clientY;
+        touchGesture.startTime = performance.now();
+        touchGesture.tracking = true;
+      }, { passive: true });
+
+      zone.addEventListener('touchmove', (event) => {
+        if (!touchGesture.tracking) return;
+        const touch = findTrackedTouch(event.changedTouches) || findTrackedTouch(event.touches);
+        if (!touch) return;
+        touchGesture.lastX = touch.clientX;
+        touchGesture.lastY = touch.clientY;
+        const dx = touchGesture.lastX - touchGesture.startX;
+        const dy = touchGesture.lastY - touchGesture.startY;
+        if (Math.hypot(dx, dy) > 14) {
+          event.preventDefault();
+        }
+      }, { passive: false });
+
+      const finishTouchGesture = async (event) => {
+        if (!touchGesture.tracking) return;
+        const touch = findTrackedTouch(event.changedTouches) || { clientX: touchGesture.lastX, clientY: touchGesture.lastY };
+        const dx = touch.clientX - touchGesture.startX;
+        const dy = touch.clientY - touchGesture.startY;
+        const absX = Math.abs(dx);
+        const absY = Math.abs(dy);
+        const duration = performance.now() - touchGesture.startTime;
+
+        clearTouchGesture();
+
+        const horizontalThreshold = 56;
+        const verticalThreshold = 52;
+        const dominance = 1.28;
+
+        if (duration > 950) return;
+        if (absX < horizontalThreshold && absY < verticalThreshold) return;
+
+        event.preventDefault();
+
+        if (absX >= horizontalThreshold && absX > absY * dominance) {
+          await runGestureAction(dx > 0 ? 'right' : 'left');
+          return;
+        }
+
+        if (absY >= verticalThreshold && absY > absX * dominance) {
+          await runGestureAction(dy < 0 ? 'up' : 'down');
+        }
+      };
+
+      zone.addEventListener('touchend', finishTouchGesture, { passive: false });
+      zone.addEventListener('touchcancel', clearTouchGesture, { passive: true });
+    }
+
+    function setPlayPauseVisual(isPaused) {
+      if (isPaused) {
+        els.playPauseIcon.innerHTML = '<path d="M22 14.5v35L48 32 22 14.5z" fill="currentColor"></path>';
       } else {
-        capturePhoto();
+        els.playPauseIcon.innerHTML = '<rect x="18" y="14" width="9" height="36" rx="2"></rect><rect x="37" y="14" width="9" height="36" rx="2"></rect>';
       }
-    });
-    saveBtn.addEventListener('click', saveCurrentImage);
-    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    }
 
-    document.addEventListener('fullscreenchange', () => {
-      fullscreenBtn.style.opacity = document.fullscreenElement ? '0.92' : '1';
-      setTimeout(() => {
-        syncPreviewCanvas();
-      }, 80);
-    });
-
-    window.addEventListener('resize', () => {
-      syncPreviewCanvas();
-      if (!STATE.captured && video.readyState >= 2 && !STATE.renderBusy) {
-        setMode(STATE.mode);
+    function setHeartVisual(active) {
+      state.currentLiked = !!active;
+      els.heartBtn.classList.toggle('active', !!active);
+      const svg = els.heartBtn.querySelector('svg');
+      if (active) {
+        svg.setAttribute('fill', 'currentColor');
+        svg.setAttribute('stroke', 'currentColor');
+      } else {
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('stroke', 'currentColor');
       }
-    });
+    }
 
-    window.addEventListener('beforeunload', () => {
-      cancelAnimationFrame(STATE.previewRAF);
-      if (video.cancelVideoFrameCallback && STATE.previewVideoFrameRequest) {
-        video.cancelVideoFrameCallback(STATE.previewVideoFrameRequest);
+    function setShuffleVisual(active) {
+      state.shuffleEnabled = !!active;
+      els.shuffleBtn.classList.toggle('active', !!active);
+      els.shuffleBtn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      els.shuffleBtn.setAttribute('title', active ? 'Shuffle on' : 'Shuffle off');
+      els.shuffleBtn.setAttribute('aria-label', active ? 'Shuffle on' : 'Shuffle off');
+    }
+
+    function setRecommendVisual(active) {
+      state.discoveryQueued = !!active;
+      els.recommendBtn.classList.toggle('active', !!active);
+      els.recommendBtn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      els.recommendBtn.setAttribute('title', active ? 'Recommended track queued' : 'Queue a recommended track');
+      els.recommendBtn.setAttribute('aria-label', active ? 'Recommended track queued' : 'Queue a recommended track');
+    }
+
+    function setVolumeIcon(volume) {
+      if (volume <= 0.001) {
+        els.volumeIcon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line>';
+      } else if (volume < 0.5) {
+        els.volumeIcon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.5 8.5a5 5 0 0 1 0 7"></path>';
+      } else {
+        els.volumeIcon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.5 8.5a5 5 0 0 1 0 7"></path><path d="M18.5 5.5a9 9 0 0 1 0 13"></path>';
       }
-      if (STATE.stream) STATE.stream.getTracks().forEach(track => track.stop());
-      if (STATE.lastBlobUrl) URL.revokeObjectURL(STATE.lastBlobUrl);
+    }
+
+    function setVolumeUI(volume, persist = true) {
+      const bounded = Math.max(0, Math.min(1, Number.isFinite(volume) ? volume : 0.8));
+      state.volume = bounded;
+      els.volumeSlider.value = String(Math.round(bounded * 100));
+      updateRangeVisual(els.volumeSlider);
+      setVolumeIcon(bounded);
+      if (persist) setSaved(STORAGE_KEYS.volume, String(bounded));
+      if (bounded > 0.001 && persist) setSaved(STORAGE_KEYS.previousVolume, String(bounded));
+    }
+
+    function syncVolumeFromPlaybackDevice(device = null, persist = false) {
+      if (!device || !Number.isFinite(device.volume_percent)) return;
+      const nextVolume = Math.max(0, Math.min(1, device.volume_percent / 100));
+      setVolumeUI(nextVolume, persist);
+      if (nextVolume > 0.001) state.previousVolume = nextVolume;
+    }
+
+    function loadSavedVolume() {
+      const savedVolume = Number(getSaved(STORAGE_KEYS.volume));
+      const savedPrevious = Number(getSaved(STORAGE_KEYS.previousVolume));
+      state.volume = Number.isFinite(savedVolume) && savedVolume >= 0 && savedVolume <= 1 ? savedVolume : 0.8;
+      state.previousVolume = Number.isFinite(savedPrevious) && savedPrevious > 0 && savedPrevious <= 1 ? savedPrevious : Math.max(state.volume, 0.8);
+      setVolumeUI(state.volume, false);
+    }
+
+    async function syncPlayerVolume(volume) {
+      if (!state.player) return;
+      if (state.volumeSyncPending) return state.volumeSyncPending = state.volumeSyncPending.then(() => state.player.setVolume(volume)).catch(() => state.player.setVolume(volume));
+      state.volumeSyncPending = state.player.setVolume(volume)
+        .catch((error) => {
+          setStatus(`Volume failed: ${error.message}`, 'error');
+        })
+        .finally(() => {
+          state.volumeSyncPending = null;
+        });
+      return state.volumeSyncPending;
+    }
+
+    async function applyVolume(volume) {
+      setVolumeUI(volume);
+      if (volume > 0.001) state.previousVolume = volume;
+      try {
+        await commandSetVolume(state.volume);
+        syncPlaybackFlags().catch(() => {});
+      } catch (error) {
+        setStatus(`Volume failed: ${error.message}`, 'error');
+      }
+    }
+
+    function clearTrack() {
+      els.albumArt.src = DEFAULT_ART;
+      els.bgArt.src = DEFAULT_ART;
+      setDefaultBackground();
+      els.trackName.textContent = 'Nothing playing';
+      els.artistName.textContent = 'Sign in and start playback';
+      els.metaTop.textContent = 'sp0tify';
+      els.currentTime.textContent = '0:00';
+      els.totalTime.textContent = '0:00';
+      els.timeline.value = 0;
+      updateRangeVisual(els.timeline);
+      setHeartVisual(false);
+      setShuffleVisual(false);
+      setRecommendVisual(false);
+      setPlayPauseVisual(true);
+      updatePlaybackDeviceInfo(null);
+      updateTransportButtons(false);
+    }
+
+    function resetPlaybackProgressUI(position = 0, duration = null) {
+      const safePos = Math.max(0, Math.round(position || 0));
+      const derivedDuration = duration == null
+        ? (state.playbackState?.duration || state.playbackState?.track_window?.current_track?.duration_ms || 0)
+        : Math.max(0, Math.round(duration || 0));
+
+      if (state.playbackState) {
+        state.playbackState.position = safePos;
+        if (derivedDuration > 0) state.playbackState.duration = derivedDuration;
+      }
+
+      state.lastPlayerSnapshotAt = Date.now();
+
+      if (!state.seeking) {
+        const max = derivedDuration > 0 ? String(derivedDuration) : (els.timeline.max || '1000');
+        const val = String(Math.min(safePos, derivedDuration || Number(max) || 1000));
+        els.currentTime.textContent = formatTime(safePos);
+        if (derivedDuration > 0) els.totalTime.textContent = formatTime(derivedDuration);
+        if (els.timeline.max !== max) els.timeline.max = max;
+        els.timeline.value = val;
+        updateRangeVisual(els.timeline);
+      }
+    }
+
+    function deriveNowPosition() {
+      if (!state.playbackState) return 0;
+      const duration = state.playbackState.duration || state.playbackState.track_window?.current_track?.duration_ms || 0;
+      if (state.playbackState.paused) return Math.min(state.playbackState.position || 0, duration);
+      const elapsed = Date.now() - state.lastPlayerSnapshotAt;
+      return Math.min((state.playbackState.position || 0) + elapsed, duration);
+    }
+
+    function renderProgress() {
+      const playback = state.playbackState;
+      if (!playback) return;
+      const duration = playback.duration || playback.track_window?.current_track?.duration_ms || 0;
+      const position = deriveNowPosition();
+      els.currentTime.textContent = formatTime(position);
+      els.totalTime.textContent = formatTime(duration);
+      if (!state.seeking) {
+        const newMax = duration > 0 ? String(duration) : '1000';
+        const newVal = String(Math.min(position, duration || 1000));
+        if (els.timeline.max !== newMax) {
+          els.timeline.max = newMax;
+        }
+        if (els.timeline.value !== newVal) {
+          els.timeline.value = newVal;
+          updateRangeVisual(els.timeline);
+        }
+      }
+    }
+
+    function startProgressLoop() {
+      if (state.timelineTimer) clearInterval(state.timelineTimer);
+      state.timelineTimer = setInterval(renderProgress, 250);
+    }
+
+    async function beginLogin() {
+      const verifier = randomString(96);
+      const challenge = base64UrlEncode(await sha256(verifier));
+      const oauthState = randomString(24);
+
+      setSaved(STORAGE_KEYS.codeVerifier, verifier);
+      setSaved(STORAGE_KEYS.oauthState, oauthState);
+
+      const params = new URLSearchParams({
+        client_id: APP_CONFIG.CLIENT_ID,
+        response_type: 'code',
+        redirect_uri: APP_CONFIG.REDIRECT_URI,
+        code_challenge_method: 'S256',
+        code_challenge: challenge,
+        scope: SCOPES.join(' '),
+        state: oauthState,
+        show_dialog: 'false'
+      });
+
+      location.href = `https://accounts.spotify.com/authorize?${params.toString()}`;
+    }
+
+    async function exchangeCodeForToken(code) {
+      const verifier = getSaved(STORAGE_KEYS.codeVerifier);
+      const response = await fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          client_id: APP_CONFIG.CLIENT_ID,
+          grant_type: 'authorization_code',
+          code,
+          redirect_uri: APP_CONFIG.REDIRECT_URI,
+          code_verifier: verifier
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error_description || data.error || 'Token exchange failed');
+      }
+
+      setSaved(STORAGE_KEYS.accessToken, data.access_token);
+      if (data.refresh_token) setSaved(STORAGE_KEYS.refreshToken, data.refresh_token);
+      setSaved(STORAGE_KEYS.expiresAt, String(Date.now() + (data.expires_in * 1000) - 60000));
+      removeSaved(STORAGE_KEYS.codeVerifier);
+      removeSaved(STORAGE_KEYS.oauthState);
+    }
+
+    async function refreshAccessToken() {
+      if (state.refreshPromise) return state.refreshPromise;
+      const refreshToken = getSaved(STORAGE_KEYS.refreshToken);
+      if (!refreshToken) throw new Error('Missing refresh token');
+
+      state.refreshPromise = fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: refreshToken,
+          client_id: APP_CONFIG.CLIENT_ID
+        })
+      })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error_description || data.error || 'Token refresh failed');
+        }
+        setSaved(STORAGE_KEYS.accessToken, data.access_token);
+        setSaved(STORAGE_KEYS.expiresAt, String(Date.now() + (data.expires_in * 1000) - 60000));
+        if (data.refresh_token) setSaved(STORAGE_KEYS.refreshToken, data.refresh_token);
+        return data.access_token;
+      })
+      .finally(() => {
+        state.refreshPromise = null;
+      });
+
+      return state.refreshPromise;
+    }
+
+    async function getValidToken() {
+      const token = getSaved(STORAGE_KEYS.accessToken);
+      const expiresAt = Number(getSaved(STORAGE_KEYS.expiresAt) || 0);
+      if (token && Date.now() < expiresAt) return token;
+      return refreshAccessToken();
+    }
+
+    async function spotifyFetch(path, options = {}) {
+      const token = await getValidToken();
+      const headers = { Authorization: `Bearer ${token}`, ...(options.headers || {}) };
+      if (options.body && !headers['Content-Type']) headers['Content-Type'] = 'application/json';
+
+      const response = await fetch(`https://api.spotify.com${path}`, {
+        ...options,
+        headers
+      });
+
+      if (response.status === 204) return null;
+
+      const text = await response.text();
+      let data = null;
+      try { data = text ? JSON.parse(text) : null; } catch (_) { data = text; }
+
+      if (!response.ok) {
+        const message = data?.error?.message || data?.error_description || `Spotify API error ${response.status}`;
+        throw new Error(message);
+      }
+
+      return data;
+    }
+
+    async function syncPlaybackFlags() {
+      try {
+        const playback = await spotifyFetch('/v1/me/player');
+        if (playback && typeof playback.shuffle_state === 'boolean') {
+          setShuffleVisual(playback.shuffle_state);
+        }
+        if (playback?.device) {
+          updatePlaybackDeviceInfo(playback.device);
+          syncVolumeFromPlaybackDevice(playback.device, false);
+        }
+      } catch (error) {
+        if (!/204/.test(String(error?.message || ''))) {
+          console.error(error);
+        }
+      }
+    }
+
+    function extractId(uriOrId) {
+      if (!uriOrId) return '';
+      const raw = String(uriOrId);
+      if (!raw.includes(':')) return raw;
+      return raw.split(':').pop() || '';
+    }
+
+    function pickRandom(items, predicate = null) {
+      const pool = (items || []).filter(Boolean).filter(item => predicate ? predicate(item) : true);
+      if (!pool.length) return null;
+      return pool[Math.floor(Math.random() * pool.length)] || null;
+    }
+
+    async function addItemToQueue(uri) {
+      const params = new URLSearchParams({ uri });
+      const targetId = getCommandDeviceId();
+      if (targetId) params.set('device_id', targetId);
+      await spotifyFetch(`/v1/me/player/queue?${params.toString()}`, { method: 'POST' });
+    }
+
+    async function fetchRecommendationCandidate(current) {
+      const trackId = extractId(current?.id || current?.uri);
+      const artistIds = (current?.artists || []).map(artist => extractId(artist.id || artist.uri)).filter(Boolean);
+      if (!trackId) return null;
+
+      try {
+        const params = new URLSearchParams({ limit: '20', seed_tracks: trackId });
+        if (artistIds[0]) params.set('seed_artists', artistIds[0]);
+        const data = await spotifyFetch(`/v1/recommendations?${params.toString()}`);
+        return pickRandom(data?.tracks, item => item && item.uri && item.uri !== current?.uri && item.id !== current?.id);
+      } catch (error) {
+        console.warn('Recommendations unavailable, falling back', error);
+      }
+
+      const primaryArtistId = artistIds[0];
+      if (primaryArtistId) {
+        try {
+          const data = await spotifyFetch(`/v1/artists/${primaryArtistId}/top-tracks`);
+          const topTrack = pickRandom(data?.tracks, item => item && item.uri && item.uri !== current?.uri && item.id !== current?.id);
+          if (topTrack) return topTrack;
+        } catch (error) {
+          console.warn('Artist top tracks fallback failed', error);
+        }
+      }
+
+      const albumId = extractId(current?.album?.id || current?.album?.uri);
+      if (albumId) {
+        try {
+          const data = await spotifyFetch(`/v1/albums/${albumId}/tracks?limit=50`);
+          const albumTrack = pickRandom(data?.items, item => item && item.uri && item.uri !== current?.uri && item.id !== current?.id);
+          if (albumTrack) return albumTrack;
+        } catch (error) {
+          console.warn('Album fallback failed', error);
+        }
+      }
+
+      return null;
+    }
+
+    async function queueDiscoveryTrack() {
+      if (state.recommendRequest) return state.recommendRequest;
+      const current = state.playbackState?.track_window?.current_track;
+      if (!current?.uri) {
+        setStatus('Play something first', 'warn');
+        return;
+      }
+
+      state.recommendRequest = (async () => {
+        els.recommendBtn.classList.add('loading');
+        els.recommendBtn.classList.add('active');
+        try {
+          const candidate = await fetchRecommendationCandidate(current);
+          if (!candidate?.uri) throw new Error('No discovery track found');
+          await addItemToQueue(candidate.uri);
+          setRecommendVisual(true);
+          const artist = (candidate.artists || []).map(artist => artist.name).filter(Boolean).join(', ');
+          setStatus(`Queued ${candidate.name}${artist ? ` — ${artist}` : ''}`, 'good');
+        } catch (error) {
+          setRecommendVisual(false);
+          setStatus(`Discovery failed: ${error.message}`, 'error');
+        } finally {
+          els.recommendBtn.classList.remove('loading');
+          state.recommendRequest = null;
+        }
+      })();
+
+      return state.recommendRequest;
+    }
+
+    async function syncLikedState(uri) {
+      if (!uri) {
+        setHeartVisual(false);
+        els.heartBtn.disabled = true;
+        return;
+      }
+
+      try {
+        const result = await spotifyFetch(`/v1/me/library/contains?uris=${encodeURIComponent(uri)}`);
+        const liked = Array.isArray(result) ? !!result[0] : false;
+        setHeartVisual(liked);
+        els.heartBtn.disabled = false;
+      } catch (error) {
+        setHeartVisual(false);
+        setStatus(`Library check failed: ${error.message}`, 'error');
+      }
+    }
+
+    async function toggleShuffle() {
+      if (state.shuffleRequest) return state.shuffleRequest;
+      const nextState = !state.shuffleEnabled;
+      const params = new URLSearchParams({ state: String(nextState) });
+      const targetId = getCommandDeviceId();
+      if (targetId) params.set('device_id', targetId);
+
+      state.shuffleRequest = (async () => {
+        try {
+          await spotifyFetch(`/v1/me/player/shuffle?${params.toString()}`, { method: 'PUT' });
+          setShuffleVisual(nextState);
+          setStatus(nextState ? 'Shuffle on' : 'Shuffle off', 'good');
+          setTimeout(() => { syncPlaybackFlags().catch(() => {}); }, 250);
+        } catch (error) {
+          setStatus(`Shuffle failed: ${error.message}`, 'error');
+        } finally {
+          state.shuffleRequest = null;
+        }
+      })();
+
+      return state.shuffleRequest;
+    }
+
+    async function toggleLike() {
+      const uri = state.currentUri;
+      if (!uri || state.likeRequest) return;
+
+      state.likeRequest = (async () => {
+        try {
+          if (state.currentLiked) {
+            await spotifyFetch(`/v1/me/library?uris=${encodeURIComponent(uri)}`, { method: 'DELETE' });
+            setHeartVisual(false);
+          } else {
+            await spotifyFetch(`/v1/me/library?uris=${encodeURIComponent(uri)}`, { method: 'PUT' });
+            setHeartVisual(true);
+          }
+        } catch (error) {
+          setStatus(`Like update failed: ${error.message}`, 'error');
+        } finally {
+          state.likeRequest = null;
+        }
+      })();
+
+      return state.likeRequest;
+    }
+
+    function updateTrackFromState(playbackState) {
+      if (!playbackState || !playbackState.track_window?.current_track) return;
+      const current = playbackState.track_window.current_track;
+      const image = current.album?.images?.[0]?.url || DEFAULT_ART;
+      const artist = (current.artists || []).map(artist => artist.name).join(', ');
+      const contextName = playbackState.context?.metadata?.context_description || current.album?.name || 'Spotify';
+
+      els.albumArt.src = image;
+      els.bgArt.src = image;
+      if (image && image !== state.gradientArtSrc) {
+        extractPaletteFromImage(image);
+      }
+      els.trackName.textContent = current.name || 'Unknown track';
+      els.artistName.textContent = artist || 'Unknown artist';
+      els.metaTop.textContent = contextName;
+      setPlayPauseVisual(!!playbackState.paused);
+      if (playbackState.device) updatePlaybackDeviceInfo(playbackState.device);
+
+      const newUri = current.uri || '';
+      if (newUri && newUri !== state.currentUri) {
+        setRecommendVisual(false);
+        state.currentUri = newUri;
+        syncLikedState(newUri);
+        resetPlaybackProgressUI(playbackState.position || 0, playbackState.duration || current.duration_ms || 0);
+      }
+
+      updateTransportButtons(true);
+      renderProgress();
+    }
+
+    async function hydratePlaybackState() {
+      try {
+        const playback = await spotifyFetch('/v1/me/player');
+        if (playback?.device) {
+          updatePlaybackDeviceInfo(playback.device);
+          syncVolumeFromPlaybackDevice(playback.device, false);
+        }
+        if (playback?.item) {
+          const normalized = normalizePlaybackState(playback, 'api');
+          if (normalized) {
+            state.playbackState = normalized;
+            state.lastPlayerSnapshotAt = Date.now();
+            updateTrackFromState(normalized);
+            setStatus('Ready', 'good');
+            return;
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+
+      if (state.player) {
+        try {
+          const playbackState = await state.player.getCurrentState();
+          if (!playbackState) return;
+          const normalized = normalizePlaybackState(playbackState, 'sdk');
+          state.playbackState = normalized;
+          state.lastPlayerSnapshotAt = Date.now();
+          updateTrackFromState(normalized);
+          syncPlaybackFlags().catch(() => {});
+          setStatus('Ready', 'good');
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    }
+
+    async function activateAudio() {
+      if (!state.player) return;
+      try {
+        await state.player.activateElement();
+        state.activated = true;
+        updateAudioButton();
+        setStatus('Audio activated', 'good');
+        if (els.overlay.classList.contains('show')) setOverlay('setup');
+      } catch (error) {
+        state.activated = false;
+        updateAudioButton();
+        setStatus(`Audio activation failed: ${error.message}`, 'error');
+        if (els.overlay.classList.contains('show')) setOverlay('setup');
+      }
+    }
+
+    async function transferPlayback() {
+      if (!state.deviceId) {
+        setStatus('Spotify device is not ready', 'warn');
+        return;
+      }
+      try {
+        await spotifyFetch('/v1/me/player', {
+          method: 'PUT',
+          body: JSON.stringify({ device_ids: [state.deviceId], play: true })
+        });
+        setSelectedDevice({ id: state.deviceId, name: APP_CONFIG.DEVICE_NAME, supports_volume: true });
+        setStatus('Playback transferred', 'good');
+        setOverlay('hidden');
+        setSaved(STORAGE_KEYS.overlayDismissed, '1');
+        await new Promise(resolve => setTimeout(resolve, 900));
+        await hydratePlaybackState();
+        syncPlaybackFlags().catch(() => {});
+      } catch (error) {
+        setStatus(`Transfer failed: ${error.message}`, 'error');
+      }
+    }
+
+    function signOut() {
+      [
+        STORAGE_KEYS.accessToken,
+        STORAGE_KEYS.refreshToken,
+        STORAGE_KEYS.expiresAt,
+        STORAGE_KEYS.codeVerifier,
+        STORAGE_KEYS.oauthState,
+        STORAGE_KEYS.overlayDismissed,
+        STORAGE_KEYS.selectedDeviceId
+      ].forEach(removeSaved);
+
+      if (state.player) {
+        try { state.player.disconnect(); } catch (_) {}
+      }
+
+      state.player = null;
+      state.deviceId = null;
+      state.ready = false;
+      state.activated = false;
+      state.playbackState = null;
+      state.currentUri = '';
+      state.currentLiked = false;
+      state.shuffleEnabled = false;
+      state.discoveryQueued = false;
+      state.selectedDeviceId = '';
+      state.selectedDeviceName = '';
+      state.playbackDeviceId = '';
+      state.playbackDeviceName = '';
+      updateAuxButtons();
+      clearTrack();
+      updateAudioButton();
+      setOverlay('signin');
+      setStatus('Signed out', 'warn');
+    }
+
+    function installPlayer() {
+      if (!window.Spotify || state.player || !hasTokens()) {
+        updateAuxButtons();
+        return;
+      }
+
+      state.player = new Spotify.Player({
+        name: APP_CONFIG.DEVICE_NAME,
+        getOAuthToken: async (cb) => {
+          try {
+            cb(await getValidToken());
+          } catch (error) {
+            setStatus(`Token error: ${error.message}`, 'error');
+          }
+        },
+        volume: state.volume,
+        enableMediaSession: true
+      });
+
+      state.player.addListener('ready', async ({ device_id }) => {
+        state.deviceId = device_id;
+        state.ready = true;
+        updateAuxButtons();
+        updateTransportButtons(true);
+        updateAudioButton();
+        setStatus('Spotify ready', 'good');
+        fetchAvailableDevices(false).catch(() => {});
+        syncPlaybackFlags().catch(() => {});
+        await syncPlayerVolume(state.volume);
+
+        if (!state.activated) {
+          const dismissed = getSaved(STORAGE_KEYS.overlayDismissed) === '1';
+          setOverlay(dismissed ? 'hidden' : 'setup');
+        }
+      });
+
+      state.player.addListener('not_ready', () => {
+        state.ready = false;
+        updateAuxButtons();
+        setStatus('Spotify device offline', 'warn');
+      });
+
+      state.player.addListener('player_state_changed', (playbackState) => {
+        if (!playbackState) return;
+        if (state.selectedDeviceId && state.selectedDeviceId !== state.deviceId) return;
+        const normalized = normalizePlaybackState(playbackState, 'sdk');
+        state.playbackState = normalized;
+        state.lastPlayerSnapshotAt = Date.now();
+        updateTrackFromState(normalized);
+        syncPlaybackFlags().catch(() => {});
+      });
+
+      state.player.addListener('autoplay_failed', () => {
+        setStatus('Tap Activate audio', 'warn');
+        setOverlay('setup');
+      });
+
+      state.player.addListener('initialization_error', ({ message }) => setStatus(`Initialization error: ${message}`, 'error'));
+      state.player.addListener('authentication_error', ({ message }) => setStatus(`Authentication error: ${message}`, 'error'));
+      state.player.addListener('account_error', ({ message }) => setStatus(`Account error: ${message}`, 'error'));
+      state.player.addListener('playback_error', ({ message }) => setStatus(`Playback error: ${message}`, 'error'));
+
+      state.player.connect().then(success => {
+        if (!success) {
+          setStatus('Spotify player could not connect', 'error');
+          return;
+        }
+        updateAuxButtons();
+      });
+    }
+
+    async function maybeHandleAuthRedirect() {
+      const params = new URLSearchParams(location.search);
+      const code = params.get('code');
+      const incomingState = params.get('state');
+      const error = params.get('error');
+
+      if (normalizeUrl(location.href) !== normalizeUrl(APP_CONFIG.REDIRECT_URI)) {
+        state.redirectMismatch = true;
+      }
+
+      if (error) {
+        setStatus(`Spotify login failed: ${error}`, 'error');
+        if (state.redirectMismatch) {
+          setStatus('Redirect URI mismatch: this page is not the configured callback', 'error');
+        }
+        history.replaceState({}, document.title, location.pathname);
+        return;
+      }
+
+      if (!code) {
+        if (state.redirectMismatch && !hasTokens()) {
+          setStatus('Redirect URI is hardcoded to a different page', 'warn');
+        }
+        return;
+      }
+
+      const expectedState = getSaved(STORAGE_KEYS.oauthState);
+      if (!incomingState || incomingState !== expectedState) {
+        setStatus('Spotify login failed: invalid state', 'error');
+        history.replaceState({}, document.title, location.pathname);
+        return;
+      }
+
+      try {
+        setStatus('Finishing Spotify login', 'warn');
+        await exchangeCodeForToken(code);
+        history.replaceState({}, document.title, location.pathname);
+        setStatus('Spotify login complete', 'good');
+        setSaved(STORAGE_KEYS.overlayDismissed, '0');
+      } catch (error) {
+        setStatus(`Spotify login failed: ${error.message}`, 'error');
+        history.replaceState({}, document.title, location.pathname);
+      }
+    }
+
+    function startPlaybackPolling() {
+      if (state.playbackPollTimer) clearInterval(state.playbackPollTimer);
+      state.playbackPollTimer = setInterval(() => {
+        if (!hasTokens() || state.seeking) return;
+        hydratePlaybackState().catch(() => {});
+      }, 2600);
+    }
+
+    function attachEvents() {
+      els.loginBtn.addEventListener('click', beginLogin);
+      els.audioBtn.addEventListener('click', activateAudio);
+      els.setupAudioBtn.addEventListener('click', activateAudio);
+      els.useDeviceBtn.addEventListener('click', transferPlayback);
+      els.setupDeviceBtn.addEventListener('click', transferPlayback);
+      els.connectRemoteBtn.addEventListener('click', openDeviceSheet);
+      els.refreshDevicesBtn.addEventListener('click', refreshDevices);
+      els.closeDevicesBtn.addEventListener('click', closeDeviceSheet);
+      els.deviceSheet.addEventListener('click', (event) => {
+        if (event.target === els.deviceSheet) closeDeviceSheet();
+      });
+      els.fullscreenBtn.addEventListener('click', toggleFullscreen);
+      els.closeOverlayBtn.addEventListener('click', () => {
+        setSaved(STORAGE_KEYS.overlayDismissed, '1');
+        setOverlay('hidden');
+      });
+      els.signOutMiniBtn.addEventListener('click', signOut);
+
+      els.prevBtn.addEventListener('click', async () => {
+        try {
+          await commandPrevious();
+          await refreshPlaybackSoon(90).catch(() => {});
+          syncPlaybackClock();
+        } catch (error) {
+          clickLegacy(legacy.prevBtn);
+          setStatus(`Previous failed: ${error.message}`, 'error');
+        }
+      });
+
+      els.playPauseBtn.addEventListener('click', async () => {
+        try {
+          await commandTogglePlay();
+          await refreshPlaybackSoon(90).catch(() => {});
+          syncPlaybackClock();
+        } catch (error) {
+          clickLegacy(legacy.playPauseBtn);
+          setStatus(`Play or pause failed: ${error.message}`, 'error');
+        }
+      });
+
+      els.shuffleBtn.addEventListener('click', toggleShuffle);
+
+      els.nextBtn.addEventListener('click', async () => {
+        try {
+          await commandNext();
+          await refreshPlaybackSoon(90).catch(() => {});
+          syncPlaybackClock();
+        } catch (error) {
+          clickLegacy(legacy.nextBtn);
+          setStatus(`Next failed: ${error.message}`, 'error');
+        }
+      });
+
+      els.heartBtn.addEventListener('click', toggleLike);
+      els.recommendBtn.addEventListener('click', queueDiscoveryTrack);
+
+      els.timeline.addEventListener('input', () => {
+        state.seeking = true;
+        updateRangeVisual(els.timeline);
+        els.currentTime.textContent = formatTime(Number(els.timeline.value));
+      });
+
+      const finishSeek = async () => {
+        if (!state.seeking) return;
+        state.seeking = false;
+        try {
+          await commandSeek(Number(els.timeline.value));
+          await refreshPlaybackSoon(150);
+        } catch (error) {
+          setStatus(`Seek failed: ${error.message}`, 'error');
+        }
+      };
+
+      els.timeline.addEventListener('change', finishSeek);
+      els.timeline.addEventListener('pointerup', finishSeek);
+      els.timeline.addEventListener('touchend', finishSeek);
+
+      els.volumeSlider.addEventListener('input', () => {
+        const volume = Number(els.volumeSlider.value) / 100;
+        setVolumeUI(volume);
+      });
+
+      const finishVolume = async () => {
+        const volume = Number(els.volumeSlider.value) / 100;
+        await applyVolume(volume);
+      };
+
+      els.volumeSlider.addEventListener('change', finishVolume);
+      els.volumeSlider.addEventListener('pointerup', finishVolume);
+      els.volumeSlider.addEventListener('touchend', finishVolume);
+
+      els.muteBtn.addEventListener('click', async () => {
+        const target = state.volume > 0.001 ? 0 : (state.previousVolume > 0.001 ? state.previousVolume : 0.8);
+        await applyVolume(target);
+      });
+
+      document.addEventListener('fullscreenchange', syncFullscreenButton);
+      document.addEventListener('webkitfullscreenchange', syncFullscreenButton);
+      document.addEventListener('fullscreenerror', () => setStatus('Full screen failed', 'error'));
+      document.addEventListener('webkitfullscreenerror', () => setStatus('Full screen failed', 'error'));
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && els.deviceSheet.classList.contains('show')) closeDeviceSheet();
+      });
+    }
+
+    window.onSpotifyWebPlaybackSDKReady = () => {
+      state.sdkReady = true;
+      installPlayer();
+    };
+
+    (async function init() {
+      setDefaultBackground();
+    loadSavedVolume();
+      clearTrack();
+      updateRangeVisual(els.timeline);
+      updateRangeVisual(els.volumeSlider);
+      attachEvents();
+      attachGestureEvents();
+      updateAuxButtons();
+      updateAudioButton();
+      syncFullscreenButton();
+      startProgressLoop();
+      startPlaybackPolling();
+      const savedSelected = getSaved(STORAGE_KEYS.selectedDeviceId);
+      if (savedSelected) state.selectedDeviceId = savedSelected;
+      await maybeHandleAuthRedirect();
+
+      if (hasTokens()) {
+        setStatus(state.redirectMismatch ? 'Stored session found' : 'Restoring session', 'warn');
+        setOverlay('hidden');
+        hydratePlaybackState().catch(() => {});
+        fetchAvailableDevices(false).catch(() => {});
+      } else {
+        setOverlay('signin');
+      }
+
+      if (window.Spotify) installPlayer();
+    })();
+  </script><div aria-label="sp0tify iPod interface" id="ipodApp"><div class="ipod-face"><div class="ipod-screen-frame"><div aria-live="polite" class="ipod-screen"><div class="ipod-topbar"><div aria-hidden="true" class="top-icon-left" id="podTopLeft"></div><div class="title" id="podTopTitle">sp0tify</div><div aria-hidden="true" class="top-icon-right visualizer idle" id="podViz"><span></span><span></span><span></span><span></span></div></div><div class="ipod-body"><div class="pod-view active" id="podMenuView"></div><div class="pod-view" id="podNowView"></div></div></div></div><div class="wheel-zone"><div aria-label="Click wheel" class="wheel" id="podWheel" role="application"><div aria-hidden="true" class="wheel-ring" id="podWheelRing"></div><div aria-hidden="true" class="wheel-label menu">Menu</div><div aria-hidden="true" class="wheel-label prev">⏮</div><div aria-hidden="true" class="wheel-label next">⏭</div><div aria-hidden="true" class="wheel-label play">⏯</div><button aria-label="Select" class="wheel-center" id="podCenterBtn" type="button"></button></div></div></div></div><script id="ipod-overlay-script">
+(() => {
+  const legacy = {
+    loginBtn: document.getElementById('loginBtn'),
+    signOutBtn: document.getElementById('signOutMiniBtn'),
+    trackName: document.getElementById('trackName'),
+    artistName: document.getElementById('artistName'),
+    metaTop: document.getElementById('metaTop'),
+    currentTime: document.getElementById('currentTime'),
+    totalTime: document.getElementById('totalTime'),
+    timeline: document.getElementById('timeline'),
+    albumArt: document.getElementById('albumArt'),
+    shuffleBtn: document.getElementById('shuffleBtn'),
+    recommendBtn: document.getElementById('recommendBtn'),
+    heartBtn: document.getElementById('heartBtn'),
+    prevBtn: document.getElementById('prevBtn'),
+    playPauseBtn: document.getElementById('playPauseBtn'),
+    playPauseIcon: document.getElementById('playPauseIcon'),
+    nextBtn: document.getElementById('nextBtn'),
+    volumeSlider: document.getElementById('volumeSlider'),
+    audioBtn: document.getElementById('audioBtn'),
+    useDeviceBtn: document.getElementById('useDeviceBtn'),
+    connectBtn: document.getElementById('connectRemoteBtn'),
+    fullscreenBtn: document.getElementById('fullscreenBtn'),
+    deviceList: document.getElementById('deviceList'),
+    refreshDevicesBtn: document.getElementById('refreshDevicesBtn'),
+    closeDevicesBtn: document.getElementById('closeDevicesBtn'),
+    setupAudioBtn: document.getElementById('setupAudioBtn'),
+    setupDeviceBtn: document.getElementById('setupDeviceBtn')
+  };
+
+  const ui = {
+    menuView: document.getElementById('podMenuView'),
+    nowView: document.getElementById('podNowView'),
+    topTitle: document.getElementById('podTopTitle'),
+    topLeft: document.getElementById('podTopLeft'),
+    viz: document.getElementById('podViz'),
+    wheel: document.getElementById('podWheel'),
+    center: document.getElementById('podCenterBtn'),
+    app: document.getElementById('ipodApp')
+  };
+
+  const state = {
+    view: 'home',
+    selected: 0,
+    devices: [],
+    menuItems: [],
+    menuOffset: 0,
+    menuVisibleCount: 6,
+    renderToken: '',
+    nowPlayingRaf: 0,
+    npElements: { bar: null, currentTimeEl: null, totalTimeEl: null },
+    lastRenderHash: '',
+    wakeLock: null,
+    wakeLockRequested: false,
+    gestureActive: false,
+    pointerId: null,
+    startAngle: 0,
+    lastAngle: 0,
+    accum: 0,
+    startX: 0,
+    startY: 0,
+    startT: 0,
+    moved: false,
+    startDist: 0,
+    likedTracks: [],
+    likedLoading: false,
+    likedLoaded: false,
+    likedFullyLoaded: false,
+    likedBackgroundLoading: false,
+    playlists: [],
+    playlistsLoading: false,
+    playlistsLoaded: false,
+    playlistTracksById: {},
+    activePlaylist: null,
+    activePlaylistIndex: 0,
+    playbackClock: { positionMs: 0, durationMs: 0, stamp: Date.now(), playing: false, trackKey: '' },
+    npLikedTrackKey: '',
+    npLikedState: false,
+    listScrollPointerId: null,
+    npSeekPointerId: null,
+    npScrubbing: false,
+    npScrubMs: 0
+  };
+
+  if (legacy.signOutBtn) {
+    legacy.signOutBtn.hidden = true;
+    legacy.signOutBtn.style.display = 'none';
+  }
+
+  let clickAudioContext = null;
+  let lastClickSoundAt = 0;
+  function playUiClick() {
+    const now = Date.now();
+    if (now - lastClickSoundAt < 42) return;
+    lastClickSoundAt = now;
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    try {
+      if (!clickAudioContext) clickAudioContext = new AudioCtx();
+      if (clickAudioContext.state === 'suspended') clickAudioContext.resume().catch(() => {});
+      const ctx = clickAudioContext;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(920, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(720, ctx.currentTime + 0.028);
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.009, ctx.currentTime + 0.004);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.04);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.042);
+    } catch (_) {}
+  }
+
+  function clearNowPlayingCache() {
+    state.npElements = { bar: null, currentTimeEl: null, totalTimeEl: null };
+  }
+
+  function stopNowPlayingLoop() {
+    if (state.nowPlayingRaf) {
+      cancelAnimationFrame(state.nowPlayingRaf);
+      state.nowPlayingRaf = 0;
+    }
+  }
+
+  function isAuthed() {
+    return typeof hasTokens === 'function' ? hasTokens() : false;
+  }
+  function isDisabled(el) { return !el || !!el.disabled; }
+  function clickLegacy(el) { if (!el || el.disabled) return; el.click(); }
+  function text(el, fallback='') { return (el && (el.textContent || '').trim()) || fallback; }
+  function currentTrackTitle(){ return text(legacy.trackName, 'Nothing playing'); }
+  function currentArtist(){ return text(legacy.artistName, isAuthed() ? 'Open Spotify on a device' : 'Sign in first'); }
+  function currentContext(){ return text(legacy.metaTop, 'sp0tify'); }
+  function currentArt(){ return legacy.albumArt && legacy.albumArt.getAttribute('src') || ''; }
+  function currentArtSmall(){
+    const images = state.playbackState?.track_window?.current_track?.album?.images;
+    if (Array.isArray(images) && images.length) {
+      const smallest = images[images.length - 1] || images[0];
+      if (smallest && smallest.url) return smallest.url;
+    }
+    return currentArt();
+  }
+  function currentTime(){ return text(legacy.currentTime, '0:00'); }
+  function totalTime(){ return text(legacy.totalTime, '0:00'); }
+  function progressValue(){ return legacy.timeline ? Number(legacy.timeline.value || 0) : 0; }
+  function volumeValue(){ return legacy.volumeSlider ? Number(legacy.volumeSlider.value || 0) : 0; }
+  function parseTimeMs(value){
+    const raw = String(value || '').trim();
+    if (!raw) return 0;
+    const cleaned = raw.replace(/^-/, '');
+    const parts = cleaned.split(':').map((part) => Number(part));
+    if (parts.some((n) => Number.isNaN(n))) return 0;
+    if (parts.length === 3) return ((parts[0] * 60 + parts[1]) * 60 + parts[2]) * 1000;
+    if (parts.length === 2) return (parts[0] * 60 + parts[1]) * 1000;
+    return parts[0] * 1000;
+  }
+  function formatTimeMs(ms){
+    const totalSeconds = Math.max(0, Math.floor((ms || 0) / 1000));
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    if (hours > 0) return `${hours}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+    return `${minutes}:${String(seconds).padStart(2,'0')}`;
+  }
+  function syncPlaybackClock(){
+    const trackKey = `${currentTrackTitle()}|${currentArtist()}`;
+    const durationMs = parseTimeMs(totalTime());
+    const reportedPositionMs = parseTimeMs(currentTime());
+    const now = Date.now();
+    const wasPlaying = !!state.playbackClock.playing;
+    const isNowPlaying = isPlaying();
+
+    if (trackKey !== state.playbackClock.trackKey) {
+      state.playbackClock.trackKey = trackKey;
+      state.playbackClock.positionMs = reportedPositionMs;
+      state.playbackClock.durationMs = durationMs;
+      state.playbackClock.stamp = now;
+      state.playbackClock.playing = isNowPlaying;
+      return;
+    }
+
+    if (wasPlaying) {
+      state.playbackClock.positionMs += Math.max(0, now - (state.playbackClock.stamp || now));
+    }
+
+    if (durationMs > 0) state.playbackClock.durationMs = durationMs;
+
+    const drift = Math.abs(reportedPositionMs - state.playbackClock.positionMs);
+    if (drift > 1700 || !wasPlaying || !isNowPlaying) {
+      state.playbackClock.positionMs = reportedPositionMs;
+    }
+
+    if (state.playbackClock.durationMs > 0) {
+      state.playbackClock.positionMs = Math.min(state.playbackClock.durationMs, state.playbackClock.positionMs);
+    }
+    state.playbackClock.positionMs = Math.max(0, state.playbackClock.positionMs);
+    state.playbackClock.playing = isNowPlaying;
+    state.playbackClock.stamp = now;
+  }
+  function displayDurationMs(){
+    return Math.max(0, state.playbackClock.durationMs || parseTimeMs(totalTime()));
+  }
+  function displayPositionMs(){
+    const duration = displayDurationMs();
+    let position = Math.max(0, state.playbackClock.positionMs || parseTimeMs(currentTime()));
+    if (state.playbackClock.playing) {
+      position += Date.now() - (state.playbackClock.stamp || Date.now());
+    }
+    if (duration > 0) position = Math.min(duration, position);
+    return Math.max(0, position);
+  }
+  function isShuffleOn(){ return !!legacy.shuffleBtn && legacy.shuffleBtn.classList.contains('active'); }
+  function isLiked(){ return !!legacy.heartBtn && legacy.heartBtn.classList.contains('active'); }
+  function currentLikeTrackKey(){ return `${currentTrackTitle()}|${currentArtist()}|${currentContext()}`; }
+  function syncNowPlayingLikedState(force = false){
+    const trackKey = currentLikeTrackKey();
+    if (force || state.npLikedTrackKey !== trackKey) {
+      state.npLikedTrackKey = trackKey;
+      state.npLikedState = isLiked();
+    }
+    return state.npLikedState;
+  }
+  function updateNowPlayingLikeButton(){
+    const likeBtn = ui.nowView.querySelector('#npLikeBtn');
+    if (!likeBtn) return;
+    likeBtn.setAttribute('aria-label', state.npLikedState ? 'Remove from liked songs' : 'Save to liked songs');
+    likeBtn.setAttribute('title', state.npLikedState ? 'Remove from liked songs' : 'Save to liked songs');
+    const svg = likeBtn.querySelector('svg');
+    if (svg) {
+      svg.setAttribute('fill', state.npLikedState ? 'currentColor' : 'none');
+      svg.setAttribute('stroke', 'currentColor');
+    }
+  }
+  function attachLikedObserver(){
+    if (!legacy.heartBtn || !window.MutationObserver) return;
+    const observer = new MutationObserver(() => {
+      const trackKey = currentLikeTrackKey();
+      if (trackKey !== state.npLikedTrackKey) return;
+      state.npLikedState = isLiked();
+      updateNowPlayingLikeButton();
     });
+    observer.observe(legacy.heartBtn, { attributes: true, attributeFilter: ['class'] });
+  }
+  function isAudioReady(){ return !!legacy.audioBtn && legacy.audioBtn.classList.contains('active'); }
+  function isUsingThisDevice(){ return !!legacy.useDeviceBtn && legacy.useDeviceBtn.classList.contains('active'); }
+  function isRemoteSelected(){ return !!legacy.connectBtn && legacy.connectBtn.classList.contains('active'); }
+  function isFullscreen(){ return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+  function isPaused(){ return !!legacy.playPauseIcon && legacy.playPauseIcon.querySelector('path'); }
+  function isPlaying(){ return isAuthed() && !!currentTrackTitle() && !isPaused(); }
 
-    buildModeButtons();
-    startCamera();
-  </script>
+  function getMenuVisibleCount(){
+    const height = ui.menuView ? ui.menuView.clientHeight || 180 : 180;
+    const rowHeight = 25;
+    return Math.max(5, Math.floor(height / rowHeight));
+  }
 
-</body>
-</html>
+  function syncMenuWindow(){
+    state.menuVisibleCount = getMenuVisibleCount();
+    const total = state.menuItems.length || 0;
+    const visible = Math.max(1, Math.min(state.menuVisibleCount, total || state.menuVisibleCount));
+    if (!total || total <= visible) {
+      state.menuOffset = 0;
+      return;
+    }
+    if (state.selected < state.menuOffset) state.menuOffset = state.selected;
+    if (state.selected >= state.menuOffset + visible) state.menuOffset = state.selected - visible + 1;
+    if (state.menuOffset < 0) state.menuOffset = 0;
+    const maxOffset = Math.max(0, total - visible);
+    if (state.menuOffset > maxOffset) state.menuOffset = maxOffset;
+  }
+
+  function clampIndex(){
+    if (!state.menuItems.length) {
+      state.selected = 0;
+      state.menuOffset = 0;
+      return;
+    }
+    if (state.selected < 0) state.selected = state.menuItems.length - 1;
+    if (state.selected >= state.menuItems.length) state.selected = 0;
+    syncMenuWindow();
+  }
+
+  function parseDevices(){
+    const out = [];
+    if (!legacy.deviceList) return out;
+    legacy.deviceList.querySelectorAll('[data-device-id]').forEach((btn) => {
+      const id = btn.getAttribute('data-device-id') || '';
+      const head = btn.querySelector('.device-item-head span');
+      const meta = btn.querySelector('.device-item-meta');
+      out.push({
+        id,
+        label: head ? head.textContent.trim() : (btn.textContent || 'Device').trim(),
+        meta: meta ? meta.textContent.replace(/\s+/g, ' ').trim() : '',
+        active: btn.classList.contains('active'),
+        disabled: btn.disabled,
+        click(){ btn.click(); }
+      });
+    });
+    state.devices = out;
+    return out;
+  }
+
+  async function activateAudioAndUseDevice(){
+    try {
+      if (typeof activateAudio === 'function') {
+        await activateAudio();
+      } else {
+        clickLegacy(legacy.setupAudioBtn);
+      }
+      await new Promise((resolve) => setTimeout(resolve, 120));
+      if (typeof transferPlayback === 'function') {
+        await transferPlayback();
+      } else {
+        clickLegacy(legacy.setupDeviceBtn);
+      }
+      if (state.deviceId) {
+        setSelectedDevice({ id: state.deviceId, name: APP_CONFIG.DEVICE_NAME, supports_volume: true });
+      }
+      if (typeof refreshPlaybackSoon === 'function') {
+        await refreshPlaybackSoon(180);
+      }
+    } catch (error) {
+      console.warn('Audio/device handoff failed', error);
+    } finally {
+      setTimeout(render, 80);
+      setTimeout(sync, 240);
+    }
+  }
+
+  function buildHomeItems(){
+    const items = [
+      { label: 'Now Playing', value: '', type: 'nav', next: 'nowplaying' },
+      { label: 'Liked Songs', value: state.likedTracks.length ? String(state.likedTracks.length) : '', type: 'nav', next: 'liked' },
+      { label: 'Devices', value: state.devices.find((d) => d.active)?.label || '', type: 'nav', next: 'devices' },
+      { label: 'Shuffle', value: isShuffleOn() ? 'On' : 'Off', action: () => clickLegacy(legacy.shuffleBtn) },
+      { label: 'Recommend', value: legacy.recommendBtn && legacy.recommendBtn.classList.contains('active') ? 'Queued' : '', action: () => clickLegacy(legacy.recommendBtn) },
+      { label: 'Activate audio', value: state.activated ? 'Yes' : '', action: () => {
+        if (typeof activateAudio === 'function') activateAudio();
+        else clickLegacy(legacy.setupAudioBtn);
+      } },
+      { label: 'Use this device', value: isUsingThisDevice() ? 'Yes' : '', action: () => { activateAudioAndUseDevice(); } },
+      { label: 'Full Screen', value: isFullscreen() ? 'On' : '', action: toggleFullscreen }
+    ];
+    if (!isAuthed()) items.push({ label: 'Connect Spotify', value: '', action: () => clickLegacy(legacy.loginBtn) });
+    return items;
+  }
+
+  function buildDeviceItems(){
+    const devices = parseDevices();
+    const items = devices.map((device) => ({
+      label: device.label,
+      value: device.active ? 'Active' : '',
+      disabled: device.disabled,
+      action: () => device.click()
+    }));
+    items.unshift({ label: 'Refresh', value: '', action: refreshDevices });
+    return items;
+  }
+
+
+  function buildPlaylistItems(){
+    if (!isAuthed()) {
+      return [{ label: 'Connect Spotify', value: '', action: () => clickLegacy(legacy.loginBtn) }];
+    }
+    if (state.playlistsLoading && !state.playlistsLoaded) {
+      return [{ label: 'Loading playlists…', value: '', disabled: true }];
+    }
+    if (!state.playlists.length) {
+      return [{ label: 'No playlists', value: '', disabled: true }];
+    }
+    return state.playlists.map((playlist, index) => ({
+      label: playlist.name || 'Playlist',
+      value: playlist.tracks?.total ? String(playlist.tracks.total) : '',
+      next: 'playlistTracks',
+      action: () => openPlaylistTracks(index)
+    }));
+  }
+
+  function buildPlaylistTrackItems(){
+    const playlist = state.activePlaylist;
+    const tracks = playlist?.tracks || [];
+    if (!playlist) return [{ label: 'No playlist', value: '', disabled: true }];
+    if (playlist.loading && !tracks.length) return [{ label: 'Loading tracks…', value: '', disabled: true }];
+    if (!tracks.length) return [{ label: 'No tracks', value: '', disabled: true }];
+    return tracks.map((item, index) => ({
+      label: item.track.name || 'Track',
+      value: ((item.track.artists || []).map((artist) => artist.name).join(', ')).slice(0, 24),
+      action: () => playPlaylistSong(index)
+    }));
+  }
+
+  async function openPlaylists(force = false){
+    state.view = 'playlists';
+    render();
+    if (force || !state.playlistsLoaded) {
+      await fetchPlaylists(force);
+    }
+    state.selected = 0;
+    render();
+  }
+
+  async function openPlaylistTracks(index){
+    const playlist = state.playlists[index];
+    if (!playlist) return;
+    state.activePlaylistIndex = index;
+    state.activePlaylist = { id: playlist.id, uri: playlist.uri, name: playlist.name || 'Playlist', tracks: state.playlistTracksById[playlist.id] || [], loading: true };
+    state.view = 'playlistTracks';
+    state.selected = 0;
+    render();
+    try {
+      const tracks = await fetchPlaylistTracks(playlist.id);
+      state.activePlaylist = { id: playlist.id, uri: playlist.uri, name: playlist.name || 'Playlist', tracks, loading: false };
+    } catch (error) {
+      state.activePlaylist = { id: playlist.id, uri: playlist.uri, name: playlist.name || 'Playlist', tracks: [], loading: false };
+      console.warn('Playlist tracks failed', error);
+    }
+    render();
+  }
+
+  async function playPlaylistSong(index){
+    const playlist = state.activePlaylist;
+    if (!playlist?.uri) return;
+    try {
+      await apiPlayerCommand('/v1/me/player/play', {
+        method: 'PUT',
+        body: { context_uri: playlist.uri, offset: { position: Math.max(0, index) } }
+      });
+      state.view = 'nowplaying';
+      if (typeof refreshPlaybackSoon === 'function') refreshPlaybackSoon().catch(() => {});
+      render();
+    } catch (error) {
+      console.warn('Playlist playback failed', error);
+    }
+  }
+
+  function getLikedSongsCache(){
+    try {
+      const raw = getSaved(STORAGE_KEYS.likedSongsCache);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function setLikedSongsCache(items){
+    try {
+      setSaved(STORAGE_KEYS.likedSongsCache, JSON.stringify(items || []));
+      setSaved(STORAGE_KEYS.likedSongsCacheAt, String(Date.now()));
+    } catch (error) {
+      // ignore storage write failures
+    }
+  }
+
+  async function fetchLikedSongsRemaining(offsetStart = 0, limit = 50){
+    if (state.likedBackgroundLoading || !isAuthed()) return state.likedTracks;
+    state.likedBackgroundLoading = true;
+    try {
+      let offset = offsetStart;
+      const items = Array.isArray(state.likedTracks) ? state.likedTracks.slice() : [];
+      while (true) {
+        const data = await spotifyFetch(`/v1/me/tracks?limit=${limit}&offset=${offset}`);
+        const pageItems = Array.isArray(data?.items) ? data.items.filter((item) => item && item.track && item.track.uri) : [];
+        if (!pageItems.length) break;
+        items.push(...pageItems);
+        state.likedTracks = items.slice();
+        state.likedLoaded = true;
+        if (state.view === 'liked') render();
+        if (!data?.next) break;
+        offset += pageItems.length;
+      }
+      state.likedTracks = items;
+      state.likedLoaded = true;
+      state.likedFullyLoaded = true;
+      setLikedSongsCache(items);
+      return items;
+    } catch (error) {
+      console.warn('Liked songs background fetch failed', error);
+      return state.likedTracks;
+    } finally {
+      state.likedBackgroundLoading = false;
+    }
+  }
+
+  async function fetchPagedItems(basePath, limit = 50){
+    const items = [];
+    let offset = 0;
+    while (true) {
+      const joiner = basePath.includes('?') ? '&' : '?';
+      const data = await spotifyFetch(`${basePath}${joiner}limit=${limit}&offset=${offset}`);
+      const pageItems = Array.isArray(data?.items) ? data.items : [];
+      items.push(...pageItems);
+      if (!data?.next || !pageItems.length) break;
+      offset += pageItems.length;
+    }
+    return items;
+  }
+
+  async function fetchLikedSongs(force = false){
+    if (!isAuthed()) {
+      state.likedTracks = [];
+      state.likedLoaded = false;
+      state.likedFullyLoaded = false;
+      return [];
+    }
+    if (state.likedLoading) return state.likedTracks;
+    if (state.likedLoaded && state.likedFullyLoaded && !force) return state.likedTracks;
+
+    const cached = !force ? getLikedSongsCache() : [];
+    if (cached.length && !state.likedLoaded) {
+      state.likedTracks = cached;
+      state.likedLoaded = true;
+      state.likedFullyLoaded = false;
+      if (state.view === 'liked') render();
+    }
+
+    state.likedLoading = true;
+    try {
+      const firstPage = await spotifyFetch('/v1/me/tracks?limit=50&offset=0');
+      const firstItems = Array.isArray(firstPage?.items) ? firstPage.items.filter((item) => item && item.track && item.track.uri) : [];
+      state.likedTracks = firstItems;
+      state.likedLoaded = true;
+      state.likedFullyLoaded = !firstPage?.next;
+      setLikedSongsCache(firstItems);
+      if (state.view === 'liked') render();
+      if (firstPage?.next) {
+        fetchLikedSongsRemaining(firstItems.length, 50).catch(() => {});
+      }
+      return state.likedTracks;
+    } catch (error) {
+      if (state.likedTracks.length) return state.likedTracks;
+      state.likedTracks = [];
+      state.likedLoaded = false;
+      state.likedFullyLoaded = false;
+      console.warn('Liked songs failed', error);
+      return [];
+    } finally {
+      state.likedLoading = false;
+    }
+  }
+
+  async function fetchPlaylists(force = false){
+    if (!isAuthed()) {
+      state.playlists = [];
+      state.playlistsLoaded = false;
+      return [];
+    }
+    if (state.playlistsLoading) return state.playlists;
+    if (state.playlistsLoaded && !force) return state.playlists;
+    state.playlistsLoading = true;
+    try {
+      const items = await fetchPagedItems('/v1/me/playlists', 50);
+      state.playlists = items.filter((item) => item && item.id && item.uri);
+      state.playlistsLoaded = true;
+      return state.playlists;
+    } catch (error) {
+      state.playlists = [];
+      state.playlistsLoaded = false;
+      console.warn('Playlist fetch failed', error);
+      return [];
+    } finally {
+      state.playlistsLoading = false;
+    }
+  }
+
+  async function fetchPlaylistTracks(playlistId, force = false){
+    if (!playlistId || !isAuthed()) return [];
+    if (state.playlistTracksById[playlistId] && !force) return state.playlistTracksById[playlistId];
+    const items = await fetchPagedItems(`/v1/playlists/${playlistId}/tracks`, 100);
+    const clean = items.filter((item) => item && item.track && item.track.uri);
+    state.playlistTracksById[playlistId] = clean;
+    return clean;
+  }
+
+  function buildLikedItems(){
+    if (!isAuthed()) {
+      return [{ label: 'Connect Spotify', value: '', action: () => clickLegacy(legacy.loginBtn) }];
+    }
+    if (state.likedLoading && !state.likedLoaded) {
+      return [{ label: 'Loading liked songs…', value: '', disabled: true }];
+    }
+    if (!state.likedTracks.length) {
+      return [{ label: 'No liked songs', value: '', disabled: true }];
+    }
+    return state.likedTracks.map((item, index) => ({
+      label: item.track.name || 'Track',
+      value: ((item.track.artists || []).map((artist) => artist.name).join(', ')).slice(0, 24),
+      action: () => playLikedSong(index)
+    }));
+  }
+
+  async function openLikedSongs(force = false){
+    state.view = 'liked';
+    render();
+    if (force || !state.likedLoaded) {
+      await fetchLikedSongs(force);
+    }
+    state.selected = 0;
+    render();
+  }
+
+  async function playLikedSong(index){
+    const items = state.likedTracks || [];
+    const picked = items[index]?.track;
+    if (!picked?.uri) return;
+    const restoreShuffle = isShuffleOn();
+    try {
+      if (isUsingThisDevice() || !getCommandDeviceId()) {
+        await activateAudioAndUseDevice();
+      }
+      resetPlaybackProgressUI(0, picked.duration_ms || 0);
+      const orderedUris = [picked.uri].concat(
+        items.slice(index + 1, index + 100).map((item) => item?.track?.uri).filter(Boolean),
+        items.slice(0, index).map((item) => item?.track?.uri).filter(Boolean)
+      );
+      if (restoreShuffle) {
+        try {
+          await spotifyFetch(`/v1/me/player/shuffle?state=false${getCommandDeviceId() ? `&device_id=${encodeURIComponent(getCommandDeviceId())}` : ''}`, { method: 'PUT' });
+          setShuffleVisual(false);
+        } catch (_) {}
+      }
+      await apiPlayerCommand('/v1/me/player/play', {
+        method: 'PUT',
+        body: { uris: orderedUris, position_ms: 0 }
+      });
+      if (restoreShuffle) {
+        setTimeout(() => {
+          spotifyFetch(`/v1/me/player/shuffle?state=true${getCommandDeviceId() ? `&device_id=${encodeURIComponent(getCommandDeviceId())}` : ''}`, { method: 'PUT' })
+            .then(() => { setShuffleVisual(true); sync(); })
+            .catch(() => {});
+        }, 900);
+      }
+      state.view = 'nowplaying';
+      state.selected = index;
+      state.playbackClock.trackKey = extractId(picked.uri) || picked.id || '';
+      state.playbackClock.positionMs = 0;
+      state.playbackClock.durationMs = picked.duration_ms || 0;
+      state.playbackClock.stamp = Date.now();
+      state.playbackClock.playing = true;
+      if (typeof refreshPlaybackSoon === 'function') {
+        await refreshPlaybackSoon(120);
+        await refreshPlaybackSoon(300);
+      }
+      syncPlaybackClock();
+      render();
+    } catch (error) {
+      console.warn('Liked playback failed', error);
+      try {
+        if (typeof commandTogglePlay === 'function') await commandTogglePlay();
+      } catch (_) {
+        clickLegacy(legacy.playPauseBtn);
+      }
+    }
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>\"]/g, (s) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[s]));
+  }
+
+  function updateVisualizer(){
+    ui.viz.classList.toggle('idle', !isAuthed() || !currentTrackTitle());
+    ui.viz.classList.toggle('paused', !!currentTrackTitle() && !isPlaying());
+  }
+
+  function renderMenuView(title, items){
+    clearNowPlayingCache();
+    stopNowPlayingLoop();
+    state.menuItems = items;
+    clampIndex();
+    ui.topTitle.textContent = title;
+    ui.topLeft.style.opacity = '1';
+    const visible = Math.max(1, Math.min(state.menuVisibleCount || 6, items.length || 1));
+    const start = Math.max(0, Math.min(state.menuOffset || 0, Math.max(0, items.length - visible)));
+    const end = start + visible;
+    const rows = items.slice(start, end).map((item, sliceIndex) => {
+      const index = start + sliceIndex;
+      const classes = ['pod-row'];
+      if (index === state.selected) classes.push('selected');
+      const value = item.value ? `<span class="value">${escapeHtml(item.value)}</span>` : '<span class="value"></span>';
+      const chev = item.next ? '<span class="chev">›</span>' : '<span class="chev"></span>';
+      return `<li class="${classes.join(' ')}" data-menu-index="${index}"><span class="label">${escapeHtml(item.label)}</span>${value}${chev}</li>`;
+    }).join('');
+    const klass = state.view === 'devices' ? 'pod-device-list' : 'pod-menu';
+    let indicator = '';
+    if (items.length > visible) {
+      const maxOffset = Math.max(1, items.length - visible);
+      const thumbHeight = Math.max(14, ((visible / items.length) * 100));
+      const top = (start / maxOffset) * (100 - thumbHeight);
+      indicator = `<div class="pod-scroll-indicator" data-scroll-indicator="true" aria-label="Scroll list"><span style="height:${thumbHeight}%;top:${top}%"></span></div>`;
+    }
+    ui.menuView.innerHTML = rows ? `<div class="pod-list-wrap"><ul class="${klass}">${rows}</ul>${indicator}</div>` : '<div class="pod-empty">No devices found.</div>';
+    void ui.menuView.offsetHeight;
+    ui.menuView.classList.add('active');
+    ui.nowView.classList.remove('active');
+    const indicatorEl = ui.menuView.querySelector('[data-scroll-indicator="true"]');
+    if (indicatorEl) attachListScrollIndicator(indicatorEl);
+    updateVisualizer();
+  }
+
+
+  function attachListScrollIndicator(indicatorEl){
+    if (!indicatorEl) return;
+    const setFromClientY = (clientY) => {
+      const total = state.menuItems.length || 0;
+      const visible = Math.max(1, Math.min(state.menuVisibleCount || 6, total || 1));
+      if (!total || total <= visible) return;
+      const rect = indicatorEl.getBoundingClientRect();
+      const ratio = Math.max(0, Math.min(1, (clientY - rect.top) / Math.max(1, rect.height)));
+      const targetIndex = Math.max(0, Math.min(total - 1, Math.round(ratio * (total - 1))));
+      state.selected = targetIndex;
+      syncMenuWindow();
+      render();
+    };
+    indicatorEl.addEventListener('pointerdown', (event) => {
+      state.listScrollPointerId = event.pointerId;
+      if (indicatorEl.setPointerCapture) indicatorEl.setPointerCapture(event.pointerId);
+      setFromClientY(event.clientY);
+      event.preventDefault();
+      event.stopPropagation();
+    }, { passive: false });
+    indicatorEl.addEventListener('pointermove', (event) => {
+      if (state.listScrollPointerId !== event.pointerId) return;
+      setFromClientY(event.clientY);
+      event.preventDefault();
+      event.stopPropagation();
+    }, { passive: false });
+    const release = (event) => {
+      if (state.listScrollPointerId !== event.pointerId) return;
+      state.listScrollPointerId = null;
+      event.preventDefault();
+      event.stopPropagation();
+    };
+    indicatorEl.addEventListener('pointerup', release, { passive: false });
+    indicatorEl.addEventListener('pointercancel', release, { passive: false });
+  }
+
+  function bindNowPlayingSeek(barEl){
+    if (!barEl) return;
+    const setPreviewFromClientX = (clientX) => {
+      const rect = barEl.getBoundingClientRect();
+      const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / Math.max(1, rect.width)));
+      const durationMs = displayDurationMs();
+      state.npScrubMs = Math.round(durationMs * ratio);
+      state.npScrubbing = true;
+      updateNowPlayingDynamic();
+    };
+    const finishSeek = async () => {
+      if (!state.npScrubbing) return;
+      const targetMs = state.npScrubMs || 0;
+      state.npScrubbing = false;
+      state.playbackClock.positionMs = targetMs;
+      state.playbackClock.stamp = Date.now();
+      updateNowPlayingDynamic();
+      try {
+        await commandSeek(targetMs);
+        if (typeof refreshPlaybackSoon === 'function') refreshPlaybackSoon(120).catch(() => {});
+      } catch (error) {
+        console.warn('Now playing seek failed', error);
+      }
+    };
+    barEl.addEventListener('pointerdown', (event) => {
+      state.npSeekPointerId = event.pointerId;
+      if (barEl.setPointerCapture) barEl.setPointerCapture(event.pointerId);
+      setPreviewFromClientX(event.clientX);
+      event.preventDefault();
+      event.stopPropagation();
+    }, { passive: false });
+    barEl.addEventListener('pointermove', (event) => {
+      if (state.npSeekPointerId !== event.pointerId) return;
+      setPreviewFromClientX(event.clientX);
+      event.preventDefault();
+      event.stopPropagation();
+    }, { passive: false });
+    const release = async (event) => {
+      if (state.npSeekPointerId !== event.pointerId) return;
+      state.npSeekPointerId = null;
+      event.preventDefault();
+      event.stopPropagation();
+      await finishSeek();
+    };
+    barEl.addEventListener('pointerup', release, { passive: false });
+    barEl.addEventListener('pointercancel', release, { passive: false });
+  }
+
+  function updateNowPlayingDynamic(){
+    if (state.view !== 'nowplaying' || !ui.nowView.classList.contains('active') || !state.npElements.bar) return;
+    const durationMs = displayDurationMs();
+    const positionMs = state.npScrubbing ? state.npScrubMs : displayPositionMs();
+    const progress = durationMs > 0 ? Math.max(0, Math.min(100, (positionMs / durationMs) * 100)) : 0;
+    state.npElements.bar.style.width = `${progress}%`;
+    if (state.npElements.currentTimeEl) state.npElements.currentTimeEl.textContent = formatTimeMs(positionMs);
+    if (state.npElements.totalTimeEl) state.npElements.totalTimeEl.textContent = formatTimeMs(durationMs);
+  }
+
+  function startNowPlayingLoop(){
+    if (state.nowPlayingRaf) return;
+    const tick = () => {
+      updateNowPlayingDynamic();
+      state.nowPlayingRaf = requestAnimationFrame(tick);
+    };
+    state.nowPlayingRaf = requestAnimationFrame(tick);
+  }
+
+  function renderNowPlaying(){
+    ui.topTitle.textContent = 'Now Playing';
+    ui.topLeft.style.opacity = isAuthed() ? '1' : '.5';
+    syncPlaybackClock();
+    const liked = syncNowPlayingLikedState();
+    const durationMs = displayDurationMs();
+    const positionMs = state.npScrubbing ? state.npScrubMs : displayPositionMs();
+    const progress = durationMs > 0 ? Math.max(0, Math.min(100, (positionMs / durationMs) * 100)) : 0;
+    ui.nowView.innerHTML = `
+      <div class="np-wrap">
+        <div class="np-header">
+          <span class="np-context" aria-hidden="true"></span>
+          <button id="npLikeBtn" class="np-like" type="button" aria-label="${liked ? 'Remove from liked songs' : 'Save to liked songs'}" title="${liked ? 'Remove from liked songs' : 'Save to liked songs'}">
+            <svg viewBox="0 0 24 24" fill="${liked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.9-4.35-9.43-8.83C.7 8.87 2.02 4.5 6.12 4.5c2.49 0 4.24 1.39 5.88 3.67 1.64-2.28 3.39-3.67 5.88-3.67 4.1 0 5.42 4.37 3.55 7.67C18.9 16.65 12 21 12 21z"></path></svg>
+          </button>
+        </div>
+        <div class="np-main">
+          <div class="np-art">${currentArtSmall() ? `<img src="${escapeHtml(currentArtSmall())}" alt="" loading="eager" decoding="async" fetchpriority="low" referrerpolicy="no-referrer">` : ''}</div>
+          <div class="np-text">
+            <div class="np-title">${escapeHtml(currentTrackTitle())}</div>
+            <div class="np-artist">${escapeHtml(currentArtist())}</div>
+            <div class="np-album">${escapeHtml(currentContext())}</div>
+          </div>
+        </div>
+        <div class="np-bottom">
+          <div class="np-bar"><span style="width:${progress}%"></span></div>
+          <div class="np-times"><span class="np-current-time">${escapeHtml(formatTimeMs(positionMs))}</span><span class="np-total-time">${escapeHtml(formatTimeMs(durationMs))}</span></div>
+        </div>
+      </div>`;
+    const barWrap = ui.nowView.querySelector('.np-bar');
+    state.npElements.bar = ui.nowView.querySelector('.np-bar > span');
+    state.npElements.currentTimeEl = ui.nowView.querySelector('.np-current-time');
+    state.npElements.totalTimeEl = ui.nowView.querySelector('.np-total-time');
+    bindNowPlayingSeek(barWrap);
+    const likeBtn = ui.nowView.querySelector('#npLikeBtn');
+    if (likeBtn) {
+      likeBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        state.npLikedTrackKey = currentLikeTrackKey();
+        state.npLikedState = !state.npLikedState;
+        updateNowPlayingLikeButton();
+        clickLegacy(legacy.heartBtn);
+        setTimeout(sync, 120);
+      });
+    }
+    ui.nowView.classList.add('active');
+    ui.menuView.classList.remove('active');
+    updateVisualizer();
+    updateNowPlayingDynamic();
+    startNowPlayingLoop();
+  }
+
+  function render(){
+    parseDevices();
+    if (state.view === 'nowplaying') {
+      renderNowPlaying();
+      return;
+    }
+    if (state.view === 'devices') {
+      renderMenuView('Devices', buildDeviceItems());
+      return;
+    }
+    if (state.view === 'liked') {
+      renderMenuView('Liked Songs', buildLikedItems());
+      return;
+    }
+    renderMenuView('sp0tify', buildHomeItems());
+  }
+
+  function selectStep(direction){
+    playUiClick();
+    if (state.view === 'nowplaying') {
+      return;
+    }
+    state.selected += direction;
+    clampIndex();
+    render();
+  }
+
+  function activateSelection(){
+    playUiClick();
+    if (state.view === 'nowplaying') {
+      return;
+    }
+    const item = state.menuItems[state.selected];
+    if (!item || item.disabled) return;
+    if (item.next === 'nowplaying') {
+      state.view = 'nowplaying';
+      render();
+      return;
+    }
+    if (item.next === 'devices') {
+      state.view = 'devices';
+      refreshDevices();
+      render();
+      return;
+    }
+    if (item.next === 'liked') {
+      openLikedSongs();
+      return;
+    }
+    if (typeof item.action === 'function') {
+      Promise.resolve(item.action()).then(() => {
+        setTimeout(render, 80);
+        setTimeout(sync, 220);
+        setTimeout(render, 360);
+      }).catch((error) => {
+        console.warn('Selection action failed', error);
+        setTimeout(render, 120);
+      });
+    }
+  }
+
+  function goMenu(){
+    if (state.view === 'nowplaying') {
+      clearNowPlayingCache();
+      stopNowPlayingLoop();
+    }
+    state.view = 'home';
+    state.selected = 0;
+    state.menuOffset = 0;
+    state.lastRenderHash = '';
+    parseDevices();
+    render();
+    requestAnimationFrame(() => {
+      if (state.view !== 'home') return;
+      state.menuOffset = 0;
+      parseDevices();
+      render();
+    });
+    setTimeout(() => {
+      if (state.view !== 'home') return;
+      state.menuOffset = 0;
+      parseDevices();
+      render();
+    }, 80);
+  }
+
+  function refreshDevices(){
+    clickLegacy(legacy.connectBtn);
+    setTimeout(() => clickLegacy(legacy.refreshDevicesBtn), 40);
+    setTimeout(() => { parseDevices(); render(); clickLegacy(legacy.closeDevicesBtn); }, 500);
+    setTimeout(() => { parseDevices(); render(); clickLegacy(legacy.closeDevicesBtn); }, 1200);
+  }
+
+  async function toggleFullscreen(){
+    const root = document.documentElement;
+    const active = document.fullscreenElement || document.webkitFullscreenElement;
+    try {
+      if (active) {
+        if (document.exitFullscreen) await document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      } else {
+        if (root.requestFullscreen) await root.requestFullscreen({ navigationUI: 'hide' }).catch(() => root.requestFullscreen());
+        else if (root.webkitRequestFullscreen) root.webkitRequestFullscreen();
+      }
+    } catch (_) {}
+    setTimeout(render, 120);
+  }
+
+  function wheelGeometry(event){
+    const rect = ui.wheel.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = event.clientX - cx;
+    const dy = event.clientY - cy;
+    return {
+      rect,
+      cx,
+      cy,
+      dx,
+      dy,
+      dist: Math.sqrt(dx * dx + dy * dy) / (rect.width / 2),
+      angle: Math.atan2(dy, dx)
+    };
+  }
+
+  function normalizeDelta(delta){
+    while (delta > Math.PI) delta -= Math.PI * 2;
+    while (delta < -Math.PI) delta += Math.PI * 2;
+    return delta;
+  }
+
+  function sectorFromAngle(angle){
+    const deg = (angle * 180 / Math.PI + 360) % 360;
+    if (deg >= 315 || deg < 45) return 'next';
+    if (deg >= 45 && deg < 135) return 'play';
+    if (deg >= 135 && deg < 225) return 'prev';
+    return 'menu';
+  }
+
+  async function handleSectorTap(sector){
+    playUiClick();
+    if (sector === 'menu') { goMenu(); return; }
+    if (sector === 'prev') {
+      try {
+        if (typeof commandPrevious === 'function') await commandPrevious();
+        else clickLegacy(legacy.prevBtn);
+      } catch (_) {
+        clickLegacy(legacy.prevBtn);
+      }
+      if (typeof refreshPlaybackSoon === 'function') refreshPlaybackSoon(90).catch(() => {});
+      syncPlaybackClock();
+      render();
+      return;
+    }
+    if (sector === 'next') {
+      try {
+        if (typeof commandNext === 'function') await commandNext();
+        else clickLegacy(legacy.nextBtn);
+      } catch (_) {
+        clickLegacy(legacy.nextBtn);
+      }
+      if (typeof refreshPlaybackSoon === 'function') refreshPlaybackSoon(90).catch(() => {});
+      syncPlaybackClock();
+      render();
+      return;
+    }
+    if (sector === 'play') {
+      try {
+        if (typeof commandTogglePlay === 'function') await commandTogglePlay();
+        else clickLegacy(legacy.playPauseBtn);
+      } catch (_) {
+        clickLegacy(legacy.playPauseBtn);
+      }
+      if (typeof refreshPlaybackSoon === 'function') refreshPlaybackSoon(90).catch(() => {});
+      syncPlaybackClock();
+      render();
+      return;
+    }
+  }
+
+  function onWheelDown(event){
+    if (event.target === ui.center) return;
+    const g = wheelGeometry(event);
+    if (g.dist > 1.14) return;
+    state.gestureActive = true;
+    state.pointerId = event.pointerId;
+    state.startAngle = g.angle;
+    state.lastAngle = g.angle;
+    state.accum = 0;
+    state.startX = event.clientX;
+    state.startY = event.clientY;
+    state.startT = Date.now();
+    state.startDist = g.dist;
+    state.moved = false;
+    if (ui.wheel.setPointerCapture) ui.wheel.setPointerCapture(event.pointerId);
+    event.preventDefault();
+  }
+
+  function onWheelMove(event){
+    if (event.target === ui.center) return;
+    if (!state.gestureActive || event.pointerId !== state.pointerId) return;
+    const g = wheelGeometry(event);
+    const delta = normalizeDelta(g.angle - state.lastAngle);
+    state.lastAngle = g.angle;
+    const travel = Math.hypot(event.clientX - state.startX, event.clientY - state.startY);
+    if (travel > 10) state.moved = true;
+    if (g.dist > 0.04) {
+      state.accum += delta;
+      const threshold = 0.155;
+      while (Math.abs(state.accum) >= threshold) {
+        const dir = state.accum > 0 ? 1 : -1;
+        selectStep(dir);
+        state.accum -= threshold * dir;
+      }
+    }
+    event.preventDefault();
+  }
+
+  function onWheelUp(event){
+    if (event.target === ui.center) return;
+    if (!state.gestureActive || event.pointerId !== state.pointerId) return;
+    const g = wheelGeometry(event);
+    const duration = Date.now() - state.startT;
+    const travel = Math.hypot(event.clientX - state.startX, event.clientY - state.startY);
+    const tapish = travel < 14 && duration < 280;
+    if (tapish) {
+      if (g.dist <= 0.26) activateSelection();
+      else handleSectorTap(sectorFromAngle(g.angle));
+    }
+    state.gestureActive = false;
+    state.pointerId = null;
+    state.accum = 0;
+    event.preventDefault();
+  }
+
+  function installParallax(){ return; }
+
+  ui.center.addEventListener('pointerdown', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+  }, { passive: false });
+  ui.center.addEventListener('pointerup', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    playUiClick();
+    activateSelection();
+  }, { passive: false });
+  ui.center.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+  });
+  ui.wheel.addEventListener('pointerdown', onWheelDown, { passive: false });
+  ui.wheel.addEventListener('pointermove', onWheelMove, { passive: false });
+  ui.wheel.addEventListener('pointerup', onWheelUp, { passive: false });
+  ui.wheel.addEventListener('pointercancel', onWheelUp, { passive: false });
+  ui.wheel.addEventListener('contextmenu', (event) => event.preventDefault());
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') { selectStep(-1); event.preventDefault(); }
+    else if (event.key === 'ArrowDown' || event.key === 'ArrowRight') { selectStep(1); event.preventDefault(); }
+    else if (event.key === 'Enter' || event.key === ' ') { activateSelection(); event.preventDefault(); }
+    else if (event.key === 'Escape' || event.key.toLowerCase() === 'm') { goMenu(); event.preventDefault(); }
+  });
+
+  function computeLightHash(){
+    const devices = state.devices || [];
+    const activeDevice = devices.find((device) => device.active);
+    return [
+      isAuthed(),
+      currentTrackTitle(),
+      currentArtist(),
+      currentContext(),
+      currentArt(),
+      volumeValue(),
+      isShuffleOn() ? 1 : 0,
+      isAudioReady() ? 1 : 0,
+      isUsingThisDevice() ? 1 : 0,
+      isRemoteSelected() ? 1 : 0,
+      isFullscreen() ? 1 : 0,
+      isPaused() ? 1 : 0,
+      legacy.recommendBtn && legacy.recommendBtn.classList.contains('active') ? 1 : 0,
+      state.view,
+      state.selected,
+      state.menuOffset,
+      state.likedTracks.length,
+      devices.length,
+      activeDevice ? activeDevice.id : ''
+    ].join('|');
+  }
+
+  function sync(){
+    syncPlaybackClock();
+    const hash = computeLightHash();
+    if (hash === state.lastRenderHash) return;
+    state.lastRenderHash = hash;
+    render();
+  }
+
+  async function requestScreenWakeLock(){
+    if (!('wakeLock' in navigator)) return;
+    if (document.visibilityState !== 'visible') return;
+    try {
+      if (state.wakeLock) return;
+      state.wakeLock = await navigator.wakeLock.request('screen');
+      state.wakeLockRequested = true;
+      state.wakeLock.addEventListener('release', () => {
+        state.wakeLock = null;
+      });
+    } catch (_) {
+      state.wakeLock = null;
+    }
+  }
+
+  async function releaseScreenWakeLock(){
+    if (!state.wakeLock) return;
+    try {
+      await state.wakeLock.release();
+    } catch (_) {}
+    state.wakeLock = null;
+  }
+
+  attachLikedObserver();
+  render();
+  startNowPlayingLoop();
+  setTimeout(refreshDevices, 400);
+  setInterval(sync, 900);
+  setTimeout(sync, 900);
+  requestScreenWakeLock();
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') requestScreenWakeLock();
+    else releaseScreenWakeLock();
+  });
+  window.addEventListener('pageshow', requestScreenWakeLock);
+  document.addEventListener('pointerdown', requestScreenWakeLock, { passive: true });
+  document.addEventListener('fullscreenchange', () => { render(); requestScreenWakeLock(); });
+  document.addEventListener('webkitfullscreenchange', () => { render(); requestScreenWakeLock(); });
+})();
+</script></body></html>
